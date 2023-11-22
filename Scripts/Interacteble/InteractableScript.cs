@@ -5,5 +5,5 @@ using UnityEngine;
 public class InteractableScript : MonoBehaviour
 {
     public InteractablePropertiesScript properties;
-    public Actions actions;
+    public GameActions actions;
 }

@@ -32,7 +32,7 @@ public class PickableScript : MonoBehaviour
             {
                 Item thisItem = new Item(item);
                 interactable.properties.inventory.AddItem(thisItem, 1);
-                foreach (Action a in interactable.actions.actionList)
+                foreach (GameAction a in interactable.actions.actionList)
                 {
                     a.action.Invoke(false);
                     interactable.properties.actions.actionList.Remove(a);

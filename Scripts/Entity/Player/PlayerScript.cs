@@ -3,26 +3,15 @@ using UnityEngine;
 
 public class PlayerScript : MonoBehaviour
 {
-	//movement
-	public float maxHealth = 100;
-	public float speed = 10;
-	public float jumpSpeed = 5;
-	public float rotationSpeed = 100;
-	public float lookUpSpeed = 100;
-	public float viewPitchRange = 90f;
-	public float gravity = 20;
-	//outside script
-	public HealthSystemScript health;
+	public EntityScript entity;
 	public InventoryObject inventory;
 	public InteractablePropertiesScript properties;
-
+	//inventory
 	public GameObject inventoryTab;
 	public GameObject hudInteractBar;
 	public GameObject hudInteractBarSlider;
 
 	public bool inventoryOpen;
-
-
 
 	public GameObject player;
 	public GameObject hand;
@@ -39,18 +28,10 @@ public class PlayerScript : MonoBehaviour
 	public InputAction selecting;
 
 
-	float pitch = 0;
-	public Vector2 direction = Vector2.zero;
-	public Vector3 moveDirection = Vector3.zero;
-	public Vector2 look = Vector2.zero;
-	public Vector3 lookDirection = Vector3.zero;
-
-
 	public Camera fpsCamera;
 	public CharacterController controller;
 	void Awake()
 	{
-		health = new HealthSystemScript(maxHealth);
 		var gameplayActionMap = playerInput.FindActionMap("Player");
 		movement = gameplayActionMap.FindAction("Walking");
 		movement.performed += OnMovementChanged;
@@ -85,7 +66,6 @@ public class PlayerScript : MonoBehaviour
 	}
 	void Start()
 	{
-		health.damage(10);
         inventoryTab.SetActive(false);
         Cursor.lockState = CursorLockMode.Locked;
 		Cursor.visible = false;
@@ -106,7 +86,7 @@ public class PlayerScript : MonoBehaviour
 		item.transform.localScale = new Vector3(1, 1, 1);
 		var itemInteraction = item.GetComponent<InteractableScript>();
 		itemInteraction.properties = properties;
-		foreach (Action a in itemInteraction.actions.actionList)
+		foreach (GameAction a in itemInteraction.actions.actionList)
 		{
 			properties.actions.actionList.Add(a);
         }
@@ -114,19 +94,16 @@ public class PlayerScript : MonoBehaviour
 	}
 	void OnMovementChanged(InputAction.CallbackContext context)
 	{
-		direction = context.ReadValue<Vector2>();
+		entity.Move(context.ReadValue<Vector2>());
 	}
 	void OnJumpChanged(InputAction.CallbackContext context)
     {
-		if (controller.isGrounded)
-		{
-			moveDirection.y = jumpSpeed;
-		}
+		entity.Jump();
 	}
 	void OnUsePreformed(InputAction.CallbackContext context, int value)
     {
-		Action action = null;
-		foreach (Action i in properties.actions.actionList)
+		GameAction action = null;
+		foreach (GameAction i in properties.actions.actionList)
 		{
 			if (i.type == (ActionType)value)
 			{
@@ -141,8 +118,8 @@ public class PlayerScript : MonoBehaviour
 	}
 	void OnUseCanceled(InputAction.CallbackContext context, int value)
 	{
-		Action action = null;
-		foreach (Action i in properties.actions.actionList)
+		GameAction action = null;
+		foreach (GameAction i in properties.actions.actionList)
 		{
 			if (i.type == (ActionType)value)
 			{
@@ -158,20 +135,7 @@ public class PlayerScript : MonoBehaviour
 
 	void OnMouseMovement(InputAction.CallbackContext context)
 	{
-		look = context.ReadValue<Vector2>();
-
-		//yaw (look.x)
-		float yaw = look.x * rotationSpeed * Time.deltaTime;
-		transform.Rotate(new Vector3(0, yaw, 0));
-
-		//pitch (look.y)
-		pitch += look.y * lookUpSpeed * Time.deltaTime;
-		pitch = Mathf.Clamp(pitch, -viewPitchRange, viewPitchRange);
-		fpsCamera.transform.localRotation = Quaternion.Euler(-pitch, 0, 0);
-
-		//fpsCamera.transform.Rotate(new Vector3(-pitch, 0, 0));
-		//Debug.Log(fpsCamera.transform.localEulerAngles);
-
+		entity.Look(context.ReadValue<Vector2>());
 	}
 	void OnInventoryPreformed(InputAction.CallbackContext context)
     {
@@ -201,20 +165,6 @@ public class PlayerScript : MonoBehaviour
 	}
 	void Update()
 	{
-		// Directional movement & jumping
-		if (controller.isGrounded)
-		{
-			moveDirection = new Vector3(direction.x, moveDirection.y, direction.y);
-			moveDirection = transform.TransformDirection(moveDirection);
-			moveDirection.x *= speed;
-			moveDirection.z *= speed;
-		}
-		else
-		{
-			moveDirection.y -= gravity * Time.deltaTime;
-		}
-		
-		controller.Move(moveDirection * Time.deltaTime);
 		//selecting
 		var ray = fpsCamera.ScreenPointToRay(new Vector3(Screen.width / 2f, Screen.height / 2f, 0));
 		RaycastHit hit;
@@ -226,7 +176,7 @@ public class PlayerScript : MonoBehaviour
 			{
 				if (_selectedObject != null)
 				{
-					foreach (Action a in _selectedObject.actions.actionList)
+					foreach (GameAction a in _selectedObject.actions.actionList)
 					{
 						///set to false only already Invoked actions
 						a.action.Invoke(false);
@@ -236,7 +186,7 @@ public class PlayerScript : MonoBehaviour
 				}
 
 				selectedObject.properties = properties;
-				foreach (Action a in selectedObject.actions.actionList)
+				foreach (GameAction a in selectedObject.actions.actionList)
                 {
 					properties.actions.actionList.Add(a);
                 }
@@ -244,7 +194,7 @@ public class PlayerScript : MonoBehaviour
 			}
 			else if (selectedObject != _selectedObject && _selectedObject != null)
 			{
-				foreach (Action a in _selectedObject.actions.actionList)
+				foreach (GameAction a in _selectedObject.actions.actionList)
 				{
 					///set to false only already Invoked actions
 					a.action.Invoke(false);
@@ -255,7 +205,7 @@ public class PlayerScript : MonoBehaviour
 		}
 		else if (_selectedObject != null)
         {
-			foreach (Action a in _selectedObject.actions.actionList)
+			foreach (GameAction a in _selectedObject.actions.actionList)
 			{
 				///set to false only already Invoked actions
 				a.action.Invoke(false);

@@ -10,5 +10,5 @@ public class InteractablePropertiesScript : MonoBehaviour
     public GameObject canvas;
     public GameObject hudInteractBarSlider;
     public GameObject hudInteractBar;
-    public Actions actions;
+    public GameActions actions;
 }

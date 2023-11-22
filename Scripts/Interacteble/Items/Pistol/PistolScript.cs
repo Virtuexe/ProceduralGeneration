@@ -17,11 +17,11 @@ public class PistolScript : MonoBehaviour
         if (Physics.Raycast(ray, Camera.main.transform.forward, out hit))
         {
             var selection = hit.transform;
-            var selectedObject = selection.GetComponent<EnemyScript>();
-            if (selectedObject != null)
-            {
-                selectedObject.health.damage(10);
-            }
+            //var selectedObject = selection.GetComponent<EnemyScript>();
+            //if (selectedObject != null)
+            //{
+            //   selectedObject.health.damage(10);
+            //}
 
         }
     }

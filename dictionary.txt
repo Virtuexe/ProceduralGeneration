@@ -1,0 +1,12 @@
+coordinates - global coordinates
+location - relative coordinates
+postion - left,right,top...
+direction - vector direction
+
+create - make brand new information or fill it in
+update - check correctnes of information and edit if not
+check - check if you can access information
+generate - spawn a physical object in word
+
+script - monobehavior script
+nonscript - non monobehavior script

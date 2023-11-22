@@ -1,0 +1,112 @@
+                                this.mesh.CreateQuad(
+                                    Vector3.Scale(manager.chunkCenter, manager.chunks[location.x, location.y, location.z].coordinates) - (manager.chunkCenter / 2)
+                                    + (manager.tileSize / 2)
+                                    + (Vector3.Scale(manager.tileSize, side))
+                                    - (Vector3.Scale(pos.RelValueX, manager.tileSize) / 2)
+                                    - (Vector3.Scale(pos.RelValueY, manager.tileSize) / 2)
+                                    - (Vector3)pos.RelValue * manager.wallThickness / 2
+
+                                    + (Vector3.Scale(position.Value * pos.Multiplier, manager.tileSize) / 2)
+                                    - (Vector3)position.Value * pos.Multiplier * manager.wallThickness / 4
+                                    - (Vector3)position.RelValue * manager.wallThickness / 4
+                                    - (Vector3.Scale(pos.RelValue, manager.tileSize) / 2)
+                                    + (Vector3.Scale(position.Value, manager.tileSize) / 2)
+                                    , 
+                                    Vector3.Scale(manager.chunkCenter, manager.chunks[location.x, location.y, location.z].coordinates) - (manager.chunkCenter / 2)
+                                    + (manager.tileSize / 2)
+                                    + (Vector3.Scale(manager.tileSize, side))
+                                    + (Vector3.Scale(pos.RelValueX, manager.tileSize) / 2)
+                                    + (Vector3.Scale(pos.RelValueY, manager.tileSize) / 2)
+                                    - (Vector3)pos.RelValue * manager.wallThickness / 2
+
+                                    - (Vector3.Scale(position.Value * pos.Multiplier, manager.tileSize) / 2)
+                                    + (Vector3)position.Value * pos.Multiplier * manager.wallThickness / 4
+                                    - (Vector3)position.RelValue * manager.wallThickness / 4
+                                    - (Vector3.Scale(pos.RelValue, manager.tileSize) / 2)
+                                    + (Vector3.Scale(position.Value, manager.tileSize) / 2)
+                                    ,
+                                    pos).transform.parent = manager.chunks[location.x, location.y, location.z].gameObject.transform;
+
+
+
+
+
+                                    //chunk old
+                                    using System;
+using System.Security.Cryptography;
+using UnityEngine;
+using UnityEngine.WSA;
+using static UnityEngine.Rendering.DebugUI;
+
+[System.Serializable]
+public struct Chunk
+{
+    public bool[,,,] sides;
+
+    public bool[,,] grid_accesible;
+    public Vector3Int coordinates;
+    public GameObject gameObject;
+    public int layersDone;
+
+    public int points_size;
+    public Vector3Int[] points;
+    public int[,,] points_distance;
+    public Chunk(Vector3Int coordinates, GameObject gameObject, int width, int height)
+    {
+        sides = new bool[width, height, width, 3];
+        grid_accesible = new bool[width, height, width];
+        this.coordinates = coordinates;
+        this.gameObject = gameObject;
+        layersDone = 0;
+
+        points_size = 0;
+        points = new Vector3Int[width * height * width];
+        points_distance = new int[width, height, width];
+        for (int y = 0; y < points_distance.GetLength(1); y++)
+        {
+            for (int z = 0; z < points_distance.GetLength(2); z++)
+            {
+                for (int x = 0; x < points_distance.GetLength(0); x++)
+                {
+                    points_distance[x, y, z] = int.MaxValue;
+                }
+            }
+        }
+
+    }
+    void CreateDirections()
+    {
+        for (int i = 0; i < points.Length; i++)
+        {
+            points_distance[points[i].x, points[i].y, points[i].z] = 0;
+        }
+    }
+    void UpdateDirctions(int x, int y, int z)
+    {
+        if (CheckDirection(x + 1,y,z) && points_distance[x, y, z] - 1 > points_distance[x + 1, y, z]) points_distance[x, y, z] = points_distance[x + 1, y, z] + 1;
+        if (CheckDirection(x - 1, y, z) && points_distance[x, y, z] - 1 > points_distance[x - 1, y, z]) points_distance[x, y, z] = points_distance[x - 1, y, z] + 1;
+        if (CheckDirection(x, y + 1, z) && points_distance[x, y, z] - 1 > points_distance[x, y + 1, z]) points_distance[x, y, z] = points_distance[x, y + 1, z] + 1;
+        if (CheckDirection(x, y - 1, z) && points_distance[x, y, z] - 1 > points_distance[x, y - 1, z]) points_distance[x, y, z] = points_distance[x, y - 1, z] + 1;
+        if (CheckDirection(x, y, z + 1) && points_distance[x, y, z] - 1 > points_distance[x, y, z + 1]) points_distance[x, y, z] = points_distance[x, y, z + 1] + 1;
+        if (CheckDirection(x, y, z - 1) && points_distance[x, y, z] - 1 > points_distance[x, y, z - 1]) points_distance[x, y, z] = points_distance[x, y, z - 1] + 1;
+
+        if (CheckDirection(x + 1, y, z) && points_distance[x, y, z] + 1 < points_distance[x + 1, y, z]) points_distance[x, y, z] = points_distance[x + 1, y, z] + 1;
+        if (CheckDirection(x - 1, y, z) && points_distance[x, y, z] + 1 < points_distance[x - 1, y, z]) points_distance[x, y, z] = points_distance[x - 1, y, z] + 1;
+        if (CheckDirection(x, y + 1, z) && points_distance[x, y, z] + 1 < points_distance[x, y + 1, z]) points_distance[x, y, z] = points_distance[x, y + 1, z] + 1;
+        if (CheckDirection(x, y - 1, z) && points_distance[x, y, z] + 1 < points_distance[x, y - 1, z]) points_distance[x, y, z] = points_distance[x, y - 1, z] + 1;
+        if (CheckDirection(x, y, z + 1) && points_distance[x, y, z] + 1 < points_distance[x, y, z + 1]) points_distance[x, y, z] = points_distance[x, y, z + 1] + 1;
+        if (CheckDirection(x, y, z - 1) && points_distance[x, y, z] + 1 < points_distance[x, y, z - 1]) points_distance[x, y, z] = points_distance[x, y, z - 1] + 1;
+    }
+    bool CheckDirection(int x, int y, int z)
+    {
+        if (x < 0 || y < 0 || z < 0 || x >= points_distance.GetLength(0) || y >= points_distance.GetLength(1) || z >= points_distance.GetLength(2))
+            return false;
+        return true;
+    }
+    static void FixCoordinates(ref Vector3Int chunk, ref Vector3Int side)
+    {
+        Vector3Int globalCoordinates = new Vector3Int(chunk.x * GeneratorManagerScript.tileAmmount.x + side.x, chunk.y * GeneratorManagerScript.tileAmmount.y + side.y, chunk.z * GeneratorManagerScript.tileAmmount.z + side.z);
+        chunk = new Vector3Int(globalCoordinates.x / GeneratorManagerScript.tileAmmount.x, globalCoordinates.y / GeneratorManagerScript.tileAmmount.y, globalCoordinates.z / GeneratorManagerScript.tileAmmount.z);
+        side = new Vector3Int(globalCoordinates.x % GeneratorManagerScript.tileAmmount.x, globalCoordinates.y % GeneratorManagerScript.tileAmmount.y, globalCoordinates.z % GeneratorManagerScript.tileAmmount.z);
+    }
+}

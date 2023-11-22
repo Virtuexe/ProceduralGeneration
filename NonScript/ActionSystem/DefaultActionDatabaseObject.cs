@@ -4,9 +4,9 @@ using UnityEngine;
 using UnityEngine.Events;
 
 [System.Serializable]
-public class Actions
+public class GameActions
 {
-    public List<Action> actionList = new List<Action>();
+    public List<GameAction> actionList = new List<GameAction>();
 }
 public enum ActionType
 { 
@@ -19,13 +19,13 @@ public class ActionEvent : UnityEvent<bool>
 {
 }
 [System.Serializable]
-public class Action
+public class GameAction
 {
     public ActionEvent action;
     public ActionType type;
     public int priority;
 
-    public Action(ActionEvent _action, ActionType _type,int _priority)
+    public GameAction(ActionEvent _action, ActionType _type,int _priority)
     {
         action = _action;
         type = _type;

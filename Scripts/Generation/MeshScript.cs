@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.InputSystem.Switch;
 using UnityEngine.ProBuilder;
 using UnityEngine.ProBuilder.MeshOperations;
+using UnityEngine.UIElements;
+
 [RequireComponent(typeof(MeshFilter))]
 public class MeshScript : MonoBehaviour
 {
@@ -25,8 +27,11 @@ public class MeshScript : MonoBehaviour
     }
     */
     ///edit to width and height
-    public GameObject CreateQuad(Vector3 A, Vector3 B, Vector3 D)
+    public GameObject CreateQuad(Vector3 A, Vector3 C, Position pos)
     {
+        //set relative position
+        A += transform.position;
+        C += transform.position;
         Mesh rectangle = new Mesh();
         //creating gameobject
         GameObject g = new GameObject();
@@ -38,19 +43,35 @@ public class MeshScript : MonoBehaviour
         var meshRenderer = g.AddComponent<MeshRenderer>();
         g.GetComponent<MeshFilter>().mesh = rectangle;
         meshRenderer.sharedMaterial = mat;
-        ///////////////
-        Vector3 C = B + D - A;
+        ///////////////        if(pos.Multiplier == -1)
+        Vector3 B = Vector3.Scale(pos.ValueX, C) + Vector3.Scale(pos.ValueY, A) + Vector3.Scale(pos.Value, A);
+        Vector3 D = Vector3.Scale(pos.ValueX, A) + Vector3.Scale(pos.ValueY, C) + Vector3.Scale(pos.Value, C);
         var vertices = new Vector3[]{
             A,
             B,
             C,
             D,
         };
-        var triangles = new int[]
+
+        var triangles = new int[6];
+        if(pos.Rotation)
         {
-            2,1,0,
-            0,3,2
-        };
+            triangles[0] = 0;
+            triangles[1] = 1;
+            triangles[2] = 2;
+            triangles[3] = 3;
+            triangles[4] = 0;
+            triangles[5] = 2;
+        }
+        else
+        {
+            triangles[0] = 2;
+            triangles[1] = 1;
+            triangles[2] = 0;
+            triangles[3] = 2;
+            triangles[4] = 0;
+            triangles[5] = 3;
+        }
         float distanceToB = Vector3.Distance(A, B);
         float distanceToD = Vector3.Distance(A, D);
         var uvs = new Vector2[]
