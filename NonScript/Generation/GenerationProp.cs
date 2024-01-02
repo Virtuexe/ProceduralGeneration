@@ -118,29 +118,27 @@ public class GenerationProp : MonoBehaviour
         innerCoordinates -= new Vector3Int(innerCoordinates.x / innerBounds.x, innerCoordinates.y / innerBounds.y, innerCoordinates.z / innerBounds.z) * innerBounds;
         return (outerCoordinates, innerCoordinates);
 	}
-	public bool GetSide(int chunk, Vector3Int side, Position pos)
+	public bool GetSide(Vector3Int locationGeneration, Vector3Int side, Position pos)
 	{
-		Vector3Int coordinates = chunkArray.chunks.coordinates[chunk];
 		//swap back,down,left to front,up,right
 		side += pos.Tile;
 		if (side.x < 0)
 		{
-			coordinates.x--;
+			locationGeneration.x--;
 		}
 		if (side.y < 0)
 		{
-			coordinates.y--;
+			locationGeneration.y--;
 		}
 		if (side.z < 0)
 		{
-			coordinates.z--;
+			locationGeneration.z--;
 		}
-		coordinates += new Vector3Int(side.x / tileAmmount.x, side.y / tileAmmount.y, side.z / tileAmmount.z);
+		locationGeneration += new Vector3Int(side.x / tileAmmount.x, side.y / tileAmmount.y, side.z / tileAmmount.z);
 		side.x = (side.x % tileAmmount.x + tileAmmount.x) % tileAmmount.x;
 		side.y = (side.y % tileAmmount.y + tileAmmount.y) % tileAmmount.y;
 		side.z = (side.z % tileAmmount.z + tileAmmount.z) % tileAmmount.z;
-		Vector3Int location = chunkArray.GetLocation(coordinates);
-		return chunkArray.chunksGeneration.sides[chunkArray.chunksGeneration.layer.GetIndex(location), side.x, side.y, side.z, pos.Side];
+		return chunkArray.chunksGeneration.sides[chunkArray.chunksGeneration.layer.GetIndex(locationGeneration), side.x, side.y, side.z, pos.Side];
 	}
 	void FixCoordinates(ref Vector3Int chunk, ref Vector3Int tile)
     {

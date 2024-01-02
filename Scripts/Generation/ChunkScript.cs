@@ -10,8 +10,11 @@ public class ChunkScript : MonoBehaviour
 	[HideInInspector]
 	public ChunkArray chunkArray;
 
+	int chunk;
 	int chunkRender;
-    int chunk;
+	Vector3Int locationGeneration;
+    Vector3Int coordinates;
+    
     bool completedChunk = true;
 
     int d = 0;
@@ -19,12 +22,14 @@ public class ChunkScript : MonoBehaviour
 	public void RenderChunk(Vector3Int locationRender)
     {
 		chunkRender = chunkArray.chunksRender.layer.GetIndex(locationRender);
+		locationGeneration = chunkArray.chunksRender.layer.LocationToLocation(locationRender, chunkArray.chunksGeneration.layer);
 		chunk = chunkArray.chunksRender.layer.GetIndex(locationRender,chunkArray.chunks.layer);
 		//if rendering new chunk then last time forget all values
-		if (completedChunk || chunkArray.chunks.coordinates[chunk] != prop.chunkArray.chunks.coordinates[chunk]){
-			chunkArray.chunksRender.gameObject[chunkRender] = new GameObject("tile" + prop.chunkArray.chunks.coordinates[chunk]);
+		if (completedChunk || coordinates != prop.chunkArray.GetCoordinates(prop.chunkArray.chunksGeneration.layer.LocationToCoordinates(locationGeneration))) {
+			coordinates = prop.chunkArray.GetCoordinates(prop.chunkArray.chunksGeneration.layer.LocationToCoordinates(locationGeneration));
+			chunkArray.chunksRender.gameObject[chunkRender] = new GameObject("tile" + coordinates);
             chunkArray.chunksRender.gameObject[chunkRender].transform.parent = transform;
-            chunkArray.chunksRender.gameObject[chunkRender].transform.localPosition = Vector3.Scale(prop.chunkSize, prop.chunkArray.chunks.coordinates[chunk]);
+            chunkArray.chunksRender.gameObject[chunkRender].transform.localPosition = Vector3.Scale(prop.chunkSize, coordinates);
             d = 0;
             tile = Vector3Int.zero;
             completedChunk = false;
@@ -42,23 +47,23 @@ public class ChunkScript : MonoBehaviour
                     {
                         Vector3Int side = tile + pos.Tile;
                         //for every side of wall
-                        if (prop.GetSide(chunkRender, tile, new Position(d)))
+                        if (prop.GetSide(locationGeneration, tile, new Position(d)))
                         {
                             Position position = new Position(d);
                             Vector3 positive = new Vector3(0, 0, 0);
                             Vector3 negative = new Vector3(0, 0, 0);
                             //bools
-                            bool right = prop.GetSide(chunkRender, tile, new Position(position.RelValueX));
-							bool left = prop.GetSide(chunkRender, tile, new Position(-position.RelValueX));
-							bool up = prop.GetSide(chunkRender, tile, new Position(position.RelValueY));
-                            bool down = prop.GetSide(chunkRender, tile, new Position(-position.RelValueY));
-                            bool right_forward = prop.GetSide(chunkRender, tile + position.RelValueX, new Position(position.RelValue));
-                            bool left_forward = prop.GetSide(chunkRender, tile - position.RelValueX, new Position(position.RelValue));
-                            bool up_forward = prop.GetSide(chunkRender, tile + position.RelValueY, new Position(position.RelValue));
-                            bool down_forward = prop.GetSide(chunkRender, tile - position.RelValueY, new Position(position.RelValue));
+                            bool right = prop.GetSide(locationGeneration, tile, new Position(position.RelValueX));
+							bool left = prop.GetSide(locationGeneration, tile, new Position(-position.RelValueX));
+							bool up = prop.GetSide(locationGeneration, tile, new Position(position.RelValueY));
+                            bool down = prop.GetSide(locationGeneration, tile, new Position(-position.RelValueY));
+                            bool right_forward = prop.GetSide(locationGeneration, tile + position.RelValueX, new Position(position.RelValue));
+                            bool left_forward = prop.GetSide(locationGeneration, tile - position.RelValueX, new Position(position.RelValue));
+                            bool up_forward = prop.GetSide(locationGeneration, tile + position.RelValueY, new Position(position.RelValue));
+                            bool down_forward = prop.GetSide(locationGeneration, tile - position.RelValueY, new Position(position.RelValue));
                             //side bool
-                            bool back_right = prop.GetSide(chunkRender, tile + position.RelValue, new Position(position.RelValueX));
-                            bool back_up = prop.GetSide(chunkRender, tile + position.RelValue, new Position(position.RelValueY));
+                            bool back_right = prop.GetSide(locationGeneration, tile + position.RelValue, new Position(position.RelValueX));
+                            bool back_up = prop.GetSide(locationGeneration, tile + position.RelValue, new Position(position.RelValueY));
 
                             if (right)
                                 positive -= (Vector3)position.RelValueX * prop.wallThickness / 2;
@@ -93,7 +98,7 @@ public class ChunkScript : MonoBehaviour
                             {
                                 ///
                                 GetComponent<MeshScript>().CreateQuad(
-                                    Vector3.Scale(prop.chunkSize, prop.chunkArray.chunks.coordinates[chunk]) - (prop.chunkSize / 2)
+                                    Vector3.Scale(prop.chunkSize, coordinates) - (prop.chunkSize / 2)
                                     + (prop.tileSize / 2)
                                     + (Vector3.Scale(prop.tileSize, side))
                                     + (Vector3.Scale(position.Value, prop.tileSize) / 2)
@@ -102,7 +107,7 @@ public class ChunkScript : MonoBehaviour
                                     - (Vector3)position.RelValue * prop.wallThickness / 2
                                     + negative
                                     ,
-                                    Vector3.Scale(prop.chunkSize, prop.chunkArray.chunks.coordinates[chunk]) - (prop.chunkSize / 2)
+                                    Vector3.Scale(prop.chunkSize, coordinates) - (prop.chunkSize / 2)
                                     + (prop.tileSize / 2)
                                     + (Vector3.Scale(prop.tileSize, side))
                                     + (Vector3.Scale(position.Value, prop.tileSize) / 2)
@@ -124,7 +129,7 @@ public class ChunkScript : MonoBehaviour
 
 
 								GetComponent<MeshScript>().CreateQuad(
-                                    Vector3.Scale(prop.chunkSize, prop.chunkArray.chunks.coordinates[chunk]) - (prop.chunkSize / 2)
+                                    Vector3.Scale(prop.chunkSize, coordinates) - (prop.chunkSize / 2)
                                     + (prop.tileSize / 2)
                                     + (Vector3.Scale(prop.tileSize, side))
                                     - (Vector3.Scale(pos.RelValueX, prop.tileSize) / 2)
@@ -137,7 +142,7 @@ public class ChunkScript : MonoBehaviour
                                     + (Vector3.Scale(position.Value, prop.tileSize) / 2)
                                     - negative
                                     ,
-                                    Vector3.Scale(prop.chunkSize, prop.chunkArray.chunks.coordinates[chunk]) - (prop.chunkSize / 2)
+                                    Vector3.Scale(prop.chunkSize, coordinates) - (prop.chunkSize / 2)
                                     + (prop.tileSize / 2)
                                     + (Vector3.Scale(prop.tileSize, side))
                                     + (Vector3.Scale(pos.RelValueX, prop.tileSize) / 2)

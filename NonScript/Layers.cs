@@ -19,7 +19,7 @@ public class Layer {
 	[HideInInspector]
 	public DestroyChunkFunction SetDestroyChunk { private get; set; }
 
-	private int[,,] indexes;
+	public int[,,] indexes;
 
 	public LayerFunction function;
 	public Vector3Int lowerLayerSize; // modifier how many lower layers should be created around edges this
@@ -36,12 +36,16 @@ public class Layer {
 				}
 	}
 	public void CallCreateChunk(Vector3Int location) {
+		if (SetCreateChunk == null)
+			return;
 		int index = indexes[location.x, location.y, location.z];
 		SetCreateChunk(index);
 	}
 	public void CallDestroyChunk(Vector3Int location) {
+		if (SetDestroyChunk == null)
+			return;
 		int index = indexes[location.x, location.y, location.z];
-		SetCreateChunk(index);
+		SetDestroyChunk(index);
 	}
 	public void MoveChunk(Vector3Int location, Vector3Int targetLocation) {
 		int index = indexes[location.x, location.y, location.z];
@@ -63,17 +67,22 @@ public class Layer {
 		
 	}
 	public int GetIndex(Vector3Int location, Layer layer) {
-		Debug.Log("offset here is " + coordinatesOffset + "so coordinates are " + ToCoordinates(location) + " and location in other layer is" + layer.ToLocation(ToCoordinates(location)));
-		return layer.GetIndex(layer.ToLocation(ToCoordinates(location)));
+		return layer.GetIndex(layer.CoordinatesToLocation(LocationToCoordinates(location)));
 	}
-	public Vector3Int ToCoordinates(Vector3Int location) {
+	public Vector3Int LocationToGlobalLocation(Vector3Int location) {
+		return location - size;
+	}
+	public Vector3Int LocationToCoordinates(Vector3Int location) {
 		return location + coordinatesOffset;
 	}
-	public Vector3Int ToLocation(Vector3Int coordinates) {
+	public Vector3Int CoordinatesToLocation(Vector3Int coordinates) {
 		return coordinates - coordinatesOffset;
 	}
+	public Vector3Int LocationToLocation(Vector3Int location, Layer layer) {
+		return layer.LocationToCoordinates(LocationToCoordinates(location));
+	}
 	public bool IsLocationIncluded(Vector3Int location) {
-		return location.x >= FirstIndex.x && location.y >= FirstIndex.y && location.z >= FirstIndex.z && location.x <= LastIndex.x && location.y <= LastIndex.y && location.z <= LastIndex.z;
+		return location.x >= 0 && location.y >= 0 && location.z >= 0 && location.x < Length.x && location.y < Length.x && location.z < Length.x;
 	}
 }
 [System.Serializable]

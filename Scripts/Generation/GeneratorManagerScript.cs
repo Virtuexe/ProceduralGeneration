@@ -34,16 +34,9 @@ public class GeneratorManagerScript : MonoBehaviour
         //chunks
         if (playerTravelDistance != Vector3Int.zero)
         {
-            MoveChunks(playerTravelDistance);
+            prop.chunkArray.MoveChunks(playerTravelDistance);
         }
         GenerateChunks();
-    }
-    public void CheckForError(Vector3Int location)
-    {
-        if (prop.chunkArray.GetLocation(prop.chunkArray.chunks.coordinates[prop.chunkArray.chunks.layer.GetIndex(location)]) != location)
-        {
-            Debug.LogWarning("err");
-        }
     }
 
     Vector3Int playerChunk;
@@ -64,45 +57,11 @@ public class GeneratorManagerScript : MonoBehaviour
         _playerChunk = playerChunk;
         return playerTravelDistance;
     }
-
-    public void MoveChunks(Vector3Int moveBy)
-    {
-        prop.chunkArray.coordinates += moveBy;
-
-        Vector3Int direction = new Vector3Int((moveBy.x < 0) ? -1 : 1, (moveBy.y < 0) ? -1 : 1, (moveBy.z < 0) ? -1 : 1);
-        Vector3Int start = new Vector3Int((moveBy.x < 0) ? prop.chunkArray.chunks.layer.Length.x - 1 : 0, (moveBy.y < 0) ? -1 : prop.chunkArray.chunks.layer.Length.y, (moveBy.z < 0) ? -1 : prop.chunkArray.chunks.layer.Length.z);
-        Vector3Int end = new Vector3Int((moveBy.x < 0) ? -1 : prop.chunkArray.chunks.layer.Length.x, (moveBy.y < 0) ? -1 : prop.chunkArray.chunks.layer.Length.y, (moveBy.z < 0) ? -1 : prop.chunkArray.chunks.layer.Length.z);
-        Vector3Int location = new Vector3Int();
-        for (location.x = start.x; location.x != end.x; location.x += direction.x)
-        {
-            for (location.y = start.y; location.y != end.y; location.y += direction.y)
-            {
-                for (location.z = start.z; location.z != end.z; location.z += direction.z)
-                {
-                    //if chunk can be moved move it
-                    if (location.x - moveBy.x < prop.chunkArray.chunks.layer.Length.x && location.y - moveBy.y < prop.chunkArray.chunks.layer.Length.y && location.z - moveBy.z < prop.chunkArray.chunks.layer.Length.z && location.x - start.x >= 0 && location.y - start.y >= 0 && location.z - start.z >= 0)
-                    {
-                        prop.chunkArray.MoveChunk(location, location - moveBy);
-                    }
-                    //if chunk will be moved out of bounds destroy it
-                    else
-                    {
-                        prop.chunkArray.DestroyChunk(location);
-                    }
-                    //if to this location new chunk wont be moved create one
-                    if (location.x + moveBy.x >= prop.chunkArray.chunks.layer.Length.x || location.y + moveBy.y >= prop.chunkArray.chunks.layer.Length.y || location.z + moveBy.z >= prop.chunkArray.chunks.layer.Length.z || location.x + moveBy.x < 0 || location.y + moveBy.y < 0 || location.z + moveBy.z < 0)
-                    {
-                        prop.chunkArray.CreateChunk(location);
-                    }
-                }
-            }
-        }
-    }
     private void GenerateChunks() {
 		Vector3Int locationGeneration = Vector3Int.zero;
-        for (locationGeneration.y = 0; locationGeneration.y < prop.chunkArray.chunksRender.layer.Length.y; locationGeneration.y++)
-            for (locationGeneration.z = 0; locationGeneration.z < prop.chunkArray.chunksRender.layer.Length.z; locationGeneration.z++)
-                for (locationGeneration.x = 0; locationGeneration.x < prop.chunkArray.chunksRender.layer.Length.x; locationGeneration.x++) {
+        for (locationGeneration.y = 0; locationGeneration.y < prop.chunkArray.chunksGeneration.layer.Length.y; locationGeneration.y++)
+            for (locationGeneration.z = 0; locationGeneration.z < prop.chunkArray.chunksGeneration.layer.Length.z; locationGeneration.z++)
+                for (locationGeneration.x = 0; locationGeneration.x < prop.chunkArray.chunksGeneration.layer.Length.x; locationGeneration.x++) {
                     int chunkGeneration = prop.chunkArray.chunksGeneration.layer.GetIndex(locationGeneration);
 					if (prop.chunkArray.chunksGeneration.genereted[chunkGeneration])
                         continue;
@@ -115,10 +74,10 @@ public class GeneratorManagerScript : MonoBehaviour
             for (locationRender.z = 0; locationRender.z < prop.chunkArray.chunksRender.layer.Length.z; locationRender.z++)
                 for (locationRender.x = 0; locationRender.x < prop.chunkArray.chunksRender.layer.Length.x; locationRender.x++) {
                     int renderChunk = prop.chunkArray.chunksRender.layer.GetIndex(locationRender);
-					if (prop.chunkArray.chunksRender.destroy[renderChunk]) {
+                    if (prop.chunkArray.chunksRender.destroy[renderChunk]) {
                         Destroy(prop.chunkArray.chunksRender.gameObject[renderChunk]);
                         prop.chunkArray.chunksRender.destroy[renderChunk] = false;
-                    }
+					}
                     if (prop.chunkArray.chunksRender.rendered[renderChunk])
                         continue;
                     chunkS.RenderChunk(locationRender);

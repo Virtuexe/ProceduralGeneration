@@ -11,13 +11,14 @@ public class GenerationScript : MonoBehaviour
 
     private int chunkGeneration;
     private int chunk;
+    private Vector3Int coordinates;
 
     CustomRandom rand;
-    public void GenerateChunk(Vector3Int locationGeneration)
-    {
-		chunkGeneration = prop.chunkArray.chunksGeneration.layer.GetIndex(locationGeneration);
+    public void GenerateChunk(Vector3Int locationGeneration) {
+        chunkGeneration = prop.chunkArray.chunksGeneration.layer.GetIndex(locationGeneration);
         chunk = prop.chunkArray.chunksGeneration.layer.GetIndex(locationGeneration, prop.chunkArray.chunks.layer);
-        rand = new CustomRandom(prop.seed, new int[] { prop.chunkArray.chunks.coordinates[chunk].x, prop.chunkArray.chunks.coordinates[chunk].y, prop.chunkArray.chunks.coordinates[chunk].z });
+		coordinates = prop.chunkArray.GetCoordinates(prop.chunkArray.chunksGeneration.layer.LocationToCoordinates(locationGeneration));
+		rand = new CustomRandom(prop.seed, new int[] { coordinates.x, coordinates.y, coordinates.z });
         for (int z = 0; z < prop.tileAmmount.z; z++)
         {
             for (int y = 0; y < prop.tileAmmount.y; y++)

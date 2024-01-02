@@ -4717,6 +4717,10 @@ PrefabInstance:
       propertyPath: controller
       value: 
       objectReference: {fileID: 1001595615}
+    - target: {fileID: 5618212701641721475, guid: de0db43c5183170419a179b58cad0e9e, type: 3}
+      propertyPath: acceleration
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 5618212701641721535, guid: de0db43c5183170419a179b58cad0e9e, type: 3}
       propertyPath: m_Name
       value: Player
@@ -4765,6 +4769,18 @@ PrefabInstance:
     - target: {fileID: 949966427747831071, guid: f8d6cad94e980a1408a4a1a54e969e1c, type: 3}
       propertyPath: layers.path.lowerLayers
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 949966427747831071, guid: f8d6cad94e980a1408a4a1a54e969e1c, type: 3}
+      propertyPath: layers.finallLayerSize.x
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 949966427747831071, guid: f8d6cad94e980a1408a4a1a54e969e1c, type: 3}
+      propertyPath: layers.finallLayerSize.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 949966427747831071, guid: f8d6cad94e980a1408a4a1a54e969e1c, type: 3}
+      propertyPath: layers.finallLayerSize.z
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 949966427747831071, guid: f8d6cad94e980a1408a4a1a54e969e1c, type: 3}
       propertyPath: layers.finalleLayerSize.x
