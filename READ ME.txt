@@ -1,0 +1,6 @@
+unity verze 2021.3.14f1
+
+package manager:
+Input System
+ProBuilder
+TextMeshPro
