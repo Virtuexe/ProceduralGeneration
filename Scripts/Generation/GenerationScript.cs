@@ -1,7 +1,7 @@
 using System;
 using TMPro;
 using UnityEngine;
-using static UnityEngine.UI.Image;
+
 public class GenerationScript : MonoBehaviour
 {
     public GenerationProp prop;

@@ -16,7 +16,7 @@ public class MainMenuScript : MonoBehaviour
 		UIManagerScript.Tick();
 	}
 	public void StartGame() {
-		startButton.Dispose();
-		SceneManager.LoadScene(0);
+		SceneManager.UnloadScene(0);
+		SceneManager.LoadScene(1);
 	}
 }
