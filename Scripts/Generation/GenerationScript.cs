@@ -16,10 +16,14 @@ namespace Generation {
 			chunk = Layers.generation.GetIndex(locationGeneration, Layers.hierarchy[0]);
 			coordinates = ChunkArray.GetCoordinates(Layers.generation.LocationToCoordinates(locationGeneration));
 			rand = new CustomRandom(GenerationProp.seed, new int[] { coordinates.x, coordinates.y, coordinates.z });
-			for (int z = 0; z < GenerationProp.tileAmmount.z; z++) {
-				for (int y = 0; y < GenerationProp.tileAmmount.y; y++) {
-					for (int x = 0; x < GenerationProp.tileAmmount.x; x++) {
-						for (int d = 0; d < 3; d++) {
+			for (int z = 0; z < GenerationProp.tileAmmount.z; z++)
+			{
+				for (int y = 0; y < GenerationProp.tileAmmount.y; y++)
+				{
+					for (int x = 0; x < GenerationProp.tileAmmount.x; x++)
+					{
+						for (int d = 0; d < 3; d++)
+						{
 							int lol = rand.random.Next(0, 8);
 							if (lol == 1)
 								ChunkArray.sides[chunkGeneration, x, y, z, d] = true;

@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 namespace Generation {
 	public static class GenerationProp {
 		public static Vector3Int test;
@@ -10,9 +10,6 @@ namespace Generation {
 		public static int mapPathDistanceInt { get { return (chunkPathDistance.x * 2 + 1) * (chunkPathDistance.y * 2 + 1) * (chunkPathDistance.z * 2 + 1); } }
 
 		public static int seed;
-
-		//Scripts
-		static GeneratorManagerScript manager;
 
 		//calculations
 		public static Vector3 chunkSize {
@@ -64,8 +61,8 @@ namespace Generation {
 			return (outerCoordinates, innerCoordinates);
 		}
 		public static bool GetSide(Vector3Int locationGeneration, Vector3Int side, Position pos) {
-			//swap back,down,left to front,up,right
-			side += pos.Tile;
+            //swap back,down,left to front,up,right
+            side += pos.Tile;
 			if (side.x < 0) {
 				locationGeneration.x--;
 			}
@@ -75,8 +72,8 @@ namespace Generation {
 			if (side.z < 0) {
 				locationGeneration.z--;
 			}
-			locationGeneration += new Vector3Int(side.x / tileAmmount.x, side.y / tileAmmount.y, side.z / tileAmmount.z);
-			side.x = (side.x % tileAmmount.x + tileAmmount.x) % tileAmmount.x;
+            //locationGeneration += new Vector3Int(side.x / tileAmmount.x, side.y / tileAmmount.y, side.z / tileAmmount.z); <- TODO: what is this (╯°□°)╯︵ ┻━┻
+            side.x = (side.x % tileAmmount.x + tileAmmount.x) % tileAmmount.x;
 			side.y = (side.y % tileAmmount.y + tileAmmount.y) % tileAmmount.y;
 			side.z = (side.z % tileAmmount.z + tileAmmount.z) % tileAmmount.z;
 			return ChunkArray.sides[Layers.generation.GetIndex(locationGeneration), side.x, side.y, side.z, pos.Side];

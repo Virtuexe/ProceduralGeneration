@@ -77,7 +77,7 @@ public class GeneratorManagerScript : MonoBehaviour
         for (locationGeneration.y = 0; locationGeneration.y < Layers.generation.Length.y; locationGeneration.y++)
             for (locationGeneration.z = 0; locationGeneration.z < Layers.generation.Length.z; locationGeneration.z++)
                 for (locationGeneration.x = 0; locationGeneration.x < Layers.generation.Length.x; locationGeneration.x++) {
-					if (Layers.generation.pendingCreate[locationGeneration.x, locationGeneration.y, locationGeneration.z])
+					if (Layers.generation.created[locationGeneration.x, locationGeneration.y, locationGeneration.z])
                         continue;
                     generationS.GenerateChunk(locationGeneration);
                     if (GameEventsScript.mainTask.OutOfTime())
@@ -88,11 +88,11 @@ public class GeneratorManagerScript : MonoBehaviour
             for (locationRender.z = 0; locationRender.z < Layers.render.Length.z; locationRender.z++)
                 for (locationRender.x = 0; locationRender.x < Layers.render.Length.x; locationRender.x++) {
                     int renderChunk = Layers.render.GetIndex(locationRender);
-                    if (Layers.render.pendingDestroy[locationRender.x,locationRender.y,locationRender.z]) {
+                    if (Layers.render.pendingsDestroy[locationRender.x,locationRender.y,locationRender.z]) {
                         Destroy(ChunkArray.gameObject[renderChunk]);
-						Layers.render.pendingDestroy[locationRender.x, locationRender.y, locationRender.z] = false;
+						Layers.render.pendingsDestroy[locationRender.x, locationRender.y, locationRender.z] = false;
 					}
-                    if (Layers.render.pendingCreate[locationRender.x, locationRender.y, locationRender.z])
+                    if (Layers.render.created[locationRender.x, locationRender.y, locationRender.z])
                         continue;
                     chunkS.RenderChunk(locationRender);
                     if (GameEventsScript.mainTask.OutOfTime())

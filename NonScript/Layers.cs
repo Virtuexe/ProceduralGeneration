@@ -9,8 +9,8 @@ namespace Generation {
 		[HideInInspector]
 		public Vector3Int coordinatesOffset;
 
-		public bool[,,] pendingCreate;
-		public bool[,,] pendingDestroy;
+		public bool[,,] created;
+		public bool[,,] pendingsDestroy;
 		public int[,,] indexes;
 
 		public LayerFunction function;
@@ -23,8 +23,8 @@ namespace Generation {
 			this.lowerLayerSize = lowerLayerSize;
 		}
 		public void Init() {
-			pendingCreate = new bool[Length.x, Length.y, Length.z];
-			pendingDestroy = new bool[Length.x, Length.y, Length.z];
+			created = new bool[Length.x, Length.y, Length.z];
+			pendingsDestroy = new bool[Length.x, Length.y, Length.z];
 			indexes = new int[Length.x, Length.y, Length.z];
 			for (int z = 0; z < Length.z; z++)
 				for (int y = 0; y < Length.y; y++)
@@ -35,21 +35,21 @@ namespace Generation {
 		public void MoveChunk(Vector3Int location, Vector3Int targetLocation) {
 			int index = indexes[location.x, location.y, location.z];
 			int targetIndex = indexes[targetLocation.x, targetLocation.y, targetLocation.z];
+			bool pendingCreate = created[location.x, location.y, location.z];
+            bool pendingCreateTarget = created[targetLocation.x, targetLocation.y, targetLocation.z];
+            bool pendingDestroy = pendingsDestroy[location.x, location.y, location.z];
+            bool pendingDestroyTarget = pendingsDestroy[targetLocation.x, targetLocation.y, targetLocation.z];
 
-			indexes[targetLocation.x, targetLocation.y, targetLocation.z] = index;
+            indexes[targetLocation.x, targetLocation.y, targetLocation.z] = index;
 			indexes[location.x, location.y, location.z] = targetIndex;
-		}
+            created[targetLocation.x, targetLocation.y, targetLocation.z] = pendingCreate;
+            created[location.x, location.y, location.z] = pendingCreateTarget;
+            pendingsDestroy[targetLocation.x, targetLocation.y, targetLocation.z] = pendingDestroy;
+            pendingsDestroy[location.x, location.y, location.z] = pendingDestroyTarget;
+        }
 
 		public int GetIndex(Vector3Int location) {
-
-			try {
-				return indexes[location.x, location.y, location.z];
-			}
-			catch {
-				Debug.Log("err: " + location);
-				return indexes[location.x, location.y, location.z];
-			}
-
+			return indexes[location.x, location.y, location.z];
 		}
 		public int GetIndex(Vector3Int location, Layer layer) {
 			return layer.GetIndex(layer.CoordinatesToLocation(LocationToCoordinates(location)));
@@ -72,7 +72,7 @@ namespace Generation {
 	}
 	[System.Serializable]
 	public static class Layers {
-		public static Vector3Int finallLayerSize; //fake lowerLayerSize above finalle layer
+		public static Vector3Int finallLayerSize = new Vector3Int(2,0,2); //fake lowerLayerSize above finalle layer
 		public static Layer render = new Layer(new Vector3Int(1, 1, 1));
 		public static Layer path = new Layer(new Vector3Int(0, 0, 0));
 		public static Layer generation = new Layer(new Vector3Int(0, 0, 0));

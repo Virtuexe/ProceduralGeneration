@@ -1,12 +1,11 @@
 using System;
 using UnityEngine;
-using static UnityEditor.Experimental.GraphView.GraphView;
 namespace Generation {
 	public static class ChunkArray {
 		public static bool[,,,,] sides = new bool[Layers.generation.LengthInt, GenerationProp.tileAmmount.x, GenerationProp.tileAmmount.y, GenerationProp.tileAmmount.z, 3];
 		public static bool[,,,] grid = new bool[Layers.generation.LengthInt, GenerationProp.tileAmmount.x, GenerationProp.tileAmmount.y, GenerationProp.tileAmmount.z];
 		public static bool[] genereted = new bool[Layers.generation.LengthInt];
-		public static GameObject[] gameObject = new GameObject[Layers.render.LengthInt];
+        public static GameObject[] gameObject = new GameObject[Layers.render.LengthInt];
 
 		//[chunk,x,y,z,chunk2,x2,y2,z2]
 		//public static Path[,,,,,,,] paths;
@@ -44,13 +43,14 @@ namespace Generation {
 								Layers.hierarchy[layer].MoveChunk(location, location + distanceToMove);
 							}
 							else {
-								Layers.hierarchy[layer].pendingDestroy[location.x,location.y,location.z] = true;
-							}
-							if (!Layers.hierarchy[layer].IsLocationIncluded(location - distanceToMove)) {
-								if (!Layers.hierarchy[layer].pendingDestroy[location.x, location.y, location.z])
-									Debug.Log("IM NOT USELESS!!!");
-								Layers.hierarchy[layer].pendingCreate[location.x, location.y, location.z] = true;
-							}
+								Layers.hierarchy[layer].pendingsDestroy[location.x,location.y,location.z] = true;
+                                Layers.hierarchy[layer].created[location.x, location.y, location.z] = false;
+                            }
+							//if (!Layers.hierarchy[layer].IsLocationIncluded(location - distanceToMove)) {
+							//	if (!Layers.hierarchy[layer].pendingsDestroy[location.x, location.y, location.z])
+							//		Debug.Log("IM NOT USELESS!!!");
+								
+							//}
 						}
 					}
 				}
