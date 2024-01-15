@@ -1,10 +1,14 @@
+using Generation;
 using System;
 using UnityEngine;
-
+[RequireComponent(typeof(GeneratorManagerScript))]
+[RequireComponent(typeof(MeshScript))]
+[RequireComponent(typeof(ChunkScript))]
+[RequireComponent(typeof(GenerationScript))]
+[RequireComponent(typeof(GameEventsScript))]
+[RequireComponent(typeof(PathFindingScript))]
 public class GeneratorManagerScript : MonoBehaviour
 {
-	[SerializeField]
-	public GenerationProp prop;
 	//SCRIPTS
 	[HideInInspector]
 	public GenerationScript generationS;
@@ -18,19 +22,34 @@ public class GeneratorManagerScript : MonoBehaviour
     //GENERATOR MANAGER
     //Game info
     public GameObject player;
-    public void Init()
+    public void Start()
     {
-        //Game info
-        _playerChunk = PlayerChunk();
-		prop.chunkArray.coordinates = PlayerChunk();
+		MeshScript mesh = gameObject.GetComponent<MeshScript>();
+		ChunkScript chunk = gameObject.GetComponent<ChunkScript>();
+		GenerationScript generation = gameObject.GetComponent<GenerationScript>();
+		GameEventsScript gameEvent = gameObject.GetComponent<GameEventsScript>();
+		PathFindingScript pathFinding = gameObject.GetComponent<PathFindingScript>();
+        //manager
+		meshS = mesh;
+		chunkS = chunk;
+		generationS = generation;
+		//mesh
+		//chunk
+		//generation
+		//gameEvent
+		gameEventS = gameEvent;
+        //pathFinding
+		//Game info
+		_playerChunk = PlayerChunk();
+		ChunkArray.coordinates = PlayerChunk();
     }
-    public void Tick()
+    public void Update()
     {
         Vector3Int playerTravelDistance = PlayerTravelDistance();
         //chunks
         if (playerTravelDistance != Vector3Int.zero)
         {
-            prop.chunkArray.MoveChunks(playerTravelDistance);
+            ChunkArray.MoveChunks(playerTravelDistance);
         }
         GenerateChunks();
     }
@@ -39,9 +58,9 @@ public class GeneratorManagerScript : MonoBehaviour
     public Vector3Int PlayerChunk()
     {
         Vector3 relativePosition = player.transform.position - transform.position;
-        int xOffset = Mathf.RoundToInt(relativePosition.x / prop.chunkSize.x);
-        int yOffset = Mathf.RoundToInt(relativePosition.y / prop.chunkSize.y);
-        int zOffset = Mathf.RoundToInt(relativePosition.z / prop.chunkSize.z);
+        int xOffset = Mathf.RoundToInt(relativePosition.x / GenerationProp.chunkSize.x);
+        int yOffset = Mathf.RoundToInt(relativePosition.y / GenerationProp.chunkSize.y);
+        int zOffset = Mathf.RoundToInt(relativePosition.z / GenerationProp.chunkSize.z);
         playerChunk = new Vector3Int(xOffset, yOffset, zOffset);
         return playerChunk;
     }
@@ -55,26 +74,25 @@ public class GeneratorManagerScript : MonoBehaviour
     }
     private void GenerateChunks() {
 		Vector3Int locationGeneration = Vector3Int.zero;
-        for (locationGeneration.y = 0; locationGeneration.y < prop.chunkArray.chunksGeneration.layer.Length.y; locationGeneration.y++)
-            for (locationGeneration.z = 0; locationGeneration.z < prop.chunkArray.chunksGeneration.layer.Length.z; locationGeneration.z++)
-                for (locationGeneration.x = 0; locationGeneration.x < prop.chunkArray.chunksGeneration.layer.Length.x; locationGeneration.x++) {
-                    int chunkGeneration = prop.chunkArray.chunksGeneration.layer.GetIndex(locationGeneration);
-					if (prop.chunkArray.chunksGeneration.genereted[chunkGeneration])
+        for (locationGeneration.y = 0; locationGeneration.y < Layers.generation.Length.y; locationGeneration.y++)
+            for (locationGeneration.z = 0; locationGeneration.z < Layers.generation.Length.z; locationGeneration.z++)
+                for (locationGeneration.x = 0; locationGeneration.x < Layers.generation.Length.x; locationGeneration.x++) {
+					if (Layers.generation.pendingCreate[locationGeneration.x, locationGeneration.y, locationGeneration.z])
                         continue;
                     generationS.GenerateChunk(locationGeneration);
                     if (GameEventsScript.mainTask.OutOfTime())
                         return;
                 }
         Vector3Int locationRender = Vector3Int.zero;
-        for (locationRender.y = 0; locationRender.y < prop.chunkArray.chunksRender.layer.Length.y; locationRender.y++)
-            for (locationRender.z = 0; locationRender.z < prop.chunkArray.chunksRender.layer.Length.z; locationRender.z++)
-                for (locationRender.x = 0; locationRender.x < prop.chunkArray.chunksRender.layer.Length.x; locationRender.x++) {
-                    int renderChunk = prop.chunkArray.chunksRender.layer.GetIndex(locationRender);
-                    if (prop.chunkArray.chunksRender.destroy[renderChunk]) {
-                        Destroy(prop.chunkArray.chunksRender.gameObject[renderChunk]);
-                        prop.chunkArray.chunksRender.destroy[renderChunk] = false;
+        for (locationRender.y = 0; locationRender.y < Layers.render.Length.y; locationRender.y++)
+            for (locationRender.z = 0; locationRender.z < Layers.render.Length.z; locationRender.z++)
+                for (locationRender.x = 0; locationRender.x < Layers.render.Length.x; locationRender.x++) {
+                    int renderChunk = Layers.render.GetIndex(locationRender);
+                    if (Layers.render.pendingDestroy[locationRender.x,locationRender.y,locationRender.z]) {
+                        Destroy(ChunkArray.gameObject[renderChunk]);
+						Layers.render.pendingDestroy[locationRender.x, locationRender.y, locationRender.z] = false;
 					}
-                    if (prop.chunkArray.chunksRender.rendered[renderChunk])
+                    if (Layers.render.pendingCreate[locationRender.x, locationRender.y, locationRender.z])
                         continue;
                     chunkS.RenderChunk(locationRender);
                     if (GameEventsScript.mainTask.OutOfTime())
@@ -85,23 +103,23 @@ public class GeneratorManagerScript : MonoBehaviour
     private void OnDrawGizmos()
     {
         Vector3 pos = transform.position;
-        for (int y = -prop.layers.finallLayerSize.y; y <= prop.layers.finallLayerSize.y; y++)
+        for (int y = -Layers.finallLayerSize.y; y <= Layers.finallLayerSize.y; y++)
         {
-            for (int z = -prop.layers.finallLayerSize.z; z <= prop.layers.finallLayerSize.z; z++)
+            for (int z = -Layers.finallLayerSize.z; z <= Layers.finallLayerSize.z; z++)
             {
-                for (int x = -prop.layers.finallLayerSize.x; x <= prop.layers.finallLayerSize.x; x++)
+                for (int x = -Layers.finallLayerSize.x; x <= Layers.finallLayerSize.x; x++)
                 {
                     Gizmos.color = Color.red;
                     //leftDownBack is -1/2,-1/2,-1/2
-                    Vector3 leftDownBack = new Vector3(pos.x + x * prop.tileAmmount.x * prop.tileSize.x - (prop.tileAmmount.x * prop.tileSize.x / 2), pos.y + y * prop.tileAmmount.y * prop.tileSize.y - (prop.tileAmmount.y * prop.tileSize.y / 2), pos.z + z * prop.tileAmmount.z * prop.tileSize.z - (prop.tileAmmount.z * prop.tileSize.z / 2));
-                    Vector3 rightDownBack = leftDownBack + new Vector3(prop.tileAmmount.x * prop.tileSize.x, 0, 0);
-                    Vector3 leftUpBack = leftDownBack + new Vector3(0, prop.tileAmmount.y * prop.tileSize.y, 0);
-                    Vector3 leftDownFront = leftDownBack + new Vector3(0, 0, prop.tileAmmount.z * prop.tileSize.z);
+                    Vector3 leftDownBack = new Vector3(pos.x + x * GenerationProp.tileAmmount.x * GenerationProp.tileSize.x - (GenerationProp.tileAmmount.x * GenerationProp.tileSize.x / 2), pos.y + y * GenerationProp.tileAmmount.y * GenerationProp.tileSize.y - (GenerationProp.tileAmmount.y * GenerationProp.tileSize.y / 2), pos.z + z * GenerationProp.tileAmmount.z * GenerationProp.tileSize.z - (GenerationProp.tileAmmount.z * GenerationProp.tileSize.z / 2));
+                    Vector3 rightDownBack = leftDownBack + new Vector3(GenerationProp.tileAmmount.x * GenerationProp.tileSize.x, 0, 0);
+                    Vector3 leftUpBack = leftDownBack + new Vector3(0, GenerationProp.tileAmmount.y * GenerationProp.tileSize.y, 0);
+                    Vector3 leftDownFront = leftDownBack + new Vector3(0, 0, GenerationProp.tileAmmount.z * GenerationProp.tileSize.z);
 
-                    Vector3 rightUpFront = leftDownBack + new Vector3(prop.tileAmmount.x * prop.tileSize.x, prop.tileAmmount.y * prop.tileSize.y, prop.tileAmmount.z * prop.tileSize.z);
-                    Vector3 leftUpFront = rightUpFront - new Vector3(prop.tileAmmount.x * prop.tileSize.x, 0, 0);
-                    Vector3 rightDownFront = rightUpFront - new Vector3(0, prop.tileAmmount.y * prop.tileSize.y, 0);
-                    Vector3 rightUpBack = rightUpFront - new Vector3(0, 0, prop.tileAmmount.z * prop.tileSize.z);
+                    Vector3 rightUpFront = leftDownBack + new Vector3(GenerationProp.tileAmmount.x * GenerationProp.tileSize.x, GenerationProp.tileAmmount.y * GenerationProp.tileSize.y, GenerationProp.tileAmmount.z * GenerationProp.tileSize.z);
+                    Vector3 leftUpFront = rightUpFront - new Vector3(GenerationProp.tileAmmount.x * GenerationProp.tileSize.x, 0, 0);
+                    Vector3 rightDownFront = rightUpFront - new Vector3(0, GenerationProp.tileAmmount.y * GenerationProp.tileSize.y, 0);
+                    Vector3 rightUpBack = rightUpFront - new Vector3(0, 0, GenerationProp.tileAmmount.z * GenerationProp.tileSize.z);
 
                     Gizmos.DrawLine(leftDownBack, rightDownBack);
                     Gizmos.DrawLine(leftDownBack, leftUpBack);
