@@ -18,7 +18,7 @@ RenderSettings:
   m_FogColor: {r: 0, g: 0, b: 0, a: 1}
   m_FogMode: 1
   m_FogDensity: 0.01
-  m_LinearFogStart: 0
+  m_LinearFogStart: 45
   m_LinearFogEnd: 50
   m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
@@ -4440,17 +4440,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 5924811762741847715, guid: 13d2fde13deb27945adacc528500d193, type: 3}
   m_PrefabInstance: {fileID: 1699539184}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1797925626 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 949966427747831071, guid: f8d6cad94e980a1408a4a1a54e969e1c, type: 3}
-  m_PrefabInstance: {fileID: 7856927662755332752}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0b647ae4383c96a4a9c4be9afce706a9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &1927510921
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4823,6 +4812,18 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 949966427747831071, guid: f8d6cad94e980a1408a4a1a54e969e1c, type: 3}
+      propertyPath: layers.tile.lowerLayerSize.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 949966427747831071, guid: f8d6cad94e980a1408a4a1a54e969e1c, type: 3}
+      propertyPath: layers.tile.lowerLayerSize.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 949966427747831071, guid: f8d6cad94e980a1408a4a1a54e969e1c, type: 3}
+      propertyPath: layers.tile.lowerLayerSize.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 949966427747831071, guid: f8d6cad94e980a1408a4a1a54e969e1c, type: 3}
       propertyPath: layers.render.lowerLayerSize.x
       value: 1
       objectReference: {fileID: 0}
@@ -4913,7 +4914,7 @@ PrefabInstance:
     - target: {fileID: 7856927661401260774, guid: f8d6cad94e980a1408a4a1a54e969e1c, type: 3}
       propertyPath: prop
       value: 
-      objectReference: {fileID: 1797925626}
+      objectReference: {fileID: 0}
     - target: {fileID: 7856927661401260774, guid: f8d6cad94e980a1408a4a1a54e969e1c, type: 3}
       propertyPath: chunkS
       value: 
@@ -4948,4 +4949,5 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 2df65e6a8b2c3134a945702c74709588, type: 2}
     m_RemovedComponents:
     - {fileID: 7856927661401260772, guid: f8d6cad94e980a1408a4a1a54e969e1c, type: 3}
+    - {fileID: 949966427747831071, guid: f8d6cad94e980a1408a4a1a54e969e1c, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: f8d6cad94e980a1408a4a1a54e969e1c, type: 3}
