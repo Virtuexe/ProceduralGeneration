@@ -51,7 +51,13 @@ namespace Generation {
 		public int GetIndex(Vector3Int location) {
 			return indexes[location.x, location.y, location.z];
 		}
-		public int GetIndex(Vector3Int location, Layer layer) {
+        public bool GetPendingsDestroy(Vector3Int location) {
+            return pendingsDestroy[location.x, location.y, location.z];
+        }
+        public bool GetCreated(Vector3Int location) {
+            return created[location.x, location.y, location.z];
+        }
+        public int GetIndex(Vector3Int location, Layer layer) {
 			return layer.GetIndex(layer.CoordinatesToLocation(LocationToCoordinates(location)));
 		}
 		public Vector3Int LocationToGlobalLocation(Vector3Int location) {

@@ -27,7 +27,7 @@ public class MeshScript : MonoBehaviour
     }
     */
     ///edit to width and height
-    public GameObject CreateQuad(Vector3 A, Vector3 C, Position pos)
+    public GameObject CreateQuad(Vector3 A, Vector3 C, Direction pos)
     {
         //set relative position
         A += transform.position;

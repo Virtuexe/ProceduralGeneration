@@ -28,11 +28,11 @@ namespace Generation
                 tile = Vector3Int.zero;
                 completedChunk = false;
             }
-            Position pos;
+            Direction pos;
             //for every side
             while (d < 6)
             {
-                pos = new Position(d);
+                pos = new Direction(d);
                 while (tile.z < GenerationProp.tileAmmount.z)
                 {
                     while (tile.y < GenerationProp.tileAmmount.y)
@@ -41,23 +41,23 @@ namespace Generation
                         {
                             Vector3Int side = tile + pos.Tile;
                             //for every side of wall
-                            if (GenerationProp.GetSide(locationGeneration, tile, new Position(d)))
+                            if (GenerationProp.GetSide(locationGeneration, tile, new Direction(d)))
                             {
-                                Position position = new Position(d);
+                                Direction position = new Direction(d);
                                 Vector3 positive = new Vector3(0, 0, 0);
                                 Vector3 negative = new Vector3(0, 0, 0);
                                 //bools
-                                bool right = GenerationProp.GetSide(locationGeneration, tile, new Position(position.RelValueX));
-                                bool left = GenerationProp.GetSide(locationGeneration, tile, new Position(-position.RelValueX));
-                                bool up = GenerationProp.GetSide(locationGeneration, tile, new Position(position.RelValueY));
-                                bool down = GenerationProp.GetSide(locationGeneration, tile, new Position(-position.RelValueY));
-                                bool right_forward = GenerationProp.GetSide(locationGeneration, tile + position.RelValueX, new Position(position.RelValue));
-                                bool left_forward = GenerationProp.GetSide(locationGeneration, tile - position.RelValueX, new Position(position.RelValue));
-                                bool up_forward = GenerationProp.GetSide(locationGeneration, tile + position.RelValueY, new Position(position.RelValue));
-                                bool down_forward = GenerationProp.GetSide(locationGeneration, tile - position.RelValueY, new Position(position.RelValue));
+                                bool right = GenerationProp.GetSide(locationGeneration, tile, new Direction(position.RelValueX));
+                                bool left = GenerationProp.GetSide(locationGeneration, tile, new Direction(-position.RelValueX));
+                                bool up = GenerationProp.GetSide(locationGeneration, tile, new Direction(position.RelValueY));
+                                bool down = GenerationProp.GetSide(locationGeneration, tile, new Direction(-position.RelValueY));
+                                bool right_forward = GenerationProp.GetSide(locationGeneration, tile + position.RelValueX, new Direction(position.RelValue));
+                                bool left_forward = GenerationProp.GetSide(locationGeneration, tile - position.RelValueX, new Direction(position.RelValue));
+                                bool up_forward = GenerationProp.GetSide(locationGeneration, tile + position.RelValueY, new Direction(position.RelValue));
+                                bool down_forward = GenerationProp.GetSide(locationGeneration, tile - position.RelValueY, new Direction(position.RelValue));
                                 //side bool
-                                bool back_right = GenerationProp.GetSide(locationGeneration, tile + position.RelValue, new Position(position.RelValueX));
-                                bool back_up = GenerationProp.GetSide(locationGeneration, tile + position.RelValue, new Position(position.RelValueY));
+                                bool back_right = GenerationProp.GetSide(locationGeneration, tile + position.RelValue, new Direction(position.RelValueX));
+                                bool back_up = GenerationProp.GetSide(locationGeneration, tile + position.RelValue, new Direction(position.RelValueY));
 
                                 if (right)
                                     positive -= (Vector3)position.RelValueX * GenerationProp.wallThickness / 2;
@@ -65,7 +65,7 @@ namespace Generation
                                 {
                                     positive += (Vector3)position.RelValueX * GenerationProp.wallThickness / 2;
                                     if (!back_right)
-                                        createSide(new Position(-pos.RelValueX));
+                                        createSide(new Direction(-pos.RelValueX));
                                 }
                                 if (left)
                                     negative += (Vector3)position.RelValueX * GenerationProp.wallThickness / 2;
@@ -79,7 +79,7 @@ namespace Generation
                                 {
                                     positive += (Vector3)position.RelValueY * GenerationProp.wallThickness / 2;
                                     if (!back_up)
-                                        createSide(new Position(-pos.RelValueY));
+                                        createSide(new Direction(-pos.RelValueY));
                                 }
                                 if (down)
                                     negative += (Vector3)position.RelValueY * GenerationProp.wallThickness / 2;
@@ -112,7 +112,7 @@ namespace Generation
                                         ,
                                         position).transform.parent = ChunkArray.gameObject[chunkRender].transform;
                                 }
-                                void createSide(Position pos)
+                                void createSide(Direction pos)
                                 {
                                     Vector3Int vector = Vector3Int.Scale(pos.ValueReverse, position.ValueReverse);
                                     Vector3Int relVector = vector * pos.Multiplier;

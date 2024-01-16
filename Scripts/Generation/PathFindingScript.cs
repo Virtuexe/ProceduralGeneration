@@ -21,8 +21,8 @@ namespace Generation {
 		}
 		private void WriteTable(Vector3Int tile) {
 			for (int i = 0; i < 6; i++) {
-				var coordinatesSide = GenerationProp.FixOutOfBounds(ChunkArray.coordinates, tile + Position.Directions[i].RelValue + Position.Directions[i].Tile, GenerationProp.tileAmmount);
-				if (!ChunkArray.sides[Layers.generation.GetIndex(coordinatesSide.outer), coordinatesSide.inner.x, coordinatesSide.inner.y, coordinatesSide.inner.z, Position.Directions[i].Side]) {
+				var coordinatesSide = GenerationProp.FixOutOfBounds(ChunkArray.coordinates, tile + Direction.Directions[i].RelValue + Direction.Directions[i].Tile, GenerationProp.tileAmmount);
+				if (!ChunkArray.sides[Layers.generation.GetIndex(coordinatesSide.outer), coordinatesSide.inner.x, coordinatesSide.inner.y, coordinatesSide.inner.z, Direction.Directions[i].Side]) {
 					ShareSet(tile, 1, i);
 				}
 

@@ -2,87 +2,87 @@ using System;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
-public struct Position
+public struct Direction
 {
 
-    public Position(int value)
+    public Direction(int value)
     {
         switch (value)
         {
             //MAIN
             case 0: //TOP
-                this = Position.Top;
+                this = Direction.Top;
                 break;
             case 1: //Front
-                this = Position.Front;
+                this = Direction.Front;
                 break;
             case 2: //Right
-                this = Position.Right;
+                this = Direction.Right;
                 break;
             //SECONDARY
             case 3: //BUTTOM
-                this = Position.Bottom;
+                this = Direction.Bottom;
                 break;
             case 4: //BACK
-                this = Position.Back;
+                this = Direction.Back;
                 break;
             case 5: //LEFT
-                this = Position.Left;
+                this = Direction.Left;
                 break;
             default: throw new ArgumentException("No position with value " + value + " does not exist");
         }
     }
-    public Position(Vector3Int value)
+    public Direction(Vector3Int value)
     {
         switch (value.x, value.y, value.z)
         {
             case (0, 1, 0):
-                this = Position.Top;
+                this = Direction.Top;
                 break;
             case (0, 0, 1):
-                this = Position.Front;
+                this = Direction.Front;
                 break;
             case (1, 0, 0):
-                this = Position.Right;
+                this = Direction.Right;
                 break;
             case (0, -1, 0):
-                this = Position.Bottom;
+                this = Direction.Bottom;
                 break;
             case (0, 0, -1):
-                this = Position.Back;
+                this = Direction.Back;
                 break;
             case (-1, 0, 0):
-                this = Position.Left;
+                this = Direction.Left;
                 break;
             default: throw new ArgumentException("No position with position " + value + " does not exist");
         }
     }
-    public Position(int x, int y, int z)
+    public Direction(int x, int y, int z)
     {
         switch (x, y, z)
         {
             case (0, 1, 0):
-                this = Position.Top;
+                this = Direction.Top;
                 break;
             case (0, 0, 1):
-                this = Position.Front;
+                this = Direction.Front;
                 break;
             case (1, 0, 0):
-                this = Position.Right;
+                this = Direction.Right;
                 break;
             case (0, -1, 0):
-                this = Position.Bottom;
+                this = Direction.Bottom;
                 break;
             case (0, 0, -1):
-                this = Position.Back;
+                this = Direction.Back;
                 break;
             case (-1, 0, 0):
-                this = Position.Left;
+                this = Direction.Left;
                 break;
             default: throw new ArgumentException("No position with position " + new Vector3Int(x,y,z) + " does not exist");
         }
     }
-    public readonly static Position[] Directions = { Top, Front, Right, Bottom, Back, Left};
+    public readonly static Direction[] Directions = { Top, Front, Right, Bottom, Back, Left};
     public Vector3Int Value { get; private set; }
     public Vector3Int RelValue { get { return Value * Multiplier; } }
     public Vector3Int ValueReverse { get; private set; }
@@ -96,12 +96,12 @@ public struct Position
     public int Index { get; private set; }
     public int Multiplier;
 	public int Binary;
-	public static bool Priority(Position first, Position second)
+	public static bool Priority(Direction first, Direction second)
     {
         if (first.Side < second.Side) return false;
         return true;
     }
-    public static Position Top = new Position
+    public static Direction Top = new Direction
     {
         Value = new Vector3Int(0, 1, 0),
         ValueReverse = new Vector3Int(1, 0, 1),
@@ -115,7 +115,7 @@ public struct Position
         Binary = 1
     };
 
-    public static Position Bottom = new Position
+    public static Direction Bottom = new Direction
     {
         Value = new Vector3Int(0, 1, 0),
         ValueReverse = new Vector3Int(1, 0, 1),
@@ -129,7 +129,7 @@ public struct Position
 		Binary = 2
 	};
 
-    public static Position Front = new Position
+    public static Direction Front = new Direction
     {
         Value = new Vector3Int(0, 0, 1),
         ValueReverse = new Vector3Int(1, 1, 0),
@@ -143,7 +143,7 @@ public struct Position
 		Binary = 4
 	};
 
-    public static Position Back = new Position
+    public static Direction Back = new Direction
     {
         Value = new Vector3Int(0, 0, 1),
         ValueReverse = new Vector3Int(1, 1, 0),
@@ -157,7 +157,7 @@ public struct Position
 		Binary = 8
 	};
 
-    public static Position Right = new Position
+    public static Direction Right = new Direction
     {
         Value = new Vector3Int(1, 0, 0),
         ValueReverse = new Vector3Int(0, 1, 1),
@@ -171,7 +171,7 @@ public struct Position
 		Binary = 16
 	};
 
-    public static Position Left = new Position
+    public static Direction Left = new Direction
     {
         Value = new Vector3Int(1, 0, 0),
         ValueReverse = new Vector3Int(0, 1, 1),

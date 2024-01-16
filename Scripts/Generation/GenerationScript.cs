@@ -16,15 +16,11 @@ namespace Generation {
 			chunk = Layers.generation.GetIndex(locationGeneration, Layers.hierarchy[0]);
 			coordinates = ChunkArray.GetCoordinates(Layers.generation.LocationToCoordinates(locationGeneration));
 			rand = new CustomRandom(GenerationProp.seed, new int[] { coordinates.x, coordinates.y, coordinates.z });
-			for (int z = 0; z < GenerationProp.tileAmmount.z; z++)
-			{
-				for (int y = 0; y < GenerationProp.tileAmmount.y; y++)
-				{
-					for (int x = 0; x < GenerationProp.tileAmmount.x; x++)
-					{
-						for (int d = 0; d < 3; d++)
-						{
-							int lol = rand.random.Next(0, 8);
+			for (int z = 0; z < GenerationProp.tileAmmount.z; z++) {
+				for (int y = 0; y < GenerationProp.tileAmmount.y; y++) {
+					for (int x = 0; x < GenerationProp.tileAmmount.x; x++) {
+						for (int d = 0; d < 3; d++) {
+							int lol = rand.random.Next(0, 6);
 							if (lol == 1)
 								ChunkArray.sides[chunkGeneration, x, y, z, d] = true;
 							if (d == 0)
@@ -82,13 +78,13 @@ namespace Generation {
 				distance.z < 0 ? -1 : 1);
 			Vector3Int corner = start.x + start.y + start.z >= end.x + end.y + end.z ? start : end;
 			// Create direction positions
-			Position directionX = new Position(direction.x, 0, 0);
-			Position directionY = new Position(0, direction.y, 0);
-			Position directionZ = new Position(0, 0, direction.z);
+			Direction directionX = new Direction(direction.x, 0, 0);
+			Direction directionY = new Direction(0, direction.y, 0);
+			Direction directionZ = new Direction(0, 0, direction.z);
 
-			// Iterate through the coordinates
-			for (int x = start.x; x * direction.x <= end.x * direction.x; x += direction.x) {
-				for (int y = start.y; y * direction.y <= end.y * direction.y; y += direction.y) {
+            // Iterate through the coordinates
+            for (int x = start.x; x * direction.x <= end.x * direction.x; x += direction.x) {
+                for (int y = start.y; y * direction.y <= end.y * direction.y; y += direction.y) {
 					for (int z = start.z; z * direction.z <= end.z * direction.z; z += direction.z) {
 						// Skip iteration if any coordinate is out of bounds
 						if (x >= GenerationProp.tileAmmount.x || y >= GenerationProp.tileAmmount.y || z >= GenerationProp.tileAmmount.z)
@@ -106,10 +102,11 @@ namespace Generation {
 							ChunkArray.sides[chunkGeneration, x, y, z, directionZ.Side] = side;
 					}
 				}
-			}
-		}
+            }
+        }
+       
 
-		public void Line(Vector3Int start, int distance, Position positition, bool side) {
+		public void Line(Vector3Int start, int distance, Direction positition, bool side) {
 			for (int i = 0; i < distance; i++) {
 				Vector3Int coordinates = start + (i * positition.RelValue) + positition.Tile;
 				ChunkArray.sides[chunkGeneration, coordinates.x, coordinates.y, coordinates.z, positition.Side] = side;
