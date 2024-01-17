@@ -1,33 +1,40 @@
 using Generation;
-using System.Drawing;
 using UnityEngine;
 namespace PathFinfing{
     public static class PathFindingScript {
-        static int nodeAmount = 1;
-        static Node[] nodes = new Node[Layers.generation.LengthInt * GenerationProp.tileAmmount.x * GenerationProp.tileAmmount.y * GenerationProp.tileAmmount.z];
-
+        static Vector3Int startTileCoordinates;
+        static Vector3Int endTileCoordinates;
         public static void FindPath(Vector3Int startChunk, Vector3Int startTile, Vector3Int endChunk, Vector3Int endTile) {
-            Vector3Int startTileCoordinates = GenerationProp.CoordinatesToTileCoordinates(ChunkArray.GetLocation(startChunk)) + startTile;
-            Vector3Int endTileCoordinates = GenerationProp.CoordinatesToTileCoordinates(ChunkArray.GetLocation(endChunk)) + endTile;
-            nodes[0] = new Node(-1,startTileCoordinates);
+            startTileCoordinates = GenerationProp.CoordinatesToTileCoordinates(ChunkArray.GetLocation(startChunk)) + startTile;
+            endTileCoordinates = GenerationProp.CoordinatesToTileCoordinates(ChunkArray.GetLocation(endChunk)) + endTile;
             for (int i = 0; i < Direction.Directions.Length; i++) {
-                TryGo(0, Direction.Directions[i]);
+                TryGo(startTile, Direction.Directions[i]);
             }
         }
-        private static void TryGo(int nodeIndex, Direction direction) {
-            if (!GenerationProp.GetSide(nodes[nodeIndex].tileCoordinates, direction)) {
+        private static void TryGo(Vector3Int tileCoordinates, Direction direction) {
+            if (!GenerationProp.GetSide(tileCoordinates, direction)) {
                 return;
             }
-            nodes[nodeAmount] = new Node(nodeIndex, nodes[nodeIndex].tileCoordinates + direction.RelValue);
-            nodeAmount++;
+            int parentNodeIndex = GetIndex(tileCoordinates);
+            int targetNodeIndex = GetIndex(tileCoordinates + direction.RelValue);
+            if (ChunkArray.nodes[targetNodeIndex].distance <= ChunkArray.nodes[parentNodeIndex].distance) {
+                return;
+            }
+            ChunkArray.nodes[targetNodeIndex] = new Node(new Direction(-direction.RelValue), ChunkArray.nodes[parentNodeIndex].distance+1);
+        }
+        public static int GetIndex(Vector3Int TileCoordinates) {
+            Vector3Int coordinates = GenerationProp.TileCoordinatesToCoordinates(TileCoordinates);
+            int chunkIndex = Layers.generation.GetIndex(coordinates);
+            Vector3Int tile = GenerationProp.TileCoordinatesToTile(TileCoordinates);
+            return chunkIndex + Layers.generation.LengthInt * (tile.x + GenerationProp.tileAmmount.x * (tile.y + GenerationProp.tileAmmount.y * tile.z));
         }
     }
-    struct Node {
-        public int parentIndex { get; private set; }
-        public Vector3Int tileCoordinates;
-        public Node(int parentIndex, Vector3Int tileCoordinates) {
-            this.parentIndex = parentIndex;
-            this.tileCoordinates = tileCoordinates;
+    public struct Node {
+        public Direction parentDirection { get; private set; }
+        public int distance { get; private set; }
+        public Node(Direction parentDirection, int distance) {
+            this.parentDirection = parentDirection;
+            this.distance = distance;
         }
     }
 }

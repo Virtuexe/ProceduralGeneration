@@ -1,10 +1,12 @@
 using System;
 using UnityEngine;
+using PathFinfing;
 namespace Generation {
 	public static class ChunkArray {
 		public static bool[,,,,] sides = new bool[Layers.generation.LengthInt, GenerationProp.tileAmmount.x, GenerationProp.tileAmmount.y, GenerationProp.tileAmmount.z, 3];
 		public static bool[,,,] grid = new bool[Layers.generation.LengthInt, GenerationProp.tileAmmount.x, GenerationProp.tileAmmount.y, GenerationProp.tileAmmount.z];
-		public static bool[] genereted = new bool[Layers.generation.LengthInt];
+        public static Node[] nodes = new Node[Layers.generation.LengthInt * GenerationProp.tileAmmount.x * GenerationProp.tileAmmount.y * GenerationProp.tileAmmount.z];
+        public static bool[] genereted = new bool[Layers.generation.LengthInt];
         public static GameObject[] gameObject = new GameObject[Layers.render.LengthInt];
 
 		//[chunk,x,y,z,chunk2,x2,y2,z2]
