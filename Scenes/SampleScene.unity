@@ -4623,6 +4623,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 5618212701641721472, guid: de0db43c5183170419a179b58cad0e9e, type: 3}
+      propertyPath: manager
+      value: 
+      objectReference: {fileID: 384938993}
+    - target: {fileID: 5618212701641721472, guid: de0db43c5183170419a179b58cad0e9e, type: 3}
       propertyPath: inventory
       value: 
       objectReference: {fileID: 11400000, guid: 374887a8ecb437d47bd22fd129140334, type: 2}
@@ -4950,4 +4954,5 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 7856927661401260772, guid: f8d6cad94e980a1408a4a1a54e969e1c, type: 3}
     - {fileID: 949966427747831071, guid: f8d6cad94e980a1408a4a1a54e969e1c, type: 3}
+    - {fileID: 5703505876864738104, guid: f8d6cad94e980a1408a4a1a54e969e1c, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: f8d6cad94e980a1408a4a1a54e969e1c, type: 3}

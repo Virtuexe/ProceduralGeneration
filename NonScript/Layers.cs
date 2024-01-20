@@ -72,8 +72,8 @@ namespace Generation {
 		public Vector3Int LocationToLocation(Vector3Int location, Layer layer) {
 			return layer.LocationToCoordinates(LocationToCoordinates(location));
 		}
-		public bool IsLocationIncluded(Vector3Int location) {
-			return location.x >= 0 && location.y >= 0 && location.z >= 0 && location.x < Length.x && location.y < Length.x && location.z < Length.x;
+		public bool IsLocationOutOfBounds(Vector3Int location) {
+			return location.x < 0 && location.y < 0 && location.z < 0 && location.x >= Length.x && location.y >= Length.x && location.z >= Length.x;
 		}
 	}
 	[System.Serializable]

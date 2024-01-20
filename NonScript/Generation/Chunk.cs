@@ -1,13 +1,12 @@
 using System;
 using UnityEngine;
-using PathFinfing;
+using PathFinding;
 namespace Generation {
 	public static class ChunkArray {
 		public static bool[,,,,] sides = new bool[Layers.generation.LengthInt, GenerationProp.tileAmmount.x, GenerationProp.tileAmmount.y, GenerationProp.tileAmmount.z, 3];
 		public static bool[,,,] grid = new bool[Layers.generation.LengthInt, GenerationProp.tileAmmount.x, GenerationProp.tileAmmount.y, GenerationProp.tileAmmount.z];
-        public static Node[] nodes = new Node[Layers.generation.LengthInt * GenerationProp.tileAmmount.x * GenerationProp.tileAmmount.y * GenerationProp.tileAmmount.z];
-        public static bool[] genereted = new bool[Layers.generation.LengthInt];
-        public static GameObject[] gameObject = new GameObject[Layers.render.LengthInt];
+		public static bool[] genereted = new bool[Layers.generation.LengthInt];
+		public static GameObject[] gameObject = new GameObject[Layers.render.LengthInt];
 
 		//[chunk,x,y,z,chunk2,x2,y2,z2]
 		//public static Path[,,,,,,,] paths;
@@ -41,17 +40,16 @@ namespace Generation {
 				for (location.x = shiftingLocation.x; location.x != prependingLocation.x; location.x -= direction.x) {
 					for (location.y = shiftingLocation.y; location.y != prependingLocation.y; location.y -= direction.y) {
 						for (location.z = shiftingLocation.z; location.z != prependingLocation.z; location.z -= direction.z) {
-							if (Layers.hierarchy[layer].IsLocationIncluded(location + distanceToMove)) {
+							if (!Layers.hierarchy[layer].IsLocationOutOfBounds(location + distanceToMove)) {
 								Layers.hierarchy[layer].MoveChunk(location, location + distanceToMove);
+							} else {
+								Layers.hierarchy[layer].pendingsDestroy[location.x, location.y, location.z] = true;
+								Layers.hierarchy[layer].created[location.x, location.y, location.z] = false;
 							}
-							else {
-								Layers.hierarchy[layer].pendingsDestroy[location.x,location.y,location.z] = true;
-                                Layers.hierarchy[layer].created[location.x, location.y, location.z] = false;
-                            }
 							//if (!Layers.hierarchy[layer].IsLocationIncluded(location - distanceToMove)) {
 							//	if (!Layers.hierarchy[layer].pendingsDestroy[location.x, location.y, location.z])
 							//		Debug.Log("IM NOT USELESS!!!");
-								
+
 							//}
 						}
 					}

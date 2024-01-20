@@ -1,26 +1,64 @@
 using Generation;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-namespace PathFinfing{
+namespace PathFinding{
     public static class PathFindingScript {
+        private static Node[] nodes = new Node[Layers.generation.LengthInt * GenerationProp.tileAmmount.x * GenerationProp.tileAmmount.y * GenerationProp.tileAmmount.z];
+        private static int nodeCount = 0;
+        private static int[] nodeQueueIndexes = new int[
+            (Layers.generation.Length.y * GenerationProp.tileAmmount.y * Layers.generation.Length.z * GenerationProp.tileAmmount.z) +
+            (Layers.generation.Length.x * GenerationProp.tileAmmount.x * Layers.generation.Length.z * GenerationProp.tileAmmount.z) +
+            (Layers.generation.Length.x * GenerationProp.tileAmmount.x * Layers.generation.Length.y * GenerationProp.tileAmmount.y) -
+            (Layers.generation.Length.x * GenerationProp.tileAmmount.x + Layers.generation.Length.y * GenerationProp.tileAmmount.y + 1) * 2
+            ];
+
         static Vector3Int startTileCoordinates;
         static Vector3Int endTileCoordinates;
-        public static void FindPath(Vector3Int startChunk, Vector3Int startTile, Vector3Int endChunk, Vector3Int endTile) {
-            startTileCoordinates = GenerationProp.CoordinatesToTileCoordinates(ChunkArray.GetLocation(startChunk)) + startTile;
-            endTileCoordinates = GenerationProp.CoordinatesToTileCoordinates(ChunkArray.GetLocation(endChunk)) + endTile;
+        public static void FindPath(Vector3Int startTileCoordinates, Vector3Int endTileCoordinates) {
+            for (int i = 0; i < nodes.Length; i++) {
+                nodes[i] = new Node(int.MaxValue);
+            }
+            PathFindingScript.startTileCoordinates = startTileCoordinates;
+            PathFindingScript.endTileCoordinates = endTileCoordinates;
+            int startNodeIndex = GetIndex(startTileCoordinates);
+            nodes[startNodeIndex] = new Node();
             for (int i = 0; i < Direction.Directions.Length; i++) {
-                TryGo(startTile, Direction.Directions[i]);
+                TryGo(startNodeIndex, Direction.Directions[i]);
             }
+            ProcessQueue();
         }
-        private static void TryGo(Vector3Int tileCoordinates, Direction direction) {
-            if (!GenerationProp.GetSide(tileCoordinates, direction)) {
+        private static void ProcessQueue() {
+            Debug.Log("finding...");
+            while (nodeCount != 0) {
+                Debug.Log("queue...");
+                nodeCount--;
+                for (int i = 0; i < Direction.Directions.Length; i++) {
+                    if(Direction.Directions[i] == nodes[nodeCount].parentDirection) {
+                        return;
+                    }
+                    TryGo(nodeCount, Direction.Directions[i]);
+                }
+            }
+        } 
+        private static void AddNodeToQueue(int index) {
+            nodeQueueIndexes[index] = nodeCount;
+            nodeCount++;
+        }
+        private static void TryGo(int nodeIndex, Direction direction) {
+            if (Layers.generation.IsLocationOutOfBounds(GenerationProp.TileCoordinatesToCoordinates(nodes[nodeIndex].tileCoordinates)) || !GenerationProp.GetSide(nodes[nodeIndex].tileCoordinates, direction)) {
                 return;
             }
-            int parentNodeIndex = GetIndex(tileCoordinates);
-            int targetNodeIndex = GetIndex(tileCoordinates + direction.RelValue);
-            if (ChunkArray.nodes[targetNodeIndex].distance <= ChunkArray.nodes[parentNodeIndex].distance) {
+            int targetNodeIndex = GetIndex(nodes[nodeIndex].tileCoordinates + direction.RelValue);
+            if (nodes[targetNodeIndex].distance <= nodes[nodeIndex].distance) {
                 return;
             }
-            ChunkArray.nodes[targetNodeIndex] = new Node(new Direction(-direction.RelValue), ChunkArray.nodes[parentNodeIndex].distance+1);
+            nodes[targetNodeIndex] = new Node(new Direction(-direction.RelValue), nodes[nodeIndex].distance + 1, nodes[nodeIndex].tileCoordinates + direction.RelValue);
+            if(endTileCoordinates == nodes[nodeIndex].tileCoordinates + direction.RelValue) {
+                Debug.Log("new best path: " + nodes[targetNodeIndex].distance);
+                return;
+            }
+            Debug.Log("added");
+            AddNodeToQueue(targetNodeIndex);
         }
         public static int GetIndex(Vector3Int TileCoordinates) {
             Vector3Int coordinates = GenerationProp.TileCoordinatesToCoordinates(TileCoordinates);
@@ -32,9 +70,21 @@ namespace PathFinfing{
     public struct Node {
         public Direction parentDirection { get; private set; }
         public int distance { get; private set; }
-        public Node(Direction parentDirection, int distance) {
+        public Vector3Int tileCoordinates { get; private set; }
+        public Node(Direction parentDirection, int distance, Vector3Int tileCoordinates) {
             this.parentDirection = parentDirection;
             this.distance = distance;
+            this.tileCoordinates = tileCoordinates;
+        }
+        public Node(int distance) {
+            this.parentDirection = new Direction();
+            this.distance = distance;
+            this.tileCoordinates = Vector3Int.zero;
+        }
+        public Node(Vector3Int tileCoordinates) {
+            this.parentDirection = new Direction();
+            this.distance = 0;
+            this.tileCoordinates = tileCoordinates;
         }
     }
 }

@@ -3,12 +3,12 @@ using UnityEngine;
 using static UnityEditor.PlayerSettings;
 
 namespace Generation {
-    public static class GenerationProp {
+	public static class GenerationProp {
 		public static Vector3Int test;
 
 		public static Vector3 tileSize = new Vector3(3, 5, 3);
 		public static float wallThickness = 0.2f;
-		public static Vector3Int tileAmmount = new Vector3Int(10, 1, 10);
+		public static Vector3Int tileAmmount = new Vector3Int(3, 1, 3);
 		public static Vector3Int chunkPathDistance = new Vector3Int(1, 0, 1);
 		public static int mapPathDistanceInt { get { return (chunkPathDistance.x * 2 + 1) * (chunkPathDistance.y * 2 + 1) * (chunkPathDistance.z * 2 + 1); } }
 
@@ -16,26 +16,22 @@ namespace Generation {
 
 		//calculations
 		public static Vector3 chunkSize {
-			get
-			{
+			get {
 				return new Vector3(tileAmmount.x * tileSize.x, tileAmmount.y * tileSize.y, tileAmmount.z * tileSize.z);
 			}
 		}
 		public static Vector3Int mapCenter {
-			get
-			{
+			get {
 				return (Layers.render.Length - Vector3Int.one) / 2;
 			}
 		}
 		public static Vector3Int mapRenderDistantStart {
-			get
-			{
+			get {
 				return mapCenter - Layers.render.size;
 			}
 		}
 		public static Vector3Int mapRenderDistantEnd {
-			get
-			{
+			get {
 				return mapCenter + Layers.render.size;
 			}
 		}
@@ -64,8 +60,8 @@ namespace Generation {
 			return (outerCoordinates, innerCoordinates);
 		}
 		public static bool GetSide(Vector3Int locationGeneration, Vector3Int side, Direction pos) {
-            //swap back,down,left to front,up,right
-            side += pos.Tile;
+			//swap back,down,left to front,up,right
+			side += pos.Tile;
 			if (side.x < 0) {
 				locationGeneration.x--;
 			}
@@ -75,31 +71,31 @@ namespace Generation {
 			if (side.z < 0) {
 				locationGeneration.z--;
 			}
-            //locationGeneration += new Vector3Int(side.x / tileAmmount.x, side.y / tileAmmount.y, side.z / tileAmmount.z); <- TODO: what is this (╯°□°)╯︵ ┻━┻
-            side.x = (side.x % tileAmmount.x + tileAmmount.x) % tileAmmount.x;
+			//locationGeneration += new Vector3Int(side.x / tileAmmount.x, side.y / tileAmmount.y, side.z / tileAmmount.z); <- TODO: what is this (╯°□°)╯︵ ┻━┻
+			side.x = (side.x % tileAmmount.x + tileAmmount.x) % tileAmmount.x;
 			side.y = (side.y % tileAmmount.y + tileAmmount.y) % tileAmmount.y;
 			side.z = (side.z % tileAmmount.z + tileAmmount.z) % tileAmmount.z;
 			return ChunkArray.sides[Layers.generation.GetIndex(locationGeneration), side.x, side.y, side.z, pos.Side];
 		}
 		public static bool GetSide(Vector3Int tileCoordinates, Direction direction) {
-            tileCoordinates += direction.Tile;
+			tileCoordinates += direction.Tile;
 			Vector3Int generationLocation = TileCoordinatesToCoordinates(tileCoordinates);
 			Vector3Int tile = TileCoordinatesToTile(tileCoordinates);
-            return ChunkArray.sides[Layers.generation.GetIndex(generationLocation), tile.x, tile.y, tile.z, direction.Side];
-        }
-        static void FixCoordinates(ref Vector3Int chunk, ref Vector3Int tile) {
-            Vector3Int globalCoordinates = new Vector3Int(chunk.x * tileAmmount.x + tile.x, chunk.y * tileAmmount.y + tile.y, chunk.z * tileAmmount.z + tile.z);
+			return ChunkArray.sides[Layers.generation.GetIndex(generationLocation), tile.x, tile.y, tile.z, direction.Side];
+		}
+		static void FixCoordinates(ref Vector3Int chunk, ref Vector3Int tile) {
+			Vector3Int globalCoordinates = new Vector3Int(chunk.x * tileAmmount.x + tile.x, chunk.y * tileAmmount.y + tile.y, chunk.z * tileAmmount.z + tile.z);
 			chunk = new Vector3Int(globalCoordinates.x / tileAmmount.x, globalCoordinates.y / tileAmmount.y, globalCoordinates.z / tileAmmount.z);
 			tile = new Vector3Int(globalCoordinates.x % tileAmmount.x, globalCoordinates.y % tileAmmount.y, globalCoordinates.z % tileAmmount.z);
 		}
-        public static Vector3Int CoordinatesToTileCoordinates(Vector3Int coordinates) {
+		public static Vector3Int CoordinatesToTileCoordinates(Vector3Int coordinates) {
 			return coordinates * tileAmmount;
 		}
 		public static Vector3Int TileCoordinatesToCoordinates(Vector3Int coordinates) {
-			return new Vector3Int(coordinates.x/tileAmmount.x, coordinates.y / tileAmmount.y, coordinates.z / tileAmmount.z);
-        }
-        public static Vector3Int TileCoordinatesToTile(Vector3Int coordinates) {
-            return new Vector3Int(coordinates.x % tileAmmount.x, coordinates.y % tileAmmount.y, coordinates.z % tileAmmount.z);
-        }
+			return new Vector3Int(coordinates.x / tileAmmount.x, coordinates.y / tileAmmount.y, coordinates.z / tileAmmount.z);
+		}
+		public static Vector3Int TileCoordinatesToTile(Vector3Int coordinates) {
+			return new Vector3Int(coordinates.x % tileAmmount.x, coordinates.y % tileAmmount.y, coordinates.z % tileAmmount.z);
+		}
     }
 }
