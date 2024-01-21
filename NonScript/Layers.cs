@@ -73,7 +73,7 @@ namespace Generation {
 			return layer.LocationToCoordinates(LocationToCoordinates(location));
 		}
 		public bool IsLocationOutOfBounds(Vector3Int location) {
-			return location.x < 0 && location.y < 0 && location.z < 0 && location.x >= Length.x && location.y >= Length.x && location.z >= Length.x;
+			return location.x < 0 || location.y < 0 || location.z < 0 || location.x >= Length.x || location.y >= Length.y || location.z >= Length.z;
 		}
 	}
 	[System.Serializable]

@@ -1,6 +1,5 @@
 ﻿using System.Drawing;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
 
 namespace Generation {
 	public static class GenerationProp {
@@ -79,9 +78,9 @@ namespace Generation {
 		}
 		public static bool GetSide(Vector3Int tileCoordinates, Direction direction) {
 			tileCoordinates += direction.Tile;
-			Vector3Int generationLocation = TileCoordinatesToCoordinates(tileCoordinates);
+            Vector3Int generationLocation = TileCoordinatesToCoordinates(tileCoordinates);
 			Vector3Int tile = TileCoordinatesToTile(tileCoordinates);
-			return ChunkArray.sides[Layers.generation.GetIndex(generationLocation), tile.x, tile.y, tile.z, direction.Side];
+            return ChunkArray.sides[Layers.generation.GetIndex(generationLocation), tile.x, tile.y, tile.z, direction.Side];
 		}
 		static void FixCoordinates(ref Vector3Int chunk, ref Vector3Int tile) {
 			Vector3Int globalCoordinates = new Vector3Int(chunk.x * tileAmmount.x + tile.x, chunk.y * tileAmmount.y + tile.y, chunk.z * tileAmmount.z + tile.z);
@@ -91,11 +90,11 @@ namespace Generation {
 		public static Vector3Int CoordinatesToTileCoordinates(Vector3Int coordinates) {
 			return coordinates * tileAmmount;
 		}
-		public static Vector3Int TileCoordinatesToCoordinates(Vector3Int coordinates) {
-			return new Vector3Int(coordinates.x / tileAmmount.x, coordinates.y / tileAmmount.y, coordinates.z / tileAmmount.z);
+		public static Vector3Int TileCoordinatesToCoordinates(Vector3Int tileCoordinates) {
+			return new Vector3Int(tileCoordinates.x / tileAmmount.x, tileCoordinates.y / tileAmmount.y, tileCoordinates.z / tileAmmount.z);
 		}
-		public static Vector3Int TileCoordinatesToTile(Vector3Int coordinates) {
-			return new Vector3Int(coordinates.x % tileAmmount.x, coordinates.y % tileAmmount.y, coordinates.z % tileAmmount.z);
+		public static Vector3Int TileCoordinatesToTile(Vector3Int tileCoordinates) {
+			return new Vector3Int(tileCoordinates.x % tileAmmount.x, tileCoordinates.y % tileAmmount.y, tileCoordinates.z % tileAmmount.z);
 		}
     }
 }
