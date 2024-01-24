@@ -1,4 +1,5 @@
 using Generation;
+using MyArrays;
 using System;
 using System.Numerics;
 using UnityEngine;
@@ -7,10 +8,9 @@ using UnityEngine.ProBuilder.MeshOperations;
 namespace PathFinding{
     public static class PathFindingScript {
         private static Node[] nodes = new Node[Layers.generation.LengthInt * GenerationProp.tileAmmount.x * GenerationProp.tileAmmount.y * GenerationProp.tileAmmount.z];
-        private static int nodeCount;
-        private static int maxDistance = 30;
+        private static int maxDistance = 5;
         private static int bestDistance;
-        private static int[] nodeQueueIndexes = new int[Layers.generation.LengthInt * GenerationProp.tileAmmount.x * GenerationProp.tileAmmount.y * GenerationProp.tileAmmount.z];
+        private static Pool<int> nodeQueueIndexes = new Pool<int>(Layers.generation.LengthInt * GenerationProp.tileAmmount.x * GenerationProp.tileAmmount.y * GenerationProp.tileAmmount.z);
         /*
         private static int[] nodeQueueIndexes = new int[
             (Layers.generation.Length.y * GenerationProp.tileAmmount.y * Layers.generation.Length.z * GenerationProp.tileAmmount.z) +
@@ -23,7 +23,7 @@ namespace PathFinding{
         static Vector3Int startTileCoordinates;
         static Vector3Int endTileCoordinates;
         public static void FindPath(Vector3Int startTileCoordinates, Vector3Int endTileCoordinates) {
-            nodeCount = 0;
+            nodeQueueIndexes.Clear();
             for (int i = 0; i < nodes.Length; i++) {
                 nodes[i] = new Node(int.MaxValue);
             }
@@ -37,31 +37,29 @@ namespace PathFinding{
             ProcessQueue();
         }
         private static void ProcessQueue() {
-            while (nodeCount != 0) {
-                nodeCount--;
-                int index = nodeQueueIndexes[nodeCount];
+            while (!nodeQueueIndexes.IsEmpty()) {
+                int index = nodeQueueIndexes.Last();
+                nodeQueueIndexes.Remove();
                 if (nodes[index].distance == maxDistance) {
                     continue;
                 }
                 for (int i = 0; i < Direction.Directions.Length; i++) {
-                    if(Direction.Directions[i] == nodes[index].parentDirection) {
+                    if (Direction.Directions[i] == nodes[index].parentDirection) {
                         continue;
                     }
                     TryGo(index, Direction.Directions[i]);
                 }
+                
             }
-        } 
+        }
         private static void AddNodeToQueue(int index) {
-            for (int queueIndex = nodeCount; queueIndex >= 0; queueIndex--) {
-                if (nodes[nodeQueueIndexes[queueIndex]].GetTotalCost() >= nodes[index].GetTotalCost() || queueIndex == 0) {
-                    for(int queueMoveIndex = nodeCount; queueMoveIndex >= queueIndex; queueMoveIndex--) {
-                        nodeQueueIndexes[queueMoveIndex + 1] = nodeQueueIndexes[queueMoveIndex];
-                    }
-                    nodeQueueIndexes[queueIndex] = index;
-                    break;
+            for (int queueIndex = nodeQueueIndexes.Count - 1; queueIndex >= 0; queueIndex--) {
+                if (nodes[nodeQueueIndexes[queueIndex]].GetTotalCost() >= nodes[index].GetTotalCost()) {
+                    nodeQueueIndexes.Insert(queueIndex, index);
+                    return;
                 }
             }
-            nodeCount++;
+            nodeQueueIndexes.Add(index);
         }
         private static void TryGo(int nodeIndex, Direction direction) {
             if (nodes[nodeIndex].tileCoordinates.x + direction.RelValue.x < 0 || nodes[nodeIndex].tileCoordinates.y + direction.RelValue.y < 0 || nodes[nodeIndex].tileCoordinates.z + direction.RelValue.z < 0) {
