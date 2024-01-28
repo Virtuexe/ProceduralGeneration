@@ -1,33 +1,42 @@
 using System;
-using System.Reflection;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace MyArrays {
-    public struct Multi<T> {
+    public unsafe struct Matrix<T> where T : unmanaged {
         public int[] Lenghts { get; private set; }
-        private T[] array;
-        public int Length {
-            get {
-                return array.Length;
-            }
-        }
-        public Multi(params int[] lengths) {
+        private T* array;
+		public int Length { get; private set; }
+		public Matrix(params int[] lengths) {
             Lenghts = lengths;
             int cumulativeMultiplier = 1;
             for (int i = 0; i < lengths.Length; i++) {
                 cumulativeMultiplier *= lengths[i];
             }
-            array = new T[cumulativeMultiplier];
-        }
-        public ref T this[params int[] indexes] {
+            array = (T*)System.Runtime.InteropServices.Marshal.AllocHGlobal(sizeof(T) * cumulativeMultiplier);
+            Length = cumulativeMultiplier;
+		}
+		void Dispose() {
+			System.Runtime.InteropServices.Marshal.FreeHGlobal((IntPtr)array);
+		}
+		public ref T this[int index] {
+			get{
+				return ref array[index];
+			}
+		}
+		public ref T this[params int[] indexes] {
             get {
                 return ref array[GetFlatIndex(ref indexes)];
             }
         }
-        public ref T this[Vector3Int vector] {
+        public ref T this[params Vector3Int[] vectors] {
             get {
-                int[] indexes = new int[] { vector.x, vector.y, vector.z };
+                int[] indexes = new int[vectors.Length * 3];
+                for(int i = 0; i < vectors.Length; i++) {
+                    indexes[i * 3 + 0] = vectors[i].x;
+					indexes[i * 3 + 1] = vectors[i].y;
+					indexes[i * 3 + 2] = vectors[i].z;
+				}
                 return ref array[GetFlatIndex(ref indexes)];
             }
         }
@@ -35,7 +44,6 @@ namespace MyArrays {
             if (indexes.Length != Lenghts.Length) {
                 throw new ArgumentException("Incorrect number of indexes.");
             }
-
             int flatIndex = 0;
             int cumulativeMultiplier = 1;
             for (int i = indexes.Length - 1; i >= 0; i--) {
@@ -49,19 +57,19 @@ namespace MyArrays {
             return flatIndex;
         }
     }
-    public struct Pool<T> {
+    public unsafe struct Pool<T> where T : unmanaged {
         public int Count { get; private set; }
-        public int Length {
-            get {
-                return array.Length;
-            }
-        }
-        private T[] array;
+        public int Length { get; private set; }
+		private T* array;
         public Pool(int length) {
             Count = 0;
-            array = new T[length];
-        }
-        public ref T this[int index] {
+            Length = length;
+			array = (T*)System.Runtime.InteropServices.Marshal.AllocHGlobal(sizeof(T) * length);
+		}
+		public void Dispose(){
+			System.Runtime.InteropServices.Marshal.FreeHGlobal((IntPtr)array);
+		}
+		public ref T this[int index] {
             get {
                 return ref array[index];
             }

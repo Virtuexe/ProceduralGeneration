@@ -7,7 +7,7 @@ using UnityEngine.ProBuilder.MeshOperations;
 
 namespace PathFinding{
     public static class PathFindingScript {
-        private static Node[] nodes = new Node[Layers.generation.LengthInt * GenerationProp.tileAmmount.x * GenerationProp.tileAmmount.y * GenerationProp.tileAmmount.z];
+        private static Matrix<Node> nodes = new Matrix<Node>(Layers.generation.LengthInt, GenerationProp.tileAmmount.x, GenerationProp.tileAmmount.y, GenerationProp.tileAmmount.z);
         private static int maxDistance = 5;
         private static int bestDistance;
         private static Pool<int> nodeQueueIndexes = new Pool<int>(Layers.generation.LengthInt * GenerationProp.tileAmmount.x * GenerationProp.tileAmmount.y * GenerationProp.tileAmmount.z);
@@ -22,7 +22,7 @@ namespace PathFinding{
 
         static Vector3Int startTileCoordinates;
         static Vector3Int endTileCoordinates;
-        public static void FindPath(Vector3Int startTileCoordinates, Vector3Int endTileCoordinates) {
+        public static Pool<Vector3Int> FindPath(Vector3Int startTileCoordinates, Vector3Int endTileCoordinates) {
             nodeQueueIndexes.Clear();
             for (int i = 0; i < nodes.Length; i++) {
                 nodes[i] = new Node(int.MaxValue);
@@ -35,6 +35,7 @@ namespace PathFinding{
                 TryGo(startNodeIndex, Direction.Directions[i]);
             }
             ProcessQueue();
+            return GetPath();
         }
         private static void ProcessQueue() {
             while (!nodeQueueIndexes.IsEmpty()) {
@@ -51,6 +52,29 @@ namespace PathFinding{
                 }
                 
             }
+        }
+        private static Pool<Vector3Int> GetPath() {
+            int maxPoolLength = 0;
+            Vector3Int currentTileCoordinates = endTileCoordinates;
+			Direction lastDirection = nodes[GetIndex(endTileCoordinates)].parentDirection;
+			while (currentTileCoordinates != startTileCoordinates) {
+                if (lastDirection != nodes[GetIndex(currentTileCoordinates)].parentDirection) {
+                    maxPoolLength++;
+                }
+                lastDirection = nodes[GetIndex(currentTileCoordinates)].parentDirection;
+                currentTileCoordinates += nodes[GetIndex(currentTileCoordinates)].parentDirection.RelValue;
+			}
+			currentTileCoordinates = endTileCoordinates;
+			lastDirection = nodes[GetIndex(endTileCoordinates)].parentDirection;
+            Pool<Vector3Int> Path = new Pool<Vector3Int>(maxPoolLength);
+			while (currentTileCoordinates != startTileCoordinates) {
+				if (lastDirection != nodes[GetIndex(currentTileCoordinates)].parentDirection) {
+					maxPoolLength++;
+				}
+				currentTileCoordinates += nodes[GetIndex(currentTileCoordinates)].parentDirection.RelValue;
+			}
+            Path.Dispose();
+		    return new Pool<Vector3Int>();
         }
         private static void AddNodeToQueue(int index) {
             for (int queueIndex = nodeQueueIndexes.Count - 1; queueIndex >= 0; queueIndex--) {
