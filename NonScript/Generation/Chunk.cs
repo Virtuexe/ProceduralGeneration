@@ -19,7 +19,6 @@ namespace Generation {
 			return coordinates - ChunkArray.coordinates;
 		}
 		public static void MoveChunks(Vector3Int distanceToMove) {
-			Debug.Log("moving: " + distanceToMove);
 			coordinates += distanceToMove;
 			distanceToMove = -distanceToMove;
 			int sign;

@@ -97,7 +97,7 @@ public class PlayerScript : MonoBehaviour {
 		entity.Jump();
 	}
 	void OnUsePreformed(InputAction.CallbackContext context, int value) {
-		PathFindingScript.FindPath(manager.RealCoordinatesToTileCoordinates(transform.position), manager.RealCoordinatesToTileCoordinates(transform.position) + Vector3Int.forward);
+		PathFindingScript.FindPath(GenerationProp.RealCoordinatesToTileCoordinates(transform.position), GenerationProp.RealCoordinatesToTileCoordinates(transform.position) + Vector3Int.forward);
         GameAction action = null;
 		foreach (GameAction i in properties.actions.actionList) {
 			if (i.type == (ActionType)value) {

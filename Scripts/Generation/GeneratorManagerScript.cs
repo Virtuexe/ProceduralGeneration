@@ -23,6 +23,8 @@ public class GeneratorManagerScript : MonoBehaviour
     public GameObject player;
     public void Start()
     {
+        GenerationProp.transform = transform;
+
 		MeshScript mesh = gameObject.GetComponent<MeshScript>();
 		ChunkScript chunk = gameObject.GetComponent<ChunkScript>();
 		GenerationScript generation = gameObject.GetComponent<GenerationScript>();
@@ -61,14 +63,6 @@ public class GeneratorManagerScript : MonoBehaviour
         int zOffset = Mathf.RoundToInt(relativePosition.z / GenerationProp.chunkSize.z);
         playerChunk = new Vector3Int(xOffset, yOffset, zOffset);
         return playerChunk;
-    }
-    public Vector3Int RealCoordinatesToTileCoordinates(Vector3 realCoordinates) {
-        Vector3 distance = realCoordinates - Vector3.Scale(GenerationProp.chunkSize, ChunkArray.coordinates) - (transform.position - (GenerationProp.chunkSize / 2) - Vector3.Scale(GenerationProp.chunkSize, Layers.generation.size));
-        Vector3Int tileCoordinates = Vector3Int.zero;
-        tileCoordinates.x = (int)(distance.x / GenerationProp.tileSize.x);
-        tileCoordinates.y = (int)(distance.y / GenerationProp.tileSize.y);
-        tileCoordinates.z = (int)(distance.z / GenerationProp.tileSize.z);
-        return tileCoordinates;
     }
     Vector3Int _playerChunk;
     public Vector3Int PlayerTravelDistance()

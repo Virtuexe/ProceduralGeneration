@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 namespace MyArrays {
     public unsafe struct Matrix<T> where T : unmanaged {
         public int[] Lenghts { get; private set; }
-        private T* array;
+        public T* array;
 		public int Length { get; private set; }
 		public Matrix(params int[] lengths) {
             Lenghts = lengths;
@@ -16,7 +16,7 @@ namespace MyArrays {
             array = (T*)System.Runtime.InteropServices.Marshal.AllocHGlobal(sizeof(T) * cumulativeMultiplier);
             Length = cumulativeMultiplier;
 		}
-		void Dispose() {
+		public void Dispose() {
 			System.Runtime.InteropServices.Marshal.FreeHGlobal((IntPtr)array);
 		}
 		public ref T this[int index] {
@@ -55,6 +55,23 @@ namespace MyArrays {
             }
 
             return flatIndex;
+        }
+        public bool isOutOfBounds(params int[] indexes) {
+            int index = GetFlatIndex(ref indexes);
+            return isOutOfBounds(index);
+        }
+        public bool isOutOfBounds(int index) {
+            if(index < 0) {
+                return true;
+            }
+            int cumulativeMultiplier = 1;
+            for (int i = 0; i < Lenghts.Length; i++) {
+                cumulativeMultiplier *= Lenghts[i];
+            }
+            if(index >= cumulativeMultiplier) {
+                return true;
+            }
+            return false;
         }
     }
     public unsafe struct Pool<T> where T : unmanaged {

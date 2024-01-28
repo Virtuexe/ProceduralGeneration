@@ -3,8 +3,6 @@ using UnityEngine;
 
 namespace Generation {
 	public static class GenerationProp {
-		public static Vector3Int test;
-
 		public static Vector3 tileSize = new Vector3(3, 5, 3);
 		public static float wallThickness = 0.2f;
 		public static Vector3Int tileAmmount = new Vector3Int(3, 1, 3);
@@ -12,6 +10,8 @@ namespace Generation {
 		public static int mapPathDistanceInt { get { return (chunkPathDistance.x * 2 + 1) * (chunkPathDistance.y * 2 + 1) * (chunkPathDistance.z * 2 + 1); } }
 
 		public static int seed;
+
+		public static Transform transform;
 
 		//calculations
 		public static Vector3 chunkSize {
@@ -96,5 +96,25 @@ namespace Generation {
 		public static Vector3Int TileCoordinatesToTile(Vector3Int tileCoordinates) {
 			return new Vector3Int(tileCoordinates.x % tileAmmount.x, tileCoordinates.y % tileAmmount.y, tileCoordinates.z % tileAmmount.z);
 		}
+        public static Vector3Int RealCoordinatesToTileCoordinates(Vector3 realCoordinates) {
+            Vector3 distance = realCoordinates - Vector3.Scale(chunkSize, ChunkArray.coordinates) - (transform.position - (chunkSize / 2) - Vector3.Scale(chunkSize, Layers.generation.size));
+            Vector3Int tileCoordinates = Vector3Int.zero;
+            tileCoordinates.x = (int)(distance.x / tileSize.x);
+            tileCoordinates.y = (int)(distance.y / tileSize.y);
+            tileCoordinates.z = (int)(distance.z / tileSize.z);
+            return tileCoordinates;
+        }
+        public static Vector3 TileCoordinatesToRealCoordinates(Vector3Int tileCoordinates) {
+            Vector3 distance = new Vector3(tileCoordinates.x * tileSize.x,
+                                           tileCoordinates.y * tileSize.y,
+                                           tileCoordinates.z * tileSize.z);
+
+            Vector3 realCoordinates = Vector3.Scale(chunkSize, ChunkArray.coordinates)
+                                      + (transform.position - (chunkSize / 2) - Vector3.Scale(chunkSize, Layers.generation.size))
+                                      + distance;
+
+            return realCoordinates;
+        }
+
     }
 }
