@@ -142,4 +142,31 @@ namespace MyArrays {
             return Count - 1;
         }
     }
+	public unsafe struct Set<T> where T : unmanaged {
+		public int Length { get; private set; }
+		private T* array;
+		public Set(int length) {
+			Length = length;
+			array = (T*)System.Runtime.InteropServices.Marshal.AllocHGlobal(sizeof(T) * length);
+		}
+		public void Dispose() {
+			System.Runtime.InteropServices.Marshal.FreeHGlobal((IntPtr)array);
+		}
+		public ref T this[int index] {
+			get
+			{
+				return ref array[index];
+			}
+		}
+        public void Clear() {
+            for (int i = 0; i < Length; i++) {
+                array[i] = new T();
+			}
+        }
+		public void Clear(T item) {
+			for (int i = 0; i < Length; i++) {
+				array[i] = item;
+			}
+		}
+	}
 }
