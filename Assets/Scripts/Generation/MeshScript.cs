@@ -2,8 +2,6 @@ using System.Drawing;
 using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.InputSystem.Switch;
-using UnityEngine.ProBuilder;
-using UnityEngine.ProBuilder.MeshOperations;
 using UnityEngine.UIElements;
 
 [RequireComponent(typeof(MeshFilter))]
