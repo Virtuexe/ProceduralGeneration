@@ -5,13 +5,14 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 
-public class GameEventsScript : MonoBehaviour{
+public unsafe class GameEventsScript : MonoBehaviour{
 #if UNITY_EDITOR
     public Matrix<PathFindingScript.Node> nodes;
     public Matrix<bool> called = new Matrix<bool>(Layers.generation.LengthInt, GenerationProp.tileAmmount.x, GenerationProp.tileAmmount.y, GenerationProp.tileAmmount.z);
     public Vector3Int startTileCoordinate;
     public bool findGizmos;
     public List<Vector3> gizmosList = new List<Vector3>();
+    public Set<Vector3Int> gizmosBestPath;
 #endif
     public static Task mainTask;
     public void Awake()
@@ -27,20 +28,29 @@ public class GameEventsScript : MonoBehaviour{
     }
 #if UNITY_EDITOR
     public void OnDrawGizmos() {
-        Gizmos.color = Color.cyan;
+        Gizmos.color = Color.white;
         for (int i = 0; i < gizmosList.Count / 2; i++) {
             Gizmos.DrawLine(gizmosList[2 * i], gizmosList[2 * i + 1]);
         }
+        if (gizmosBestPath.Length > 0) {
+            Gizmos.color = Color.cyan;
+            Vector3 lastGizmo = GenerationProp.TileCoordinatesToRealCoordinates(gizmosBestPath.array[0]);
+            for (int i = 1; i < gizmosBestPath.Length; i++) {
+                Gizmos.DrawLine(lastGizmo, GenerationProp.TileCoordinatesToRealCoordinates(gizmosBestPath.array[i]));
+                lastGizmo = GenerationProp.TileCoordinatesToRealCoordinates(gizmosBestPath.array[i]);
+            }
+        }
+
         if (!findGizmos) {
             return;
         }
         findGizmos = false;
         for(int i = 0; i < called.Length; i++) {
-            called[i] = false;
+            (*called[i]) = false;
         }
         gizmosList.Clear();
         int index = PathFindingScript.GetIndex(startTileCoordinate);
-        called[index] = true;
+        (*called[index]) = true;
         GizmosSpread(startTileCoordinate);
     }
     private void GizmosSpread(Vector3Int tileCoordinate) {
@@ -51,14 +61,12 @@ public class GameEventsScript : MonoBehaviour{
                     if (Layers.generation.IsLocationOutOfBounds(GenerationProp.TileCoordinatesToCoordinates(currentTileCoordinates))) {
                         continue;
                     }
-                    //Debug.Log("got here");
                     int index = PathFindingScript.GetIndex(currentTileCoordinates);
                     if (nodes.isOutOfBounds(index)) {
                         continue;
                     }
-                    //Debug.Log("im so close");
-                    if (!called[index]) {
-                        called[index] = true;
+                    if (!*called[index]) {
+                        *called[index] = true;
                         AddGizmos(index);
                         GizmosSpread(currentTileCoordinates);
                     }
@@ -67,9 +75,12 @@ public class GameEventsScript : MonoBehaviour{
         }
     }
     private void AddGizmos(int index) {
-        Vector3 realCoordinates = GenerationProp.TileCoordinatesToRealCoordinates(nodes[index].tileCoordinates);
-        gizmosList.Add(realCoordinates + (GenerationProp.tileSize / 2));
-        gizmosList.Add(realCoordinates + (GenerationProp.tileSize / 2) + Vector3.Scale(nodes[index].parentDirection, GenerationProp.tileSize));
+        if ((*nodes[index]).parentDirection == new Direction().Value) {
+            return;
+        }
+        Vector3 realCoordinates = GenerationProp.TileCoordinatesToRealCoordinates((*nodes[index]).tileCoordinates);
+        gizmosList.Add(realCoordinates);
+        gizmosList.Add(realCoordinates + Vector3.Scale((*nodes[index]).parentDirection, GenerationProp.tileSize));
     }
 #endif
 }

@@ -113,7 +113,7 @@ namespace Generation {
                                       + (transform.position - (chunkSize / 2) - Vector3.Scale(chunkSize, Layers.generation.size))
                                       + distance;
 
-            return realCoordinates;
+            return realCoordinates + (tileSize / 2);
         }
 
     }

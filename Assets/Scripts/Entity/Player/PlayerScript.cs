@@ -96,8 +96,18 @@ public class PlayerScript : MonoBehaviour {
 	void OnJumpChanged(InputAction.CallbackContext context) {
 		entity.Jump();
 	}
+	Vector3 waypointCoordinates;
+	bool waypointSet;
 	void OnUsePreformed(InputAction.CallbackContext context, int value) {
-		PathFindingScript.FindPath(GenerationProp.RealCoordinatesToTileCoordinates(transform.position), GenerationProp.RealCoordinatesToTileCoordinates(transform.position) + Vector3Int.forward);
+		if(!waypointSet) {
+			waypointCoordinates = transform.position;
+			Debug.Log("Waypoint set");
+            waypointSet = true;
+        } else {
+			waypointSet = false;
+            PathFindingScript.FindPath(GenerationProp.RealCoordinatesToTileCoordinates(waypointCoordinates), GenerationProp.RealCoordinatesToTileCoordinates(transform.position));
+        }
+		
         GameAction action = null;
 		foreach (GameAction i in properties.actions.actionList) {
 			if (i.type == (ActionType)value) {

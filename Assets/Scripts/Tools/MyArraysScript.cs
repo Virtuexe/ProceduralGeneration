@@ -19,14 +19,14 @@ namespace MyArrays {
 		public void Dispose() {
 			System.Runtime.InteropServices.Marshal.FreeHGlobal((IntPtr)array);
 		}
-		public ref T this[int index] {
+		public T* this[int index] {
 			get{
-				return ref array[index];
+				return &array[index];
 			}
 		}
-		public ref T this[params int[] indexes] {
+		public T* this[params int[] indexes] {
             get {
-                return ref array[GetFlatIndex(ref indexes)];
+                return &array[GetFlatIndex(ref indexes)];
             }
         }
         public ref T this[params Vector3Int[] vectors] {
@@ -77,7 +77,7 @@ namespace MyArrays {
     public unsafe struct Pool<T> where T : unmanaged {
         public int Count { get; private set; }
         public int Length { get; private set; }
-		private T* array;
+        public T* array;
         public Pool(int length) {
             Count = 0;
             Length = length;
@@ -86,9 +86,9 @@ namespace MyArrays {
 		public void Dispose(){
 			System.Runtime.InteropServices.Marshal.FreeHGlobal((IntPtr)array);
 		}
-		public ref T this[int index] {
+        public T* this[int index] {
             get {
-                return ref array[index];
+                return &array[index];
             }
         }
         public void Add(T item) {
@@ -144,18 +144,22 @@ namespace MyArrays {
     }
 	public unsafe struct Set<T> where T : unmanaged {
 		public int Length { get; private set; }
-		private T* array;
+        public T* array;
 		public Set(int length) {
 			Length = length;
 			array = (T*)System.Runtime.InteropServices.Marshal.AllocHGlobal(sizeof(T) * length);
 		}
-		public void Dispose() {
+        public Set(T* array, int length) {
+            Length = length;
+            this.array = array;
+        }
+        public void Dispose() {
 			System.Runtime.InteropServices.Marshal.FreeHGlobal((IntPtr)array);
 		}
-		public ref T this[int index] {
+		public T* this[int index] {
 			get
 			{
-				return ref array[index];
+				return &array[index];
 			}
 		}
         public void Clear() {
