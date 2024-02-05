@@ -53,25 +53,31 @@ public unsafe class GameEventsScript : MonoBehaviour{
         (*called[index]) = true;
         GizmosSpread(startTileCoordinate);
     }
-    private void GizmosSpread(TileCoordinates tileCoordinate) {
-        for (int x = -1; x <= 1; x++) {
-            for (int y = -1; y <= 1; y++) {
-                for (int z = -1; z <= 1; z++) {
-                    TileCoordinates currentTileCoordinates = new TileCoordinates();
-					currentTileCoordinates = new TileCoordinates(tileCoordinate.coordinates, tileCoordinate.tile + new Vector3Int(x, y, z));
+    private void GizmosSpread(TileCoordinates startTileCoordinate) {
+        Queue<TileCoordinates> queue = new Queue<TileCoordinates>();
+        queue.Enqueue(startTileCoordinate);
 
+        while (queue.Count > 0) {
+            TileCoordinates tileCoordinate = queue.Dequeue();
+            for (int x = -1; x <= 1; x++) {
+                for (int y = -1; y <= 1; y++) {
+                    for (int z = -1; z <= 1; z++) {
+                        TileCoordinates currentTileCoordinates = new TileCoordinates(tileCoordinate.coordinates, tileCoordinate.tile + new Vector3Int(x, y, z));
 
-                    if (Layers.generation.IsLocationOutOfBounds(currentTileCoordinates.coordinates)) {
-                        continue;
-                    }
-                    int index = PathFindingScript.GetIndex(currentTileCoordinates);
-                    if (nodes.isOutOfBounds(index)) {
-                        continue;
-                    }
-                    if (!*called[index]) {
-                        *called[index] = true;
-                        AddGizmos(index);
-                        GizmosSpread(currentTileCoordinates);
+                        if (Layers.generation.IsLocationOutOfBounds(currentTileCoordinates.coordinates)) {
+                            continue;
+                        }
+                        int index = PathFindingScript.GetIndex(currentTileCoordinates);
+                        if (nodes.isOutOfBounds(index)) {
+                            continue;
+                        }
+                        if (!*called[index]) {
+                            *called[index] = true;
+                            AddGizmos(index);
+
+                            // Instead of calling GizmosSpread, enqueue the new tile coordinates
+                            queue.Enqueue(currentTileCoordinates);
+                        }
                     }
                 }
             }
