@@ -46,10 +46,10 @@ public class PlayerScript : MonoBehaviour {
 		use.performed += context => OnUsePreformed(context, 0);
 		use.canceled += context => OnUseCanceled(context, 0);
 		use.Enable();
-		primary = gameplayActionMap.FindAction("Primary");
-		primary.performed += context => OnUsePreformed(context, 1);
-		primary.canceled += context => OnUseCanceled(context, 1);
-		primary.Enable();
+		//primary = gameplayActionMap.FindAction("Primary");
+		//primary.performed += context => OnUsePreformed(context, 1);
+		//primary.canceled += context => OnUseCanceled(context, 1);
+		//primary.Enable();
 		secondary = gameplayActionMap.FindAction("Secondary");
 		secondary.performed += context => OnUsePreformed(context, 2);
 		secondary.canceled += context => OnUseCanceled(context, 2);

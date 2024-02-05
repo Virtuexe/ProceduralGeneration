@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace Generation {
@@ -76,11 +77,11 @@ namespace Generation {
 			side.z = (side.z % tileAmmount.z + tileAmmount.z) % tileAmmount.z;
 			return ChunkArray.sides[Layers.generation.GetIndex(locationGeneration), side.x, side.y, side.z, pos.Side];
 		}
-		public static bool GetSide(Vector3Int tileCoordinates, Direction direction) {
-			tileCoordinates += direction.Tile;
-            Vector3Int generationLocation = TileCoordinatesToCoordinates(tileCoordinates);
-			Vector3Int tile = TileCoordinatesToTile(tileCoordinates);
-            return ChunkArray.sides[Layers.generation.GetIndex(generationLocation), tile.x, tile.y, tile.z, direction.Side];
+		public static bool GetSide(TileCoordinates tileCoordinates, Direction direction) {
+			Debug.Log(tileCoordinates.coordinates);
+			tileCoordinates += new TileCoordinates(Vector3Int.zero, direction.Tile);
+			Debug.Log("to: " + tileCoordinates.coordinates);
+			return ChunkArray.sides[Layers.generation.GetIndex(tileCoordinates.coordinates), tileCoordinates.tile.x, tileCoordinates.tile.y, tileCoordinates.tile.z, direction.Side];
 		}
 		static void FixCoordinates(ref Vector3Int chunk, ref Vector3Int tile) {
 			Vector3Int globalCoordinates = new Vector3Int(chunk.x * tileAmmount.x + tile.x, chunk.y * tileAmmount.y + tile.y, chunk.z * tileAmmount.z + tile.z);
@@ -90,31 +91,90 @@ namespace Generation {
 		public static Vector3Int CoordinatesToTileCoordinates(Vector3Int coordinates) {
 			return coordinates * tileAmmount;
 		}
-		public static Vector3Int TileCoordinatesToCoordinates(Vector3Int tileCoordinates) {
-			return new Vector3Int(tileCoordinates.x / tileAmmount.x, tileCoordinates.y / tileAmmount.y, tileCoordinates.z / tileAmmount.z);
-		}
 		public static Vector3Int TileCoordinatesToTile(Vector3Int tileCoordinates) {
 			return new Vector3Int(tileCoordinates.x % tileAmmount.x, tileCoordinates.y % tileAmmount.y, tileCoordinates.z % tileAmmount.z);
 		}
-        public static Vector3Int RealCoordinatesToTileCoordinates(Vector3 realCoordinates) {
-            Vector3 distance = realCoordinates - Vector3.Scale(chunkSize, ChunkArray.coordinates) - (transform.position - (chunkSize / 2) - Vector3.Scale(chunkSize, Layers.generation.size));
-            Vector3Int tileCoordinates = Vector3Int.zero;
-            tileCoordinates.x = (int)(distance.x / tileSize.x);
-            tileCoordinates.y = (int)(distance.y / tileSize.y);
-            tileCoordinates.z = (int)(distance.z / tileSize.z);
-            return tileCoordinates;
-        }
-        public static Vector3 TileCoordinatesToRealCoordinates(Vector3Int tileCoordinates) {
-            Vector3 distance = new Vector3(tileCoordinates.x * tileSize.x,
-                                           tileCoordinates.y * tileSize.y,
-                                           tileCoordinates.z * tileSize.z);
+		public static TileCoordinates RealCoordinatesToTileCoordinates(Vector3 realCoordinates) {
+			Vector3 distance = realCoordinates - Vector3.Scale(chunkSize, ChunkArray.coordinates) - (transform.position - (chunkSize / 2) - Vector3.Scale(chunkSize, Layers.generation.size));
+			TileCoordinates tileCoordinates = new TileCoordinates();
+			tileCoordinates.coordinates.x = (int)(distance.x / tileSize.x) / tileAmmount.x;
+			tileCoordinates.coordinates.y = (int)(distance.y / tileSize.y) / tileAmmount.y;
+			tileCoordinates.coordinates.z = (int)(distance.z / tileSize.z) / tileAmmount.z;
+			return tileCoordinates;
+		}
+		public static Vector3 TileCoordinatesToRealCoordinates(TileCoordinates tileCoordinates) {
+			Vector3 distance = new Vector3(tileCoordinates.coordinates.x + tileCoordinates.tile.x * tileSize.x,
+										   tileCoordinates.coordinates.y + tileCoordinates.tile.y * tileSize.y,
+										   tileCoordinates.coordinates.z + tileCoordinates.tile.z * tileSize.z);
 
-            Vector3 realCoordinates = Vector3.Scale(chunkSize, ChunkArray.coordinates)
-                                      + (transform.position - (chunkSize / 2) - Vector3.Scale(chunkSize, Layers.generation.size))
-                                      + distance;
+			Vector3 realCoordinates = Vector3.Scale(chunkSize, ChunkArray.coordinates)
+									  + (transform.position - (chunkSize / 2) - Vector3.Scale(chunkSize, Layers.generation.size))
+									  + distance;
 
-            return realCoordinates + (tileSize / 2);
-        }
+			return realCoordinates + (tileSize / 2);
+		}
+	}
+	public unsafe struct TileCoordinates {
+		public Vector3Int coordinates;
+		public Vector3Int tile { get; private set; }
+		public TileCoordinates(Vector3Int coordinates, Vector3Int tile) {
+			this.coordinates = coordinates;
+			this.tile = tile;
+			FixCoordinate();
+		}
+		public void Abs() {
+			coordinates = new Vector3Int(Math.Abs(coordinates.x), Math.Abs(coordinates.x), Math.Abs(coordinates.x));
+		}
+		public int ToInt() {
+			return coordinates.x * GenerationProp.tileAmmount.x +
+				coordinates.y * GenerationProp.tileAmmount.y +
+				coordinates.z * GenerationProp.tileAmmount.z + 
+				tile.x + 
+				tile.y + 
+				tile.z;
+		}
+		public void FixCoordinate() {
+			coordinates += new Vector3Int(
+				(tile.x % GenerationProp.tileAmmount.x + GenerationProp.tileAmmount.x) % GenerationProp.tileAmmount.x,
+				(tile.y % GenerationProp.tileAmmount.y + GenerationProp.tileAmmount.y) % GenerationProp.tileAmmount.y,
+				(tile.z % GenerationProp.tileAmmount.z + GenerationProp.tileAmmount.z) % GenerationProp.tileAmmount.z);
 
-    }
+			tile = new Vector3Int(
+				(tile.x + GenerationProp.tileAmmount.x) % GenerationProp.tileAmmount.x,
+				(tile.y + GenerationProp.tileAmmount.y) % GenerationProp.tileAmmount.y,
+				(tile.z + GenerationProp.tileAmmount.z) % GenerationProp.tileAmmount.z);
+		}
+		private static TileCoordinates selectedTileCoordinate;
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static TileCoordinates operator +(TileCoordinates left, TileCoordinates right) {
+			selectedTileCoordinate = new TileCoordinates(left.coordinates + right.coordinates, left.tile + right.tile);
+			FixSelectedCoordinate();
+			return selectedTileCoordinate;
+		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static TileCoordinates operator -(TileCoordinates left, TileCoordinates right) {
+			selectedTileCoordinate = new TileCoordinates(left.coordinates - right.coordinates, left.tile - right.tile);
+			FixSelectedCoordinate();
+			return selectedTileCoordinate;
+		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool operator ==(TileCoordinates left, TileCoordinates right) {
+			return left.coordinates == right.coordinates && left.tile == right.tile;
+		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool operator !=(TileCoordinates left, TileCoordinates right) {
+			return left.coordinates != right.coordinates || left.tile != right.tile;
+		}
+		public static void FixSelectedCoordinate() {
+			selectedTileCoordinate.coordinates += new Vector3Int(
+				(selectedTileCoordinate.tile.x % GenerationProp.tileAmmount.x + GenerationProp.tileAmmount.x) % GenerationProp.tileAmmount.x,
+				(selectedTileCoordinate.tile.y % GenerationProp.tileAmmount.y + GenerationProp.tileAmmount.y) % GenerationProp.tileAmmount.y,
+				(selectedTileCoordinate.tile.z % GenerationProp.tileAmmount.z + GenerationProp.tileAmmount.z) % GenerationProp.tileAmmount.z);
+
+			selectedTileCoordinate.tile = new Vector3Int(
+				(selectedTileCoordinate.tile.x + GenerationProp.tileAmmount.x) % GenerationProp.tileAmmount.x,
+				(selectedTileCoordinate.tile.y + GenerationProp.tileAmmount.y) % GenerationProp.tileAmmount.y,
+				(selectedTileCoordinate.tile.z + GenerationProp.tileAmmount.z) % GenerationProp.tileAmmount.z);
+		}
+	}
 }
