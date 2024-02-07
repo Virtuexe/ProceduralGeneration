@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CustomVariables;
+using MyArrays;
+using System;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
@@ -78,7 +80,7 @@ namespace Generation {
 			return ChunkArray.sides[Layers.generation.GetIndex(locationGeneration), side.x, side.y, side.z, pos.Side];
 		}
 		public static bool GetSide(TileCoordinates tileCoordinates, Direction direction) {
-			tileCoordinates += new TileCoordinates(Vector3Int.zero, direction.Tile);
+			tileCoordinates.tile += new TileCoordinates(Vector3Int.zero, direction.Tile);
 			return ChunkArray.sides[Layers.generation.GetIndex(tileCoordinates.coordinates), tileCoordinates.tile.x, tileCoordinates.tile.y, tileCoordinates.tile.z, direction.Side];
 		}
 		static void FixCoordinates(ref Vector3Int chunk, ref Vector3Int tile) {
@@ -107,9 +109,9 @@ namespace Generation {
 			Vector3 chunkOrigin = Vector3.Scale(chunkSize, ChunkArray.coordinates) + (transform.position - (chunkSize / 2) - Vector3.Scale(chunkSize, Layers.generation.size));
 
 			Vector3 tileInChunkPosition = new Vector3(
-				tileCoordinates.coordinates.x * chunkSize.x + tileCoordinates.tile.x * tileSize.x + tileSize.x / 2,
-				tileCoordinates.coordinates.y * chunkSize.y + tileCoordinates.tile.y * tileSize.y + tileSize.y / 2,
-				tileCoordinates.coordinates.z * chunkSize.z + tileCoordinates.tile.z * tileSize.z + tileSize.z / 2
+				tileCoordinates.coordinates.x * chunkSize.x + tileCoordinates.tile.x.number * tileSize.x + tileSize.x / 2,
+				tileCoordinates.coordinates.y * chunkSize.y + tileCoordinates.tile.y.number * tileSize.y + tileSize.y / 2,
+				tileCoordinates.coordinates.z * chunkSize.z + tileCoordinates.tile.z.number * tileSize.z + tileSize.z / 2
 			);
 
 			Vector3 realCoordinates = chunkOrigin + tileInChunkPosition;
@@ -118,73 +120,17 @@ namespace Generation {
         }
 	}
 	public unsafe struct TileCoordinates {
-		public Vector3Int coordinates;
-		public Vector3Int tile;
-		public TileCoordinates(Vector3Int coordinates, Vector3Int tile) {
-			this.coordinates = coordinates;
-			this.tile = tile;
-			FixCoordinate();
+		public Vector3<int> coordinates;
+		public Vector3<EntangledPInt> tile;
+        public TileCoordinates(Vector3Int coordinates, Vector3Int tile) {
+			this.coordinates = new Vector3<int>(coordinates.x, coordinates.y, coordinates.z);
+			fixed(Vector3<int>* p = &this.coordinates)
+			this.tile = new Vector3<EntangledPInt>(
+				new EntangledPInt(GenerationProp.tileAmmount.x, &p->x),
+				new EntangledPInt(GenerationProp.tileAmmount.y, &p->x),
+				new EntangledPInt(GenerationProp.tileAmmount.z, &p->x));
 		}
-		public int ToInt() {;
-			return coordinates.x * GenerationProp.tileAmmount.x +
-				coordinates.y * GenerationProp.tileAmmount.y +
-				coordinates.z * GenerationProp.tileAmmount.z + 
-				tile.x + 
-				tile.y + 
-				tile.z;
-		}
-		public void FixCoordinate() {
-			coordinates += new Vector3Int(
-				tile.x / GenerationProp.tileAmmount.x + (tile.x < 0 ? -1 : 0),
-				tile.y / GenerationProp.tileAmmount.y + (tile.y < 0 ? -1 : 0),
-				tile.z / GenerationProp.tileAmmount.z + (tile.z < 0 ? -1 : 0));
-
-
-            tile = new Vector3Int(
-                (tile.x % GenerationProp.tileAmmount.x + GenerationProp.tileAmmount.x) % GenerationProp.tileAmmount.x,
-                (tile.y % GenerationProp.tileAmmount.y + GenerationProp.tileAmmount.y) % GenerationProp.tileAmmount.y,
-                (tile.z % GenerationProp.tileAmmount.z + GenerationProp.tileAmmount.z) % GenerationProp.tileAmmount.z);
-        }
-		private static TileCoordinates selectedTileCoordinate;
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static TileCoordinates operator +(TileCoordinates left, TileCoordinates right) {
-			selectedTileCoordinate = new TileCoordinates(left.coordinates + right.coordinates, left.tile + right.tile);
-			FixSelectedCoordinate();
-			return selectedTileCoordinate;
-		}
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static TileCoordinates operator -(TileCoordinates left, TileCoordinates right) {
-			selectedTileCoordinate = new TileCoordinates(left.coordinates - right.coordinates, left.tile - right.tile);
-			FixSelectedCoordinate();
-			return selectedTileCoordinate;
-		}
-		public static int Distance(TileCoordinates left, TileCoordinates right) {
-			return
-				Math.Abs((left.coordinates.x * GenerationProp.tileAmmount.x + left.tile.x) - (right.coordinates.x * GenerationProp.tileAmmount.x + right.tile.x)) +
-				Math.Abs((left.coordinates.y * GenerationProp.tileAmmount.y + left.tile.y) - (right.coordinates.y * GenerationProp.tileAmmount.y + right.tile.y)) +
-				Math.Abs((left.coordinates.z * GenerationProp.tileAmmount.z + left.tile.z) - (right.coordinates.z * GenerationProp.tileAmmount.z + right.tile.z));
-        }
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool operator ==(TileCoordinates left, TileCoordinates right) {
-			return left.coordinates == right.coordinates && left.tile == right.tile;
-		}
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool operator !=(TileCoordinates left, TileCoordinates right) {
-			return left.coordinates != right.coordinates || left.tile != right.tile;
-		}
-		public static void FixSelectedCoordinate() {
-            selectedTileCoordinate.coordinates += new Vector3Int(
-                selectedTileCoordinate.tile.x / GenerationProp.tileAmmount.x + (selectedTileCoordinate.tile.x < 0 ? -1 : 0),
-                selectedTileCoordinate.tile.y / GenerationProp.tileAmmount.y + (selectedTileCoordinate.tile.y < 0 ? -1 : 0),
-                selectedTileCoordinate.tile.z / GenerationProp.tileAmmount.z + (selectedTileCoordinate.tile.z < 0 ? -1 : 0));
-
-
-            selectedTileCoordinate.tile = new Vector3Int(
-                (selectedTileCoordinate.tile.x % GenerationProp.tileAmmount.x + GenerationProp.tileAmmount.x) % GenerationProp.tileAmmount.x,
-                (selectedTileCoordinate.tile.y % GenerationProp.tileAmmount.y + GenerationProp.tileAmmount.y) % GenerationProp.tileAmmount.y,
-                (selectedTileCoordinate.tile.z % GenerationProp.tileAmmount.z + GenerationProp.tileAmmount.z) % GenerationProp.tileAmmount.z);
-        }
-		public override string ToString() {
+        public override string ToString() {
 			return "[coordinates:" + coordinates + ",tile:" + tile + "]";
 		}
 	}
