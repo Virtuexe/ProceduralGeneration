@@ -2,7 +2,6 @@ using Generation;
 using MyArrays;
 using PathFinding;
 using UnityEngine;
-using System;
 using System.Collections.Generic;
 
 public unsafe class GameEventsScript : MonoBehaviour{

@@ -1,4 +1,7 @@
 using System;
+using System.Net.NetworkInformation;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -171,6 +174,35 @@ namespace MyArrays {
 			for (int i = 0; i < Length; i++) {
 				array[i] = item;
 			}
+		}
+	}
+	public unsafe struct Set3<T> where T : unmanaged {
+		public T x; public T y; public T z;
+		public Set3(in T x, in T y, in T z) {
+			this.x = x;
+			this.y = y;
+			this.z = z;
+        }
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void Do(delegate*<in T*, void> function) {
+            fixed (T* px = &x, py = &y, pz = &z) {
+                function(px);
+                function(py);
+                function(pz);
+            }
+        }
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void DoCopy(delegate*<T, void> function) {
+			function(x);
+			function(y);
+			function(z);
+		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Set3<T> DoNew(delegate*<T, T> function) {
+			T x = function(this.x);
+			T y = function(this.y);
+			T z = function(this.z);
+            return new Set3<T>(x, y, z);
 		}
 	}
 }

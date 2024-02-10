@@ -125,7 +125,7 @@ namespace Generation {
 			this.tile = tile;
 			FixCoordinate();
 		}
-		public int ToInt() {;
+		public int ToInt() {
 			return coordinates.x * GenerationProp.tileAmmount.x +
 				coordinates.y * GenerationProp.tileAmmount.y +
 				coordinates.z * GenerationProp.tileAmmount.z + 
