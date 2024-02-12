@@ -2,6 +2,7 @@ using System;
 using System.Net.NetworkInformation;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -160,8 +161,7 @@ namespace MyArrays {
 			System.Runtime.InteropServices.Marshal.FreeHGlobal((IntPtr)array);
 		}
 		public T* this[int index] {
-			get
-			{
+			get{
 				return &array[index];
 			}
 		}
@@ -177,32 +177,48 @@ namespace MyArrays {
 		}
 	}
 	public unsafe struct Set3<T> where T : unmanaged {
-		public T x; public T y; public T z;
-		public Set3(in T x, in T y, in T z) {
-			this.x = x;
-			this.y = y;
-			this.z = z;
-        }
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Do(delegate*<in T*, void> function) {
-            fixed (T* px = &x, py = &y, pz = &z) {
-                function(px);
-                function(py);
-                function(pz);
+		public T* x {
+            get {
+                return &array[0];
             }
+            set {
+                array[0] = *value;
+			}
         }
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void DoCopy(delegate*<T, void> function) {
-			function(x);
-			function(y);
-			function(z);
+		public T* y {
+			get {
+				return &array[1];
+			}
+			set {
+				array[1] = *value;
+			}
 		}
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Set3<T> DoNew(delegate*<T, T> function) {
-			T x = function(this.x);
-			T y = function(this.y);
-			T z = function(this.z);
-            return new Set3<T>(x, y, z);
+		public T* z {
+			get {
+				return &array[2];
+			}
+			set {
+				array[2] = *value;
+			}
+		}
+		private T* array;
+
+		public Set3(in T x, in T y, in T z) {
+            array = (T*)Marshal.AllocHGlobal(sizeof(T));
+            array[0] = x;
+            array[1] = y;
+            array[2] = z;
+        }
+		public T* this[in int index] {
+            get {
+                return &array[index];
+            }
+            set {
+                array[index] = *value;
+			}
+        }
+        public void Dispose() {
+			Marshal.FreeHGlobal((IntPtr)array);
 		}
 	}
 }
