@@ -8,21 +8,33 @@ namespace PathFinding {
 		private static Matrix<Node> nodes = new Matrix<Node>(Layers.generation.LengthInt, GenerationProp.tileAmmount.x, GenerationProp.tileAmmount.y, GenerationProp.tileAmmount.z);
 		private static int maxDistance = -1;
 		private static int bestDistance;
-		private static Pool<int> nodeQueueIndexes = new Pool<int>(Layers.generation.LengthInt * GenerationProp.tileAmmount.x * GenerationProp.tileAmmount.y * GenerationProp.tileAmmount.z * Direction.Directions.Length);
+		private static Pool<int> nodeQueueIndexes = new Pool<int>(Layers.generation.LengthInt * GenerationProp.tileAmmount.x * GenerationProp.tileAmmount.y * GenerationProp.tileAmmount.z);
+		/*
+        private static int[] nodeQueueIndexes = new int[
+            (Layers.generation.Length.y * GenerationProp.tileAmmount.y * Layers.generation.Length.z * GenerationProp.tileAmmount.z) +
+            (Layers.generation.Length.x * GenerationProp.tileAmmount.x * Layers.generation.Length.z * GenerationProp.tileAmmount.z) +
+            (Layers.generation.Length.x * GenerationProp.tileAmmount.x * Layers.generation.Length.y * GenerationProp.tileAmmount.y) -
+            (Layers.generation.Length.x * GenerationProp.tileAmmount.x + Layers.generation.Length.y * GenerationProp.tileAmmount.y + 1) * 2
+            ];
+        */
+		//static PathFindingScript() {
+		//	for (int i = 0; i < nodes.Length; i++) {
+		//		nodes[i].testGoResult = new Set<bool>(Direction.Directions.Length);
+		//	}
+		//}
 		static TileCoordinates startTileCoordinates;
 		static TileCoordinates endTileCoordinates;
 #if UNITY_EDITOR
 		static public GameEventsScript gameEvent;
 #endif
 		public static Set<TileCoordinates> FindPath(TileCoordinates startTileCoordinates, TileCoordinates endTileCoordinates) {
-            if (startTileCoordinates == endTileCoordinates) {
+			if(startTileCoordinates == endTileCoordinates) {
 				return new Set<TileCoordinates>();
 			}
 			nodeQueueIndexes.Clear();
 			bestDistance = int.MaxValue;
 			for (int i = 0; i < nodes.Length; i++) {
 				nodes.array[i].distance = int.MaxValue;
-				nodes.array[i].queueIndex = -1;
 				nodes.array[i].parentDirection = Vector3Int.zero;
 			}
 			PathFindingScript.startTileCoordinates = startTileCoordinates;
@@ -35,7 +47,7 @@ namespace PathFinding {
 			for (int directionIndex = 0; directionIndex < Direction.Directions.Length; directionIndex++) {
 				TryMove(startNodeIndex, Direction.Directions[directionIndex]);
 			}
-            ProcessQueue();
+			ProcessQueue();
 			Set<TileCoordinates> bestPath = GetPath();
 #if UNITY_EDITOR
 			gameEvent.nodes = nodes;
@@ -44,9 +56,6 @@ namespace PathFinding {
 			gameEvent.gizmosBestPath.Dispose();
 			gameEvent.gizmosBestPath = bestPath;
 #endif
-			Node testNode = new Node();
-			testNode.tileCoordinates = startTileCoordinates;
-			Debug.Log(testNode.GetTotalCost());
 			return bestPath;
         }
 		private static void ProcessQueue() {
@@ -60,16 +69,9 @@ namespace PathFinding {
 					if (Direction.Directions[i].RelValue == (*nodes[index]).parentDirection) {
 						continue;
 					}
-					TryMove(index, Direction.Directions[i]);
-				}
-				for (int i = 0; i < nodeQueueIndexes.Count; i++) {
-					for (int y = 0; y < nodeQueueIndexes.Count; y++) {
-						if (nodeQueueIndexes.array[i] == nodeQueueIndexes.array[y]) {
-							if (i == y)
-								continue;
-						}
-					}
-				}
+                    TryMove(index, Direction.Directions[i]);
+                }
+
 			}
 		}
 		private static Set<TileCoordinates> GetPath() {
@@ -100,10 +102,9 @@ namespace PathFinding {
         }
 		private static void AddNodeToQueue(int index) {
 			for (int queueIndex = nodeQueueIndexes.Count - 1; queueIndex >= 0; queueIndex--) {
-				int nodeQueueIndex = nodeQueueIndexes.array[queueIndex];
-                if (nodes.array[nodeQueueIndex].GetTotalCost() >= nodes.array[index].GetTotalCost()) {
-                    nodeQueueIndexes.Insert(queueIndex + 1, index);
-                    return;
+				if (nodes.array[nodeQueueIndexes.array[queueIndex]].GetTotalCost() >= (*nodes[index]).GetTotalCost()) {
+					nodeQueueIndexes.Insert(queueIndex + 1, index);
+					return;
 				}
 			}
 			nodeQueueIndexes.Insert(0,index);
@@ -177,10 +178,10 @@ namespace PathFinding {
 			public Vector3Int parentDirection;
 			public int distance;
 			public TileCoordinates tileCoordinates;
-			public int queueIndex;
 			public int GetTotalCost() {
-                int distance = this.distance + TileCoordinates.Distance(tileCoordinates, endTileCoordinates);
-				return distance;
+				TileCoordinates newTileCoordinates = tileCoordinates - endTileCoordinates;
+				newTileCoordinates.Abs();
+				return distance + newTileCoordinates.ToInt();
 			}
 		}
 	}
