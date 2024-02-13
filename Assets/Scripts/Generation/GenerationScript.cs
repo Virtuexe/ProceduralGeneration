@@ -12,11 +12,21 @@ namespace Generation {
 
 		CustomRandom rand;
 		public void GenerateChunk(Vector3Int locationGeneration) {
-			chunkGeneration = Layers.generation.GetIndex(locationGeneration);
+            chunkGeneration = Layers.generation.GetIndex(locationGeneration);
 			chunk = Layers.generation.GetIndex(locationGeneration, Layers.hierarchy[0]);
 			coordinates = ChunkArray.GetCoordinates(Layers.generation.LocationToCoordinates(locationGeneration));
 			rand = new CustomRandom(GenerationProp.seed, new int[] { coordinates.x, coordinates.y, coordinates.z });
-			for (int z = 0; z < GenerationProp.tileAmmount.z; z++) {
+
+            for (int z = 0; z < GenerationProp.tileAmmount.z; z++) {
+                for (int y = 0; y < GenerationProp.tileAmmount.y; y++) {
+                    for (int x = 0; x < GenerationProp.tileAmmount.x; x++) {
+                        for (int d = 0; d < 3; d++) {
+                            ChunkArray.sides[chunkGeneration, x, y, z, d] = false;
+                        }
+                    }
+                }
+            }
+            for (int z = 0; z < GenerationProp.tileAmmount.z; z++) {
 				for (int y = 0; y < GenerationProp.tileAmmount.y; y++) {
 					for (int x = 0; x < GenerationProp.tileAmmount.x; x++) {
 						for (int d = 0; d < 3; d++) {
