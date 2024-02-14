@@ -14,13 +14,13 @@ namespace Generation
         Vector3Int tile = Vector3Int.zero;
         public void RenderChunk(Vector3Int locationRender)
         {
-            chunkRender = Layers.render.GetIndex(locationRender);
-            locationGeneration = Layers.render.LocationToLocation(locationRender, Layers.generation);
+            chunkRender = Layers.render.LayerLocationToIndex(locationRender);
+            locationGeneration = Layers.render.LayerLocationToLayerLocation(locationRender, Layers.generation);
             chunk = Layers.render.GetIndex(locationRender, Layers.hierarchy[0]);
             //if rendering new chunk then last time forget all values
-            if (completedChunk || coordinates != ChunkArray.GetCoordinates(Layers.generation.LocationToCoordinates(locationGeneration)))
+            if (completedChunk || coordinates != ChunkArray.GetCoordinates(Layers.generation.LayerLocationToLayerCoordinates(locationGeneration)))
             {
-                coordinates = ChunkArray.GetCoordinates(Layers.render.LocationToCoordinates(locationRender));
+                coordinates = ChunkArray.GetCoordinates(Layers.render.LayerLocationToLayerCoordinates(locationRender));
                 ChunkArray.gameObject[chunkRender] = new GameObject("tile" + coordinates);
                 ChunkArray.gameObject[chunkRender].transform.parent = transform;
                 ChunkArray.gameObject[chunkRender].transform.localPosition = Vector3.Scale(GenerationProp.chunkSize, coordinates);

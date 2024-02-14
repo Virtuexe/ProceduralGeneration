@@ -88,7 +88,6 @@ public class PlayerScript : MonoBehaviour {
 		foreach (GameAction a in itemInteraction.actions.actionList) {
 			properties.actions.actionList.Add(a);
 		}
-
 	}
 	void OnMovementChanged(InputAction.CallbackContext context) {
 		entity.Move(context.ReadValue<Vector2>());
@@ -96,19 +95,22 @@ public class PlayerScript : MonoBehaviour {
 	void OnJumpChanged(InputAction.CallbackContext context) {
 		entity.Jump();
 	}
-	Vector3 waypointCoordinates;
+	NPCScript npc;
 	bool waypointSet;
 	void OnUsePreformed(InputAction.CallbackContext context, int value) {
-		if(!waypointSet) {
-			waypointCoordinates = transform.position;
-			Debug.Log("Waypoint set");
-            waypointSet = true;
-        } else {
+		//Debug.Log("length generation: " + Layers.generation.Length);
+		//Debug.Log("location " + GenerationProp.RealCoordinatesToTileCoordinates(transform.position).coordinates);
+		//Debug.Log("layer location " + Layers.generation.LocationToLayerLocation(GenerationProp.RealCoordinatesToTileCoordinates(transform.position).coordinates));
+		if (!waypointSet) {
+			waypointSet = true;
+			npc = NPCScript.Spawn(transform.position);
+		}
+		else {
 			waypointSet = false;
-            PathFindingScript.FindPath(GenerationProp.RealCoordinatesToTileCoordinates(waypointCoordinates), GenerationProp.RealCoordinatesToTileCoordinates(transform.position));
-        }
-		
-        GameAction action = null;
+			npc.Go(GenerationProp.RealCoordinatesToTileCoordinates(transform.position));
+		}
+
+		GameAction action = null;
 		foreach (GameAction i in properties.actions.actionList) {
 			if (i.type == (ActionType)value) {
 				if (action == null || action.priority < i.priority) {

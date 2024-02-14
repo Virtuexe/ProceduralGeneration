@@ -48,9 +48,6 @@ namespace Generation {
             pendingsDestroy[location.x, location.y, location.z] = pendingDestroyTarget;
         }
 
-		public int GetIndex(Vector3Int location) {
-			return indexes[location.x, location.y, location.z];
-		}
         public bool GetPendingsDestroy(Vector3Int location) {
             return pendingsDestroy[location.x, location.y, location.z];
         }
@@ -58,22 +55,43 @@ namespace Generation {
             return created[location.x, location.y, location.z];
         }
         public int GetIndex(Vector3Int location, Layer layer) {
-			return layer.GetIndex(layer.CoordinatesToLocation(LocationToCoordinates(location)));
+			return layer.LayerLocationToIndex(layer.LayerCoordinatesToLayerLocation(LayerLocationToLayerCoordinates(location)));
 		}
-		public Vector3Int LocationToGlobalLocation(Vector3Int location) {
-			return location - size;
+		//TRANSLATIONS
+		//to index
+		public int LayerLocationToIndex(Vector3Int layerLocation) {
+			return indexes[layerLocation.x, layerLocation.y, layerLocation.z];
 		}
-		public Vector3Int LocationToCoordinates(Vector3Int location) {
+		public int CoordinatesToIndex(Vector3Int coordinates) {
+			return LayerLocationToIndex(CoordinatesToLayerLocation(coordinates));
+		}
+		//to coordinates
+		public Vector3Int LayerLocationToCoodinates(in Vector3Int layerLocation) {
+			return ChunkArray.GetCoordinates(LayerLocationToLocation(layerLocation));
+		}
+		//to layer coordinates
+		public Vector3Int LayerLocationToLayerCoordinates(in Vector3Int location) {
 			return location + coordinatesOffset;
 		}
-		public Vector3Int CoordinatesToLocation(Vector3Int coordinates) {
-			return coordinates - coordinatesOffset;
+		//to location
+		public Vector3Int LayerLocationToLocation(in Vector3Int location) {
+			return location - size;
 		}
-		public Vector3Int LocationToLocation(Vector3Int location, Layer layer) {
-			return layer.LocationToCoordinates(LocationToCoordinates(location));
+		public Vector3Int LocationToLayerLocation(in Vector3Int location) {
+			return location + size;
 		}
-		public bool IsLocationOutOfBounds(Vector3Int location) {
+		//to layer location
+		public Vector3Int LayerCoordinatesToLayerLocation(in Vector3Int layerCoordinates) {
+			return layerCoordinates - coordinatesOffset;
+		}
+		public Vector3Int LayerLocationToLayerLocation(in Vector3Int location, in Layer layer) {
+			return layer.LayerLocationToLayerCoordinates(LayerLocationToLayerCoordinates(location));
+		}
+		public bool IsLocationOutOfBounds(in Vector3Int location) {
 			return location.x < 0 || location.y < 0 || location.z < 0 || location.x >= Length.x || location.y >= Length.y || location.z >= Length.z;
+		}
+		public Vector3Int CoordinatesToLayerLocation(in Vector3Int coordinates) {
+			return LocationToLayerLocation(ChunkArray.GetLocation(coordinates));
 		}
 	}
 	[System.Serializable]

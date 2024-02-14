@@ -1,6 +1,7 @@
 using Generation;
 using MyArrays;
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace PathFinding {
@@ -14,23 +15,23 @@ namespace PathFinding {
 #if UNITY_EDITOR
 		static public GameEventsScript gameEvent;
 #endif
-		public static Set<TileCoordinates> FindPath(TileCoordinates startTileCoordinates, TileCoordinates endTileCoordinates) {
+		public static Pool<TileCoordinates> FindPath(TileCoordinates startTileCoordinates, TileCoordinates endTileCoordinates) {
             if (startTileCoordinates == endTileCoordinates) {
-				return new Set<TileCoordinates>();
+				return new Pool<TileCoordinates>();
 			}
 			nodeQueueIndexes.Clear();
 			bestDistance = int.MaxValue;
 			for (int i = 0; i < nodes.Length; i++) {
-				nodes.array[i].distance = int.MaxValue;
-				nodes.array[i].queueIndex = -1;
-				nodes.array[i].parentDirection = Vector3Int.zero;
+				nodes.buffer[i].distance = int.MaxValue;
+				nodes.buffer[i].queueIndex = -1;
+				nodes.buffer[i].parentDirection = Vector3Int.zero;
 			}
 			PathFindingScript.startTileCoordinates = startTileCoordinates;
 			PathFindingScript.endTileCoordinates = endTileCoordinates;
 			int startNodeIndex = GetIndex(startTileCoordinates);
 
-			nodes.array[startNodeIndex].distance = 0;
-			nodes.array[startNodeIndex].tileCoordinates = startTileCoordinates;
+			nodes.buffer[startNodeIndex].distance = 0;
+			nodes.buffer[startNodeIndex].tileCoordinates = startTileCoordinates;
 
 			for (int directionIndex = 0; directionIndex < Direction.Directions.Length; directionIndex++) {
 				TryMove(startNodeIndex, Direction.Directions[directionIndex]);
@@ -41,17 +42,17 @@ namespace PathFinding {
 			gameEvent.nodes = nodes;
 			gameEvent.startTileCoordinate = startTileCoordinates;
 			gameEvent.findGizmos = true;
-			gameEvent.gizmosBestPath.Dispose();
+			gameEvent.gizmosBestPath.Free();
 			gameEvent.gizmosBestPath = bestPath;
 #endif
 			Node testNode = new Node();
 			testNode.tileCoordinates = startTileCoordinates;
-			Debug.Log(testNode.GetTotalCost());
-			return bestPath;
+			Debug.Log("theoretical distance: " + testNode.GetTotalCost());
+			return new Pool<TileCoordinates>(bestPath.Length, bestPath.buffer, bestPath.Length);
         }
 		private static void ProcessQueue() {
 			while (!nodeQueueIndexes.IsEmpty()) {
-				int index = nodeQueueIndexes.Last();
+				int index = *nodeQueueIndexes.Last();
 				nodeQueueIndexes.Remove();
 				if ((*nodes[index]).distance == maxDistance) {
 					continue;
@@ -64,7 +65,7 @@ namespace PathFinding {
 				}
 				for (int i = 0; i < nodeQueueIndexes.Count; i++) {
 					for (int y = 0; y < nodeQueueIndexes.Count; y++) {
-						if (nodeQueueIndexes.array[i] == nodeQueueIndexes.array[y]) {
+						if (nodeQueueIndexes.buffer[i] == nodeQueueIndexes.buffer[y]) {
 							if (i == y)
 								continue;
 						}
@@ -75,33 +76,33 @@ namespace PathFinding {
 		private static Set<TileCoordinates> GetPath() {
 			int Length = 2;
 			TileCoordinates currentTileCoordinates = endTileCoordinates;
-			Vector3Int lastDirection = nodes.array[GetIndex(endTileCoordinates)].parentDirection;
+			Vector3Int lastDirection = nodes.buffer[GetIndex(endTileCoordinates)].parentDirection;
 			while (currentTileCoordinates != startTileCoordinates) {
-				currentTileCoordinates += new TileCoordinates(Vector3Int.zero, nodes.array[GetIndex(currentTileCoordinates)].parentDirection);
-				if (lastDirection != nodes.array[GetIndex(currentTileCoordinates)].parentDirection) {
+				currentTileCoordinates += new TileCoordinates(Vector3Int.zero, nodes.buffer[GetIndex(currentTileCoordinates)].parentDirection);
+				if (lastDirection != nodes.buffer[GetIndex(currentTileCoordinates)].parentDirection) {
 					Length++;
 				}
-				lastDirection = nodes.array[GetIndex(currentTileCoordinates)].parentDirection;
+				lastDirection = nodes.buffer[GetIndex(currentTileCoordinates)].parentDirection;
 			}
 
 			Pool<TileCoordinates> path = new Pool<TileCoordinates>(Length);
 			path.Add(endTileCoordinates);
 			currentTileCoordinates = endTileCoordinates;
-			lastDirection = nodes.array[GetIndex(endTileCoordinates)].parentDirection;
+			lastDirection = nodes.buffer[GetIndex(endTileCoordinates)].parentDirection;
 			while (currentTileCoordinates != startTileCoordinates) {
-				currentTileCoordinates += new TileCoordinates(Vector3Int.zero, nodes.array[GetIndex(currentTileCoordinates)].parentDirection);
-				if (lastDirection != nodes.array[GetIndex(currentTileCoordinates)].parentDirection) {
+				currentTileCoordinates += new TileCoordinates(Vector3Int.zero, nodes.buffer[GetIndex(currentTileCoordinates)].parentDirection);
+				if (lastDirection != nodes.buffer[GetIndex(currentTileCoordinates)].parentDirection) {
 					path.Add(currentTileCoordinates);
 				}
-				lastDirection = nodes.array[GetIndex(currentTileCoordinates)].parentDirection;
+				lastDirection = nodes.buffer[GetIndex(currentTileCoordinates)].parentDirection;
 			}
 			path.Add(startTileCoordinates);
-			return new Set<TileCoordinates>(path.array, Length);
+			return new Set<TileCoordinates>(path.buffer, Length);
         }
 		private static void AddNodeToQueue(int index) {
 			for (int queueIndex = nodeQueueIndexes.Count - 1; queueIndex >= 0; queueIndex--) {
-				int nodeQueueIndex = nodeQueueIndexes.array[queueIndex];
-                if (nodes.array[nodeQueueIndex].GetTotalCost() >= nodes.array[index].GetTotalCost()) {
+				int nodeQueueIndex = nodeQueueIndexes.buffer[queueIndex];
+                if (nodes.buffer[nodeQueueIndex].GetTotalCost() >= nodes.buffer[index].GetTotalCost()) {
                     nodeQueueIndexes.Insert(queueIndex + 1, index);
                     return;
 				}
@@ -109,7 +110,7 @@ namespace PathFinding {
 			nodeQueueIndexes.Insert(0,index);
 		}
 		private static bool TryMove(int sourceNodeIndex, Direction direction) {
-			TileCoordinates targetTileCoordinates = nodes.array[sourceNodeIndex].tileCoordinates;
+			TileCoordinates targetTileCoordinates = nodes.buffer[sourceNodeIndex].tileCoordinates;
 			targetTileCoordinates += new TileCoordinates(Vector3Int.zero, direction.RelValue);
 
 			if (BoundsCheckMove(sourceNodeIndex, direction)) {
@@ -123,7 +124,7 @@ namespace PathFinding {
 			return true;
 		}
 		private static void QuickTryMove(int sourceNodeIndex, Vector3Int direction) {
-			TileCoordinates targetTileCoordinates = nodes.array[sourceNodeIndex].tileCoordinates;
+			TileCoordinates targetTileCoordinates = nodes.buffer[sourceNodeIndex].tileCoordinates;
 			targetTileCoordinates += new TileCoordinates(Vector3Int.zero, direction);
 
 			int targetNodeIndex = GetIndex(targetTileCoordinates);
@@ -133,28 +134,26 @@ namespace PathFinding {
 			Move(sourceNodeIndex, direction, targetNodeIndex);
 		}
 		private static bool BoundsCheckMove(int sourceNodeIndex, Direction direction) {
-			TileCoordinates targetTileCoordinates = nodes.array[sourceNodeIndex].tileCoordinates;
+			TileCoordinates targetTileCoordinates = nodes.buffer[sourceNodeIndex].tileCoordinates;
 			targetTileCoordinates += new TileCoordinates(Vector3Int.zero, direction.RelValue);
 
-			if (targetTileCoordinates.coordinates.x < 0 || targetTileCoordinates.coordinates.y < 0 || targetTileCoordinates.coordinates.z < 0) {
-				return true;
-			}
-			if (Layers.generation.IsLocationOutOfBounds(targetTileCoordinates.coordinates) || GenerationProp.GetSide(nodes.array[sourceNodeIndex].tileCoordinates, direction)) {
+			if (Layers.generation.IsLocationOutOfBounds(Layers.generation.CoordinatesToLayerLocation(targetTileCoordinates.coordinates)) || 
+				GenerationProp.GetSide(nodes.buffer[sourceNodeIndex].tileCoordinates, direction)) {
 				return true;
 			}
 			return false;
 		}
 		private static bool NodeCheckMove(int sourceNodeIndex, int targetNodeIndex) {
-			if ((*nodes[sourceNodeIndex]).GetTotalCost() >= bestDistance) {
+			if (nodes[sourceNodeIndex]->GetTotalCost() >= bestDistance) {
 				return true;
 			}
-			if ((*nodes[targetNodeIndex]).distance <= (*nodes[sourceNodeIndex]).distance) {
+			if (nodes[targetNodeIndex]->distance <= nodes[sourceNodeIndex]->distance) {
 				return true;
 			}
 			return false;
 		}
 		private static void Move(int nodeIndex, Vector3Int direction, int targetNodeIndex) {
-			TileCoordinates targetTileCoordinates = nodes.array[nodeIndex].tileCoordinates;
+			TileCoordinates targetTileCoordinates = nodes.buffer[nodeIndex].tileCoordinates;
 			targetTileCoordinates += new TileCoordinates(Vector3Int.zero, direction);
 
 			(*nodes[targetNodeIndex]).parentDirection = -direction;
@@ -170,7 +169,7 @@ namespace PathFinding {
 			AddNodeToQueue(targetNodeIndex);
 		}
 		public static int GetIndex(TileCoordinates tileCoordinates) {
-			int chunkIndex = Layers.generation.GetIndex(tileCoordinates.coordinates);
+			int chunkIndex = Layers.generation.CoordinatesToIndex(tileCoordinates.coordinates);
 			return chunkIndex + Layers.generation.LengthInt * (tileCoordinates.tile.x + GenerationProp.tileAmmount.x * (tileCoordinates.tile.y + GenerationProp.tileAmmount.y * tileCoordinates.tile.z));
 		}
 		public struct Node {

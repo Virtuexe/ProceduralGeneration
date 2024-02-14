@@ -9,10 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2246206558884384291}
+  - component: {fileID: 8904443192745934714}
   - component: {fileID: 7856927661401260774}
   - component: {fileID: 8090196196726551882}
-  - component: {fileID: 8904443192745934714}
-  - component: {fileID: 5703505876864738104}
   - component: {fileID: 7856927661401260770}
   - component: {fileID: 7856927661401260771}
   - component: {fileID: 5162777899345376555}
@@ -39,6 +38,21 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8904443192745934714
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5656486277416379103}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d56b9b5f87a6db4aba1d2562b211277, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  findGizmos: 0
+  gizmosList: []
+  NewEnemyPrefab: {fileID: 5618212701641721535, guid: 9725adb5176ed86448d16b42efd56149, type: 3}
 --- !u!114 &7856927661401260774
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -69,30 +83,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mat: {fileID: 2100000, guid: 5643714871014714eb179fe481e5d61a, type: 2}
---- !u!114 &8904443192745934714
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5656486277416379103}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0d56b9b5f87a6db4aba1d2562b211277, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &5703505876864738104
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5656486277416379103}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c44ceee7cc2a5db4da3ccc80d3c8287f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!33 &7856927661401260770
 MeshFilter:
   m_ObjectHideFlags: 0

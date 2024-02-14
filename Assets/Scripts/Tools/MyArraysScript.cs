@@ -1,11 +1,13 @@
 using System;
+using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace MyArrays {
     public unsafe struct Matrix<T> where T : unmanaged {
         public int[] Lenghts { get; private set; }
-        public T* array;
+		[MarshalAs(UnmanagedType.R4)]
+		public T* buffer;
 		public int Length { get; private set; }
 		public Matrix(params int[] lengths) {
             Lenghts = lengths;
@@ -13,20 +15,20 @@ namespace MyArrays {
             for (int i = 0; i < lengths.Length; i++) {
                 cumulativeMultiplier *= lengths[i];
             }
-            array = (T*)System.Runtime.InteropServices.Marshal.AllocHGlobal(sizeof(T) * cumulativeMultiplier);
+            buffer = (T*)Marshal.AllocHGlobal(sizeof(T) * cumulativeMultiplier);
             Length = cumulativeMultiplier;
 		}
-		public void Dispose() {
-			System.Runtime.InteropServices.Marshal.FreeHGlobal((IntPtr)array);
+		public void Free() {
+			Marshal.FreeHGlobal((IntPtr)buffer);
 		}
 		public T* this[int index] {
 			get{
-				return &array[index];
+				return &buffer[index];
 			}
 		}
 		public T* this[params int[] indexes] {
             get {
-                return &array[GetFlatIndex(ref indexes)];
+                return &buffer[GetFlatIndex(ref indexes)];
             }
         }
         public ref T this[params Vector3Int[] vectors] {
@@ -37,7 +39,7 @@ namespace MyArrays {
 					indexes[i * 3 + 1] = vectors[i].y;
 					indexes[i * 3 + 2] = vectors[i].z;
 				}
-                return ref array[GetFlatIndex(ref indexes)];
+                return ref buffer[GetFlatIndex(ref indexes)];
             }
         }
         private int GetFlatIndex(ref int[] indexes) {
@@ -77,25 +79,30 @@ namespace MyArrays {
     public unsafe struct Pool<T> where T : unmanaged {
         public int Count { get; private set; }
         public int Length { get; private set; }
-        public T* array;
+        public T* buffer;
         public Pool(int length) {
             Count = 0;
             Length = length;
-			array = (T*)System.Runtime.InteropServices.Marshal.AllocHGlobal(sizeof(T) * length);
+			buffer = (T*)Marshal.AllocHGlobal(sizeof(T) * length);
 		}
-		public void Dispose(){
-			System.Runtime.InteropServices.Marshal.FreeHGlobal((IntPtr)array);
+		public Pool(int length, T* buffer, int count) {
+			Count = count;
+			Length = length;
+			this.buffer = buffer;
+		}
+		public void Free(){
+			System.Runtime.InteropServices.Marshal.FreeHGlobal((IntPtr)buffer);
 		}
         public T* this[int index] {
             get {
-                return &array[index];
+                return &buffer[index];
             }
         }
         public void Add(T item) {
             if(Count >= Length) {
                 throw new ArgumentException("Array is out of space.");
             }
-            array[Count] = item;
+            buffer[Count] = item;
             Count++;
         }
         public void Remove() {
@@ -112,7 +119,7 @@ namespace MyArrays {
                 throw new IndexOutOfRangeException("Index out of pool range " + index);
             }
             for (int i = index; i < Count; i++) {
-                array[i] = array[i + 1];
+                buffer[i] = buffer[i + 1];
             }
             Count--;
         }
@@ -124,19 +131,19 @@ namespace MyArrays {
                 throw new ArgumentException("Array is out of space.");
             }
             for (int i = Count - 1; i >= index; i--) {
-                array[i + 1] = array[i];
+                buffer[i + 1] = buffer[i];
             }
-            array[index] = item;
+            buffer[index] = item;
             Count++;
         }
         public bool IsEmpty() {
             return Count == 0;
         }
-        public T Last() {
-            return array[Count - 1];
+        public T* Last() {
+            return &buffer[Count - 1];
         }
-        public T First() {
-            return array[0];
+        public T* First() {
+            return &buffer[0];
         }
         public int LastIndex() {
             return Count - 1;
@@ -144,32 +151,31 @@ namespace MyArrays {
     }
 	public unsafe struct Set<T> where T : unmanaged {
 		public int Length { get; private set; }
-        public T* array;
+        public T* buffer;
 		public Set(int length) {
 			Length = length;
-			array = (T*)System.Runtime.InteropServices.Marshal.AllocHGlobal(sizeof(T) * length);
+			buffer = (T*)Marshal.AllocHGlobal(sizeof(T) * length);
 		}
         public Set(T* array, int length) {
             Length = length;
-            this.array = array;
+            this.buffer = array;
         }
-        public void Dispose() {
-			System.Runtime.InteropServices.Marshal.FreeHGlobal((IntPtr)array);
+        public void Free() {
+			Marshal.FreeHGlobal((IntPtr)buffer);
 		}
 		public T* this[int index] {
-			get
-			{
-				return &array[index];
+            get {
+				return &buffer[index];
 			}
 		}
         public void Clear() {
             for (int i = 0; i < Length; i++) {
-                array[i] = new T();
+                buffer[i] = new T();
 			}
         }
 		public void Clear(T item) {
 			for (int i = 0; i < Length; i++) {
-				array[i] = item;
+				buffer[i] = item;
 			}
 		}
 	}

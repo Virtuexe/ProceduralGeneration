@@ -87,7 +87,7 @@ public class GeneratorManagerScript : MonoBehaviour
         for (locationRender.y = 0; locationRender.y < Layers.render.Length.y; locationRender.y++)
             for (locationRender.z = 0; locationRender.z < Layers.render.Length.z; locationRender.z++)
                 for (locationRender.x = 0; locationRender.x < Layers.render.Length.x; locationRender.x++) {
-                    int renderChunk = Layers.render.GetIndex(locationRender);
+                    int renderChunk = Layers.render.LayerLocationToIndex(locationRender);
                     if (Layers.render.pendingsDestroy[locationRender.x,locationRender.y,locationRender.z]) {
                         Destroy(ChunkArray.gameObject[renderChunk]);
 						Layers.render.pendingsDestroy[locationRender.x, locationRender.y, locationRender.z] = false;

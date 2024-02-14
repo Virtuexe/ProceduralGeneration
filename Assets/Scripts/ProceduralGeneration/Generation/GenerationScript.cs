@@ -12,9 +12,9 @@ namespace Generation {
 
 		CustomRandom rand;
 		public void GenerateChunk(Vector3Int locationGeneration) {
-            chunkGeneration = Layers.generation.GetIndex(locationGeneration);
+            chunkGeneration = Layers.generation.LayerLocationToIndex(locationGeneration);
 			chunk = Layers.generation.GetIndex(locationGeneration, Layers.hierarchy[0]);
-			coordinates = ChunkArray.GetCoordinates(Layers.generation.LocationToCoordinates(locationGeneration));
+			coordinates = ChunkArray.GetCoordinates(Layers.generation.LayerLocationToLayerCoordinates(locationGeneration));
 			rand = new CustomRandom(GenerationProp.seed, new int[] { coordinates.x, coordinates.y, coordinates.z });
 
             for (int z = 0; z < GenerationProp.tileAmmount.z; z++) {

@@ -75,16 +75,13 @@ namespace Generation {
 			side.x = (side.x % tileAmmount.x + tileAmmount.x) % tileAmmount.x;
 			side.y = (side.y % tileAmmount.y + tileAmmount.y) % tileAmmount.y;
 			side.z = (side.z % tileAmmount.z + tileAmmount.z) % tileAmmount.z;
-			return ChunkArray.sides[Layers.generation.GetIndex(locationGeneration), side.x, side.y, side.z, pos.Side];
+			return ChunkArray.sides[Layers.generation.LayerLocationToIndex(locationGeneration), side.x, side.y, side.z, pos.Side];
 		}
 		public static bool GetSide(TileCoordinates tileCoordinates, Direction direction) {
 			tileCoordinates += new TileCoordinates(Vector3Int.zero, direction.Tile);
-			return ChunkArray.sides[Layers.generation.GetIndex(tileCoordinates.coordinates), tileCoordinates.tile.x, tileCoordinates.tile.y, tileCoordinates.tile.z, direction.Side];
-		}
-		static void FixCoordinates(ref Vector3Int chunk, ref Vector3Int tile) {
-			Vector3Int globalCoordinates = new Vector3Int(chunk.x * tileAmmount.x + tile.x, chunk.y * tileAmmount.y + tile.y, chunk.z * tileAmmount.z + tile.z);
-			chunk = new Vector3Int(globalCoordinates.x / tileAmmount.x, globalCoordinates.y / tileAmmount.y, globalCoordinates.z / tileAmmount.z);
-			tile = new Vector3Int(globalCoordinates.x % tileAmmount.x, globalCoordinates.y % tileAmmount.y, globalCoordinates.z % tileAmmount.z);
+			tileCoordinates.coordinates = Layers.generation.CoordinatesToLayerLocation(tileCoordinates.coordinates);
+
+			return ChunkArray.sides[Layers.generation.LayerLocationToIndex(tileCoordinates.coordinates), tileCoordinates.tile.x, tileCoordinates.tile.y, tileCoordinates.tile.z, direction.Side];
 		}
 		public static Vector3Int CoordinatesToTileCoordinates(Vector3Int coordinates) {
 			return coordinates * tileAmmount;
@@ -93,18 +90,20 @@ namespace Generation {
 			return new Vector3Int(tileCoordinates.x % tileAmmount.x, tileCoordinates.y % tileAmmount.y, tileCoordinates.z % tileAmmount.z);
 		}
 		public static TileCoordinates RealCoordinatesToTileCoordinates(Vector3 realCoordinates) {
-			Vector3 distance = realCoordinates - Vector3.Scale(chunkSize, ChunkArray.coordinates) - (transform.position - (chunkSize / 2) - Vector3.Scale(chunkSize, Layers.generation.size));
+			Vector3 distance = realCoordinates - (transform.position - (chunkSize / 2));
+
 			TileCoordinates tileCoordinates = new TileCoordinates();
-            tileCoordinates.coordinates.x = (int)(distance.x / chunkSize.x);
-            tileCoordinates.coordinates.y = (int)(distance.y / chunkSize.y);
-            tileCoordinates.coordinates.z = (int)(distance.z / chunkSize.z);
-            tileCoordinates.tile.x = (int)(distance.x / tileSize.x) % tileAmmount.x;
+			tileCoordinates.coordinates.x = (int)(distance.x / chunkSize.x);
+			tileCoordinates.coordinates.y = (int)(distance.y / chunkSize.y);
+			tileCoordinates.coordinates.z = (int)(distance.z / chunkSize.z);
+			tileCoordinates.tile.x = (int)(distance.x / tileSize.x) % tileAmmount.x;
 			tileCoordinates.tile.y = (int)(distance.y / tileSize.y) % tileAmmount.y;
 			tileCoordinates.tile.z = (int)(distance.z / tileSize.z) % tileAmmount.z;
+			tileCoordinates.FixCoordinate();
 			return tileCoordinates;
 		}
 		public static Vector3 TileCoordinatesToRealCoordinates(TileCoordinates tileCoordinates) {
-			Vector3 chunkOrigin = Vector3.Scale(chunkSize, ChunkArray.coordinates) + (transform.position - (chunkSize / 2) - Vector3.Scale(chunkSize, Layers.generation.size));
+			Vector3 chunkOrigin = transform.position - (chunkSize / 2);
 
 			Vector3 tileInChunkPosition = new Vector3(
 				tileCoordinates.coordinates.x * chunkSize.x + tileCoordinates.tile.x * tileSize.x + tileSize.x / 2,
@@ -115,7 +114,7 @@ namespace Generation {
 			Vector3 realCoordinates = chunkOrigin + tileInChunkPosition;
 
 			return realCoordinates;
-        }
+		}
 	}
 	public unsafe struct TileCoordinates {
 		public Vector3Int coordinates;
@@ -125,10 +124,11 @@ namespace Generation {
 			this.tile = tile;
 			FixCoordinate();
 		}
-		public int ToInt() {;
-			return coordinates.x * GenerationProp.tileAmmount.x +
-				coordinates.y * GenerationProp.tileAmmount.y +
-				coordinates.z * GenerationProp.tileAmmount.z + 
+		public int ToInt() {
+			Vector3Int location = ChunkArray.GetLocation(coordinates);
+			return location.x * GenerationProp.tileAmmount.x +
+				location.y * GenerationProp.tileAmmount.y +
+				location.z * GenerationProp.tileAmmount.z + 
 				tile.x + 
 				tile.y + 
 				tile.z;
