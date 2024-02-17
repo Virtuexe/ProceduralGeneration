@@ -1,5 +1,7 @@
 using System;
+using System.Reflection;
 using System.Runtime.InteropServices;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -176,6 +178,29 @@ namespace MyArrays {
 		public void Clear(T item) {
 			for (int i = 0; i < Length; i++) {
 				buffer[i] = item;
+			}
+		}
+	}
+	[StructLayout(LayoutKind.Sequential)]
+	public unsafe struct Set3<T> where T : unmanaged {
+        public T x;
+		public T y;
+		public T z;
+        public Set3(T x, T y, T z) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+		}
+        public T this[int index] {
+            get {
+                fixed (T* ptr = &x) {
+					return ptr[index];
+				}
+			}
+			set {
+				fixed (T* ptr = &x) {
+					ptr[index] = value;
+				}
 			}
 		}
 	}

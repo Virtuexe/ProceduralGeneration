@@ -73,6 +73,16 @@ public class GeneratorManagerScript : MonoBehaviour
         return playerTravelDistance;
     }
     private void GenerateChunks() {
+		Vector3Int locationGenerationDetail = Vector3Int.zero;
+		for (locationGenerationDetail.y = 0; locationGenerationDetail.y < Layers.generationDetail.Length.y; locationGenerationDetail.y++)
+			for (locationGenerationDetail.z = 0; locationGenerationDetail.z < Layers.generationDetail.Length.z; locationGenerationDetail.z++)
+				for (locationGenerationDetail.x = 0; locationGenerationDetail.x < Layers.generationDetail.Length.x; locationGenerationDetail.x++) {
+					if (Layers.generationDetail.created[locationGenerationDetail.x, locationGenerationDetail.y, locationGenerationDetail.z])
+						continue;
+					GenerationDetail.GenerateDetail(locationGenerationDetail);
+					if (GameEventsScript.mainTask.OutOfTime())
+						return;
+				}
 		Vector3Int locationGeneration = Vector3Int.zero;
         for (locationGeneration.y = 0; locationGeneration.y < Layers.generation.Length.y; locationGeneration.y++)
             for (locationGeneration.z = 0; locationGeneration.z < Layers.generation.Length.z; locationGeneration.z++)

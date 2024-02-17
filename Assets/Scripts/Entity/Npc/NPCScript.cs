@@ -29,6 +29,11 @@ public unsafe class NPCScript {
 		TileCoordinates tileCoordinates = GenerationProp.RealCoordinatesToTileCoordinates(entityScript.transform.position);
 		if(tileCoordinates == *path.Last()) {
 			path.Remove();
+			if(path.Count == 0) {
+				hasSomewhereToGo = false;
+				entityScript.Move(new Vector2(0, 0));
+				return;
+			}
 		}
 		Vector3 direction = (GenerationProp.TileCoordinatesToRealCoordinates(*path.Last()) - entityScript.transform.position).normalized;
 		entityScript.Move(new Vector2(direction.x, direction.z));

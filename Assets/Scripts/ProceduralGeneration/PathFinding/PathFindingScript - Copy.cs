@@ -170,7 +170,7 @@ namespace PathFinding {
 		}
 		public static int GetIndex(TileCoordinates tileCoordinates) {
 			int chunkIndex = Layers.generation.CoordinatesToIndex(tileCoordinates.coordinates);
-			return chunkIndex + Layers.generation.LengthInt * (tileCoordinates.tile.x + GenerationProp.tileAmmount.x * (tileCoordinates.tile.y + GenerationProp.tileAmmount.y * tileCoordinates.tile.z));
+			return chunkIndex + Layers.generation.LengthInt * (tileCoordinates.tiles.x + GenerationProp.tileAmmount.x * (tileCoordinates.tiles.y + GenerationProp.tileAmmount.y * tileCoordinates.tiles.z));
 		}
 		public struct Node {
 			public Vector3Int parentDirection;

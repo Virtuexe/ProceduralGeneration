@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 namespace Generation {
 	public delegate void LayerFunction(int chunk);
@@ -84,8 +83,8 @@ namespace Generation {
 		public Vector3Int LayerCoordinatesToLayerLocation(in Vector3Int layerCoordinates) {
 			return layerCoordinates - coordinatesOffset;
 		}
-		public Vector3Int LayerLocationToLayerLocation(in Vector3Int location, in Layer layer) {
-			return layer.LayerLocationToLayerCoordinates(LayerLocationToLayerCoordinates(location));
+		public Vector3Int LayerLocationToOtherLayerLocation(in Vector3Int location, in Layer layer) {
+			return layer.LayerCoordinatesToLayerLocation(LayerLocationToLayerCoordinates(location));
 		}
 		public bool IsLocationOutOfBounds(in Vector3Int location) {
 			return location.x < 0 || location.y < 0 || location.z < 0 || location.x >= Length.x || location.y >= Length.y || location.z >= Length.z;
@@ -99,11 +98,11 @@ namespace Generation {
 		public static Vector3Int finallLayerSize = new Vector3Int(2,0,2); //fake lowerLayerSize above finalle layer
 		public static Layer render = new Layer(new Vector3Int(1, 1, 1));
 		public static Layer path = new Layer(new Vector3Int(0, 0, 0));
-		public static Layer generation = new Layer(new Vector3Int(0, 0, 0));
+		public static Layer generation = new Layer(new Vector3Int(1, 0, 1));
+		public static Layer generationDetail = new Layer(new Vector3Int(0, 0, 0));
 		public static Layer[] hierarchy { get; private set; }
 		static Layers() {
-			hierarchy = new Layer[] { new Layer(new Vector3Int(0,0,0)), generation, path, render }; //atleast one item
-
+			hierarchy = new Layer[] { new Layer(new Vector3Int(0,0,0)), generationDetail, generation, path, render }; //atleast one item
 
 			hierarchy[hierarchy.Length - 1].size = finallLayerSize;
 			for (int layer = hierarchy.Length - 1; layer > 0; layer--) {

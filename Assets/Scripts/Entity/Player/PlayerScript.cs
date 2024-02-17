@@ -98,9 +98,7 @@ public class PlayerScript : MonoBehaviour {
 	NPCScript npc;
 	bool waypointSet;
 	void OnUsePreformed(InputAction.CallbackContext context, int value) {
-		//Debug.Log("length generation: " + Layers.generation.Length);
-		//Debug.Log("location " + GenerationProp.RealCoordinatesToTileCoordinates(transform.position).coordinates);
-		//Debug.Log("layer location " + Layers.generation.LocationToLayerLocation(GenerationProp.RealCoordinatesToTileCoordinates(transform.position).coordinates));
+		//Debug.Log("coor " + GenerationProp.RealCoordinatesToTileCoordinates(transform.position));
 		if (!waypointSet) {
 			waypointSet = true;
 			npc = NPCScript.Spawn(transform.position);

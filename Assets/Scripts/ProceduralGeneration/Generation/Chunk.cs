@@ -1,15 +1,19 @@
 using System;
 using UnityEngine;
 using PathFinding;
+using MyArrays;
+
 namespace Generation {
 	public static class ChunkArray {
+		//generation detail
+		public static int[] roomsAmount = new int[Layers.generationDetail.LengthInt];
+		public static Vector3Int[,,] rooms = new Vector3Int[Layers.generationDetail.LengthInt, GenerationProp.roomsMaxCount, 2];
+		//generation
 		public static bool[,,,,] sides = new bool[Layers.generation.LengthInt, GenerationProp.tileAmmount.x, GenerationProp.tileAmmount.y, GenerationProp.tileAmmount.z, 3];
 		public static bool[,,,] grid = new bool[Layers.generation.LengthInt, GenerationProp.tileAmmount.x, GenerationProp.tileAmmount.y, GenerationProp.tileAmmount.z];
 		public static bool[] genereted = new bool[Layers.generation.LengthInt];
+		//render
 		public static GameObject[] gameObject = new GameObject[Layers.render.LengthInt];
-
-		//[chunk,x,y,z,chunk2,x2,y2,z2]
-		//public static Path[,,,,,,,] paths;
 
 		public static Vector3Int coordinates;
 		public static Vector3Int GetCoordinates(Vector3Int location) {

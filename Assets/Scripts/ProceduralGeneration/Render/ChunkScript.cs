@@ -15,8 +15,8 @@ namespace Generation
         public void RenderChunk(Vector3Int locationRender)
         {
             chunkRender = Layers.render.LayerLocationToIndex(locationRender);
-            locationGeneration = Layers.render.LayerLocationToLayerLocation(locationRender, Layers.generation);
-            chunk = Layers.render.GetIndex(locationRender, Layers.hierarchy[0]);
+            locationGeneration = Layers.render.LayerLocationToOtherLayerLocation(locationRender, Layers.generation);
+			chunk = Layers.render.GetIndex(locationRender, Layers.hierarchy[0]);
             //if rendering new chunk then last time forget all values
             if (completedChunk || coordinates != ChunkArray.GetCoordinates(Layers.generation.LayerLocationToLayerCoordinates(locationGeneration)))
             {
@@ -28,12 +28,12 @@ namespace Generation
                 tile = Vector3Int.zero;
                 completedChunk = false;
             }
-            Direction pos;
+			Direction pos;
             //for every side
             while (d < 6)
             {
                 pos = new Direction(d);
-                while (tile.z < GenerationProp.tileAmmount.z)
+				while (tile.z < GenerationProp.tileAmmount.z)
                 {
                     while (tile.y < GenerationProp.tileAmmount.y)
                     {
