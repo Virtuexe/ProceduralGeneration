@@ -204,4 +204,25 @@ namespace MyArrays {
 			}
 		}
 	}
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct Range<T> where T : unmanaged {
+        public T min;
+        public T max;
+        public Range(T min, T max) {
+            this.min = min;
+            this.max = max;
+        }
+        public T this[int index] {
+            get {
+                fixed (T* ptr = &min) {
+                    return ptr[index];
+                }
+            }
+            set {
+                fixed (T* ptr = &min) {
+                    ptr[index] = value;
+                }
+            }
+        }
+    }
 }

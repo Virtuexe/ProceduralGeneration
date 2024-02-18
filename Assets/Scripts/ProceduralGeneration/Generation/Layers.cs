@@ -1,8 +1,7 @@
 using UnityEngine;
 namespace Generation {
-	public delegate void LayerFunction(int chunk);
 	[System.Serializable]
-	public class Layer {
+	public unsafe class Layer {
 		[HideInInspector]
 		public Vector3Int size;
 		[HideInInspector]
@@ -11,15 +10,31 @@ namespace Generation {
 		public bool[,,] created;
 		public bool[,,] pendingsDestroy;
 		public int[,,] indexes;
+		public readonly delegate*<Vector3Int, void> generateFunction;
+		public readonly delegate*<Vector3Int, void> destroyFunction;
 
-		public LayerFunction function;
-		public Vector3Int lowerLayerSize; // modifier how many lower layers should be created around edges this
+		public Vector3Int layerSize; // modifier how many lower layers should be created around edges this
 		public Vector3Int Length => size * 2 + Vector3Int.one;
 		public int LengthInt => Length.x * Length.y * Length.z;
 		public Vector3Int FirstIndex => coordinatesOffset;
 		public Vector3Int LastIndex => coordinatesOffset + Length - Vector3Int.one;
-		public Layer(Vector3Int lowerLayerSize) {
-			this.lowerLayerSize = lowerLayerSize;
+		public Layer(Vector3Int layerSize, delegate*<Vector3Int, void> generateFunction , delegate*<Vector3Int, void> destroyFunction) {
+			this.layerSize = layerSize;
+			this.size = layerSize;
+			this.generateFunction = generateFunction;
+			this.destroyFunction = destroyFunction;
+		}
+		public void GenerateChunks() {
+			Vector3Int layerLocation = Vector3Int.zero;
+			for (layerLocation.y = 0; layerLocation.y < Length.y; layerLocation.y++)
+				for (layerLocation.z = 0; layerLocation.z < Length.z; layerLocation.z++)
+					for (layerLocation.x = 0; layerLocation.x < Length.x; layerLocation.x++) {
+						generateFunction(layerLocation);
+						if (pendingsDestroy[layerLocation.x, layerLocation.y, layerLocation.z]) {
+							destroyFunction(layerLocation);
+							pendingsDestroy[layerLocation.x, layerLocation.y, layerLocation.z] = false;
+						}
+					}
 		}
 		public void Init() {
 			created = new bool[Length.x, Length.y, Length.z];
@@ -95,18 +110,15 @@ namespace Generation {
 	}
 	[System.Serializable]
 	public static class Layers {
-		public static Vector3Int finallLayerSize = new Vector3Int(2,0,2); //fake lowerLayerSize above finalle layer
-		public static Layer render = new Layer(new Vector3Int(1, 1, 1));
-		public static Layer path = new Layer(new Vector3Int(0, 0, 0));
-		public static Layer generation = new Layer(new Vector3Int(1, 0, 1));
-		public static Layer generationDetail = new Layer(new Vector3Int(0, 0, 0));
+		public static Layer render = new Layer(new Vector3Int(2,0,2));
+		public static Layer generation = new Layer(new Vector3Int(1, 1, 1));
+		public static Layer generationDetail = new Layer(new Vector3Int(1, 0, 1));
 		public static Layer[] hierarchy { get; private set; }
 		static Layers() {
-			hierarchy = new Layer[] { new Layer(new Vector3Int(0,0,0)), generationDetail, generation, path, render }; //atleast one item
+			hierarchy = new Layer[] { new Layer(new Vector3Int(0,0,0)), generationDetail, generation, render }; //atleast one item
 
-			hierarchy[hierarchy.Length - 1].size = finallLayerSize;
 			for (int layer = hierarchy.Length - 1; layer > 0; layer--) {
-				hierarchy[layer - 1].size += hierarchy[layer].lowerLayerSize + hierarchy[layer].size;
+				hierarchy[layer - 1].size += hierarchy[layer].size;
 			}
 			Vector3Int size = hierarchy[0].size;
 			hierarchy[0].Init();

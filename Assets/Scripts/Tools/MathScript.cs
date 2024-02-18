@@ -17,6 +17,9 @@ namespace MyMath {
 		}
 		public static float ScaleDown(float number, float scale) {
 			return (number / scale) + (number < 0 ? -1f : 0f);
-		} 
+		}
+		public static int PercentageToAmount(int maxAmount, int percentege) {
+			return (maxAmount * percentege) / 100;
+		}
 	}  
 }

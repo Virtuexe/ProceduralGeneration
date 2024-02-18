@@ -113,23 +113,23 @@ public class GeneratorManagerScript : MonoBehaviour
     private void OnDrawGizmos()
     {
         Vector3 pos = transform.position;
-        for (int y = -Layers.finallLayerSize.y; y <= Layers.finallLayerSize.y; y++)
+        for (int y = -Layers.render.layerSize.y; y <= Layers.render.layerSize.y; y++)
         {
-            for (int z = -Layers.finallLayerSize.z; z <= Layers.finallLayerSize.z; z++)
+            for (int z = -Layers.render.layerSize.z; z <= Layers.render.layerSize.z; z++)
             {
-                for (int x = -Layers.finallLayerSize.x; x <= Layers.finallLayerSize.x; x++)
+                for (int x = -Layers.render.layerSize.x; x <= Layers.render.layerSize.x; x++)
                 {
                     Gizmos.color = Color.red;
                     //leftDownBack is -1/2,-1/2,-1/2
-                    Vector3 leftDownBack = new Vector3(pos.x + x * GenerationProp.tileAmmount.x * GenerationProp.tileSize.x - (GenerationProp.tileAmmount.x * GenerationProp.tileSize.x / 2), pos.y + y * GenerationProp.tileAmmount.y * GenerationProp.tileSize.y - (GenerationProp.tileAmmount.y * GenerationProp.tileSize.y / 2), pos.z + z * GenerationProp.tileAmmount.z * GenerationProp.tileSize.z - (GenerationProp.tileAmmount.z * GenerationProp.tileSize.z / 2));
-                    Vector3 rightDownBack = leftDownBack + new Vector3(GenerationProp.tileAmmount.x * GenerationProp.tileSize.x, 0, 0);
-                    Vector3 leftUpBack = leftDownBack + new Vector3(0, GenerationProp.tileAmmount.y * GenerationProp.tileSize.y, 0);
-                    Vector3 leftDownFront = leftDownBack + new Vector3(0, 0, GenerationProp.tileAmmount.z * GenerationProp.tileSize.z);
+                    Vector3 leftDownBack = new Vector3(pos.x + x * GenerationProp.tileAmount.x * GenerationProp.tileSize.x - (GenerationProp.tileAmount.x * GenerationProp.tileSize.x / 2), pos.y + y * GenerationProp.tileAmount.y * GenerationProp.tileSize.y - (GenerationProp.tileAmount.y * GenerationProp.tileSize.y / 2), pos.z + z * GenerationProp.tileAmount.z * GenerationProp.tileSize.z - (GenerationProp.tileAmount.z * GenerationProp.tileSize.z / 2));
+                    Vector3 rightDownBack = leftDownBack + new Vector3(GenerationProp.tileAmount.x * GenerationProp.tileSize.x, 0, 0);
+                    Vector3 leftUpBack = leftDownBack + new Vector3(0, GenerationProp.tileAmount.y * GenerationProp.tileSize.y, 0);
+                    Vector3 leftDownFront = leftDownBack + new Vector3(0, 0, GenerationProp.tileAmount.z * GenerationProp.tileSize.z);
 
-                    Vector3 rightUpFront = leftDownBack + new Vector3(GenerationProp.tileAmmount.x * GenerationProp.tileSize.x, GenerationProp.tileAmmount.y * GenerationProp.tileSize.y, GenerationProp.tileAmmount.z * GenerationProp.tileSize.z);
-                    Vector3 leftUpFront = rightUpFront - new Vector3(GenerationProp.tileAmmount.x * GenerationProp.tileSize.x, 0, 0);
-                    Vector3 rightDownFront = rightUpFront - new Vector3(0, GenerationProp.tileAmmount.y * GenerationProp.tileSize.y, 0);
-                    Vector3 rightUpBack = rightUpFront - new Vector3(0, 0, GenerationProp.tileAmmount.z * GenerationProp.tileSize.z);
+                    Vector3 rightUpFront = leftDownBack + new Vector3(GenerationProp.tileAmount.x * GenerationProp.tileSize.x, GenerationProp.tileAmount.y * GenerationProp.tileSize.y, GenerationProp.tileAmount.z * GenerationProp.tileSize.z);
+                    Vector3 leftUpFront = rightUpFront - new Vector3(GenerationProp.tileAmount.x * GenerationProp.tileSize.x, 0, 0);
+                    Vector3 rightDownFront = rightUpFront - new Vector3(0, GenerationProp.tileAmount.y * GenerationProp.tileSize.y, 0);
+                    Vector3 rightUpBack = rightUpFront - new Vector3(0, 0, GenerationProp.tileAmount.z * GenerationProp.tileSize.z);
 
                     Gizmos.DrawLine(leftDownBack, rightDownBack);
                     Gizmos.DrawLine(leftDownBack, leftUpBack);

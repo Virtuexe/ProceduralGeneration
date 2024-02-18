@@ -8,7 +8,7 @@ using System.Collections.Generic;
 public unsafe class GameEventsScript : MonoBehaviour{
 #if UNITY_EDITOR
     public Matrix<PathFindingScript.Node> nodes;
-    public Matrix<bool> called = new Matrix<bool>(Layers.generation.LengthInt, GenerationProp.tileAmmount.x, GenerationProp.tileAmmount.y, GenerationProp.tileAmmount.z);
+    public Matrix<bool> called = new Matrix<bool>(Layers.generation.LengthInt, GenerationProp.tileAmount.x, GenerationProp.tileAmount.y, GenerationProp.tileAmount.z);
     public TileCoordinates startTileCoordinate;
     public bool findGizmos;
     public List<Vector3> gizmosList = new List<Vector3>();

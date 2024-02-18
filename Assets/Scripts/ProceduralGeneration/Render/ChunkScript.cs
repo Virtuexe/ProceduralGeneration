@@ -33,11 +33,11 @@ namespace Generation
             while (d < 6)
             {
                 pos = new Direction(d);
-				while (tile.z < GenerationProp.tileAmmount.z)
+				while (tile.z < GenerationProp.tileAmount.z)
                 {
-                    while (tile.y < GenerationProp.tileAmmount.y)
+                    while (tile.y < GenerationProp.tileAmount.y)
                     {
-                        while (tile.x < GenerationProp.tileAmmount.x)
+                        while (tile.x < GenerationProp.tileAmount.x)
                         {
                             Vector3Int side = tile + pos.Tile;
                             //for every side of wall
