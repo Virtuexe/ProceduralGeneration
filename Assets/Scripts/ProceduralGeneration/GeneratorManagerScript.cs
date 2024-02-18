@@ -11,8 +11,6 @@ public class GeneratorManagerScript : MonoBehaviour
 	//SCRIPTS
 	[HideInInspector]
 	public GenerationScript generationS;
-	[HideInInspector]
-	public ChunkScript chunkS;
     [HideInInspector]
     public GameEventsScript gameEventS;
     [HideInInspector]

@@ -1,18 +1,18 @@
 using UnityEngine;
 namespace Generation
 {
-    public class ChunkScript : MonoBehaviour
+    public static class ChunkScript
     {
-        int chunk;
-        int chunkRender;
-        Vector3Int locationGeneration;
-        Vector3Int coordinates;
+        static int chunk;
+        static int chunkRender;
+        static Vector3Int locationGeneration;
+        static Vector3Int coordinates;
 
-        bool completedChunk = true;
+        static bool completedChunk = true;
 
-        int d = 0;
-        Vector3Int tile = Vector3Int.zero;
-        public void RenderChunk(Vector3Int locationRender)
+        static int d = 0;
+        static Vector3Int tile = Vector3Int.zero;
+        public static void RenderChunk(Vector3Int locationRender)
         {
             chunkRender = Layers.render.LayerLocationToIndex(locationRender);
             locationGeneration = Layers.render.LayerLocationToOtherLayerLocation(locationRender, Layers.generation);
@@ -91,7 +91,7 @@ namespace Generation
                                 void createWall()
                                 {
                                     ///
-                                    GetComponent<MeshScript>().CreateQuad(
+                                    MeshScript.CreateQuad(
                                         Vector3.Scale(GenerationProp.chunkSize, coordinates) - (GenerationProp.chunkSize / 2)
                                         + (GenerationProp.tileSize / 2)
                                         + (Vector3.Scale(GenerationProp.tileSize, side))
