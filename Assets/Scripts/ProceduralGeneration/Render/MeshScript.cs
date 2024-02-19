@@ -1,3 +1,4 @@
+using Generation;
 using UnityEngine;
 public static class MeshScript
 {
@@ -5,7 +6,6 @@ public static class MeshScript
     //public float height;
 
     public static Material mat;
-    public static Transform transform;
 
 
     /*
@@ -23,8 +23,8 @@ public static class MeshScript
     public static GameObject CreateQuad(Vector3 A, Vector3 C, Direction pos)
     {
         //set relative position
-        A += transform.position;
-        C += transform.position;
+        A += GenerationProp.transform.position;
+        C += GenerationProp.transform.position;
         Mesh rectangle = new Mesh();
         //creating gameobject
         GameObject g = new GameObject();

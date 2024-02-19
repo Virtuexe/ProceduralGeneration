@@ -1,42 +1,26 @@
 using Generation;
 using System;
 using UnityEngine;
-[RequireComponent(typeof(GeneratorManagerScript))]
-[RequireComponent(typeof(MeshScript))]
-[RequireComponent(typeof(ChunkScript))]
-[RequireComponent(typeof(GenerationScript))]
 [RequireComponent(typeof(GameEventsScript))]
 public class GeneratorManagerScript : MonoBehaviour
 {
 	//SCRIPTS
-	[HideInInspector]
-	public GenerationScript generationS;
     [HideInInspector]
     public GameEventsScript gameEventS;
-    [HideInInspector]
-    public MeshScript meshS;
 
     //GENERATOR MANAGER
     //Game info
     public GameObject player;
+    public Material material;
     public void Start()
     {
         GenerationProp.transform = transform;
+        MeshScript.mat = material;
 
-		MeshScript mesh = gameObject.GetComponent<MeshScript>();
-		ChunkScript chunk = gameObject.GetComponent<ChunkScript>();
-		GenerationScript generation = gameObject.GetComponent<GenerationScript>();
 		GameEventsScript gameEvent = gameObject.GetComponent<GameEventsScript>();
-        //manager
-		meshS = mesh;
-		chunkS = chunk;
-		generationS = generation;
-		//mesh
-		//chunk
-		//generation
-		//gameEvent
+
 		gameEventS = gameEvent;
-        //pathFinding
+
 		//Game info
 		_playerChunk = PlayerChunk();
 		ChunkArray.coordinates = PlayerChunk();
@@ -71,41 +55,9 @@ public class GeneratorManagerScript : MonoBehaviour
         return playerTravelDistance;
     }
     private void GenerateChunks() {
-		Vector3Int locationGenerationDetail = Vector3Int.zero;
-		for (locationGenerationDetail.y = 0; locationGenerationDetail.y < Layers.generationDetail.Length.y; locationGenerationDetail.y++)
-			for (locationGenerationDetail.z = 0; locationGenerationDetail.z < Layers.generationDetail.Length.z; locationGenerationDetail.z++)
-				for (locationGenerationDetail.x = 0; locationGenerationDetail.x < Layers.generationDetail.Length.x; locationGenerationDetail.x++) {
-					if (Layers.generationDetail.created[locationGenerationDetail.x, locationGenerationDetail.y, locationGenerationDetail.z])
-						continue;
-					GenerationDetail.GenerateDetail(locationGenerationDetail);
-					if (GameEventsScript.mainTask.OutOfTime())
-						return;
-				}
-		Vector3Int locationGeneration = Vector3Int.zero;
-        for (locationGeneration.y = 0; locationGeneration.y < Layers.generation.Length.y; locationGeneration.y++)
-            for (locationGeneration.z = 0; locationGeneration.z < Layers.generation.Length.z; locationGeneration.z++)
-                for (locationGeneration.x = 0; locationGeneration.x < Layers.generation.Length.x; locationGeneration.x++) {
-					if (Layers.generation.created[locationGeneration.x, locationGeneration.y, locationGeneration.z])
-                        continue;
-                    generationS.GenerateChunk(locationGeneration);
-                    if (GameEventsScript.mainTask.OutOfTime())
-                        return;
-                }
-        Vector3Int locationRender = Vector3Int.zero;
-        for (locationRender.y = 0; locationRender.y < Layers.render.Length.y; locationRender.y++)
-            for (locationRender.z = 0; locationRender.z < Layers.render.Length.z; locationRender.z++)
-                for (locationRender.x = 0; locationRender.x < Layers.render.Length.x; locationRender.x++) {
-                    int renderChunk = Layers.render.LayerLocationToIndex(locationRender);
-                    if (Layers.render.pendingsDestroy[locationRender.x,locationRender.y,locationRender.z]) {
-                        Destroy(ChunkArray.gameObject[renderChunk]);
-						Layers.render.pendingsDestroy[locationRender.x, locationRender.y, locationRender.z] = false;
-					}
-                    if (Layers.render.created[locationRender.x, locationRender.y, locationRender.z])
-                        continue;
-                    chunkS.RenderChunk(locationRender);
-                    if (GameEventsScript.mainTask.OutOfTime())
-                        return;
-                }
+        for (int i = 1; i < Layers.hierarchy.Length; i++) {
+            Layers.hierarchy[i].Generate();
+		}
     }
 #if UNITY_EDITOR
     private void OnDrawGizmos()

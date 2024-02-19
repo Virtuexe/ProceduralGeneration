@@ -30,8 +30,8 @@ namespace Generation {
 					rand.Number(roomPossiblePlacement.min.x + roomSize.x, roomPossiblePlacement.max.x), 
 					rand.Number(roomPossiblePlacement.min.y + roomSize.y, roomPossiblePlacement.max.y), 
 					rand.Number(roomPossiblePlacement.min.z + roomSize.z, roomPossiblePlacement.max.z));
-				ChunkArray.rooms[indexGenerationDetail, room, 0] = roomOrigin;
-				ChunkArray.rooms[indexGenerationDetail, room, 1] = roomOrigin - roomSize;
+				ChunkArray.roomOrigins[indexGenerationDetail, room] = roomOrigin;
+				ChunkArray.roomSizes[indexGenerationDetail, room] = roomOrigin - roomSize;
 			}
 			Layers.generationDetail.created[locationGenerationDetail.x, locationGenerationDetail.y, locationGenerationDetail.z] = true;
 		}

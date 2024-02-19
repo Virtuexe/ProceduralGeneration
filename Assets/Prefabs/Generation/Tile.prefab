@@ -11,11 +11,8 @@ GameObject:
   - component: {fileID: 2246206558884384291}
   - component: {fileID: 8904443192745934714}
   - component: {fileID: 7856927661401260774}
-  - component: {fileID: 8090196196726551882}
   - component: {fileID: 7856927661401260770}
   - component: {fileID: 7856927661401260771}
-  - component: {fileID: 5162777899345376555}
-  - component: {fileID: 3862686364309707646}
   m_Layer: 0
   m_Name: Tile
   m_TagString: Untagged
@@ -65,24 +62,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 061e11461577b8e41a1d048a59625e0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  generationS: {fileID: 0}
-  chunkS: {fileID: 0}
   gameEventS: {fileID: 0}
-  meshS: {fileID: 0}
   player: {fileID: 0}
---- !u!114 &8090196196726551882
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5656486277416379103}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3a6c8844a6f5f4b42b1ad631b6711935, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mat: {fileID: 2100000, guid: 5643714871014714eb179fe481e5d61a, type: 2}
 --- !u!33 &7856927661401260770
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -132,29 +113,3 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &5162777899345376555
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5656486277416379103}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 960085a0c107be846a565917939f5e8a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &3862686364309707646
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5656486277416379103}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 91519f390c0143a4daec8cb51c57c8d4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  corridorComplexityMin: 0
-  corridorComplexityMax: 0

@@ -8,10 +8,10 @@ namespace Generation {
 	public static class GenerationProp {
 		public static Vector3 tileSize = new Vector3(3, 5, 3);
 		public static float wallThickness = 0.2f;
-		public static Vector3Int tileAmount = new Vector3Int(10, 1, 10);
+		public static Vector3Int tileAmount = new Vector3Int(100, 1, 100);
 		public static Vector3Int chunkPathDistance = new Vector3Int(1, 0, 1);
 		public static Range<int> roomCount = new Range<int>(10,10);
-		public static Range<Set3<int>> roomSize = new Range<Set3<int>>(new Set3<int>(2, 0, 2), new Set3<int>(2, 0, 2));
+		public static Range<Set3<int>> roomSize = new Range<Set3<int>>(new Set3<int>(2, 0, 2), new Set3<int>(10, 0, 10));
 		public static int mapPathDistanceInt { get { return (chunkPathDistance.x * 2 + 1) * (chunkPathDistance.y * 2 + 1) * (chunkPathDistance.z * 2 + 1); } }
 
 		public static int seed;
@@ -122,7 +122,7 @@ namespace Generation {
 			Vector3 realPositionWithinChunk = Vector3.Scale(tileSize, new Vector3(tileCoordinates.tiles.x, tileCoordinates.tiles.y, tileCoordinates.tiles.z));
 
 			Vector3 realCoordinates = chunkOrigin + realPositionWithinChunk;
-			return realCoordinates;
+			return realCoordinates + (tileSize / 2);
 		}
 	}
 	public unsafe struct TileCoordinates {

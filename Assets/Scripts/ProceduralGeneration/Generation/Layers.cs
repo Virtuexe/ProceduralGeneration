@@ -24,16 +24,23 @@ namespace Generation {
 			this.generateFunction = generateFunction;
 			this.destroyFunction = destroyFunction;
 		}
-		public void GenerateChunks() {
+		public void Generate() {
 			Vector3Int layerLocation = Vector3Int.zero;
 			for (layerLocation.y = 0; layerLocation.y < Length.y; layerLocation.y++)
 				for (layerLocation.z = 0; layerLocation.z < Length.z; layerLocation.z++)
 					for (layerLocation.x = 0; layerLocation.x < Length.x; layerLocation.x++) {
-						generateFunction(layerLocation);
 						if (pendingsDestroy[layerLocation.x, layerLocation.y, layerLocation.z]) {
-							destroyFunction(layerLocation);
+							if (destroyFunction != null) {
+								destroyFunction(layerLocation);
+							}
 							pendingsDestroy[layerLocation.x, layerLocation.y, layerLocation.z] = false;
 						}
+						else if (created[layerLocation.x, layerLocation.y, layerLocation.z]) {
+							continue;
+						}
+						generateFunction(layerLocation);
+						if (GameEventsScript.mainTask.OutOfTime())
+							return;
 					}
 		}
 		public void Init() {
@@ -109,13 +116,13 @@ namespace Generation {
 		}
 	}
 	[System.Serializable]
-	public static class Layers {
-		public static Layer render = new Layer(new Vector3Int(2,0,2));
-		public static Layer generation = new Layer(new Vector3Int(1, 1, 1));
-		public static Layer generationDetail = new Layer(new Vector3Int(1, 0, 1));
+	public unsafe static class Layers {
+		public static Layer render = new Layer(new Vector3Int(1,0,1), &ChunkScript.RenderChunk, &ChunkScript.DestroyChunk);
+		public static Layer generation = new Layer(new Vector3Int(1, 1, 1), &GenerationScript.GenerateChunk, null);
+		public static Layer generationDetail = new Layer(new Vector3Int(1, 0, 1), &GenerationDetail.GenerateDetail, null);
 		public static Layer[] hierarchy { get; private set; }
 		static Layers() {
-			hierarchy = new Layer[] { new Layer(new Vector3Int(0,0,0)), generationDetail, generation, render }; //atleast one item
+			hierarchy = new Layer[] { new Layer(new Vector3Int(0,0,0), null, null), generationDetail, generation, render }; //atleast one item
 
 			for (int layer = hierarchy.Length - 1; layer > 0; layer--) {
 				hierarchy[layer - 1].size += hierarchy[layer].size;

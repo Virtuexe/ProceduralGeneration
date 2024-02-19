@@ -7,10 +7,11 @@ namespace Generation {
 	public static class ChunkArray {
 		//generation detail
 		public static int[] roomsAmount = new int[Layers.generationDetail.LengthInt];
-		public static Vector3Int[,,] rooms = new Vector3Int[Layers.generationDetail.LengthInt, GenerationProp.roomCount.max, 2];
+		public static Vector3Int[,] roomOrigins = new Vector3Int[Layers.generationDetail.LengthInt, GenerationProp.roomCount.max];
+		public static Vector3Int[,] roomSizes = new Vector3Int[Layers.generationDetail.LengthInt, GenerationProp.roomCount.max];
 		//generation
 		public static bool[,,,,] sides = new bool[Layers.generation.LengthInt, GenerationProp.tileAmount.x, GenerationProp.tileAmount.y, GenerationProp.tileAmount.z, 3];
-		public static bool[,,,] grid = new bool[Layers.generation.LengthInt, GenerationProp.tileAmount.x, GenerationProp.tileAmount.y, GenerationProp.tileAmount.z];
+		public static bool[,,,] accesible = new bool[Layers.generation.LengthInt, GenerationProp.tileAmount.x, GenerationProp.tileAmount.y, GenerationProp.tileAmount.z];
 		public static bool[] genereted = new bool[Layers.generation.LengthInt];
 		//render
 		public static GameObject[] gameObject = new GameObject[Layers.render.LengthInt];

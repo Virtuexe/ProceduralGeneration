@@ -9,7 +9,6 @@ public unsafe class NPCScript {
 		Object npc = Object.Instantiate(GameEventsScript.EnemyPrefab, coordinates, new Quaternion());
 		NPCScript npcScript = new NPCScript();
 		npcScript.entityScript = npc.GetComponent<EntityScript>();
-		Debug.Log("ligma: " + npcScript.entityScript);
 		GameEventsScript.NPCs.Add(npcScript);
 		return npcScript;
 	} 
@@ -27,9 +26,10 @@ public unsafe class NPCScript {
 	}
 	private void Move() {
 		TileCoordinates tileCoordinates = GenerationProp.RealCoordinatesToTileCoordinates(entityScript.transform.position);
-		if(tileCoordinates == *path.Last()) {
+		if (tileCoordinates == *path.Last()) {
 			path.Remove();
 			if(path.Count == 0) {
+				Debug.Log("done");
 				hasSomewhereToGo = false;
 				entityScript.Move(new Vector2(0, 0));
 				return;

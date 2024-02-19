@@ -1,17 +1,18 @@
 using MyArrays;
 using UnityEngine;
 namespace Generation {
-	public class GenerationScript : MonoBehaviour {
-		public int corridorComplexityMin;
-		public int corridorComplexityMax;
-
-		private int chunkGeneration;
-		private int chunk;
-		private Vector3Int coordinates;
-		private CustomRandom rand = new CustomRandom();
-		public void GenerateChunk(Vector3Int locationGeneration) {
+	public static class GenerationScript {
+		private static int chunkGeneration;
+		private static int chunk;
+		private static Vector3Int generationDetailLocation;
+		private static int generationDetailIndex;
+		private static Vector3Int coordinates;
+		private static CustomRandom rand = new CustomRandom();
+		public static void GenerateChunk(Vector3Int locationGeneration) {
             chunkGeneration = Layers.generation.LayerLocationToIndex(locationGeneration);
 			chunk = Layers.generation.GetIndex(locationGeneration, Layers.hierarchy[0]);
+			generationDetailLocation = Layers.generation.LayerLocationToOtherLayerLocation(locationGeneration, Layers.generationDetail);
+			generationDetailIndex = Layers.generation.LayerLocationToIndex(generationDetailLocation);
 			coordinates = ChunkArray.GetCoordinates(Layers.generation.LayerLocationToLayerCoordinates(locationGeneration));
 
 			for (int z = 0; z < GenerationProp.tileAmount.z; z++) {
@@ -32,15 +33,36 @@ namespace Generation {
 							offsetedLocationGeneration[i] = locationGeneration[i] + generationDetailOffset[i];
 						}
 						int generationDetailIndex = Layers.generationDetail.LayerLocationToIndex((Layers.generation.LayerLocationToOtherLayerLocation(new Vector3Int(offsetedLocationGeneration.x, offsetedLocationGeneration.y, offsetedLocationGeneration.z), Layers.generationDetail)));
-						for(int room = 0; room < ChunkArray.roomsAmount[generationDetailIndex]; room++) {
-							Fill(ChunkArray.rooms[generationDetailIndex, room, 0], ChunkArray.rooms[generationDetailIndex, room, 1], false);
+						for (int room = 0; room < ChunkArray.roomsAmount[generationDetailIndex]; room++) {
+							Fill(ChunkArray.roomOrigins[generationDetailIndex, room], ChunkArray.roomOrigins[generationDetailIndex, room] + ChunkArray.roomSizes[generationDetailIndex, room], false, true);
 						}
 					}
 				}
 			}
-			Layers.generation.created[locationGeneration.x, locationGeneration.y, locationGeneration.z] = true;
+			Set<(int, int)> closestRoomIndexGenerationDetailIndex;
+			for (int thisRoom = 0; thisRoom < ChunkArray.roomsAmount[generationDetailIndex]; thisRoom++) {
+				for (generationDetailOffset.x = -Layers.generationDetail.layerSize.x; generationDetailOffset.x <= Layers.generationDetail.layerSize.x; generationDetailOffset.x++) {
+					for (generationDetailOffset.y = -Layers.generationDetail.layerSize.y; generationDetailOffset.y <= Layers.generationDetail.layerSize.y; generationDetailOffset.y++) {
+						for (generationDetailOffset.z = -Layers.generationDetail.layerSize.z; generationDetailOffset.z <= Layers.generationDetail.layerSize.z; generationDetailOffset.z++) {
+							Set3<int> offsetedLocationGeneration = new Set3<int>();
+							for (int i = 0; i < 3; i++) {
+								offsetedLocationGeneration[i] = locationGeneration[i] + generationDetailOffset[i];
+							}
+							int generationDetailIndex = Layers.generationDetail.LayerLocationToIndex((Layers.generation.LayerLocationToOtherLayerLocation(new Vector3Int(offsetedLocationGeneration.x, offsetedLocationGeneration.y, offsetedLocationGeneration.z), Layers.generationDetail)));
+							for (int room = 0; room < ChunkArray.roomsAmount[generationDetailIndex]; room++) {
+								if(generationDetailIndex == GenerationScript.generationDetailIndex) {
+									continue;
+								}
+
+							}
+						}
+					}
+				}
+
+				Layers.generation.created[locationGeneration.x, locationGeneration.y, locationGeneration.z] = true;
+			}
 		}
-		public void Fill(Vector3Int start, Vector3Int end, bool side) {
+		public static void Fill(Vector3Int start, Vector3Int end, bool side, bool accesible) {
 			// Calculate the distance between start and end coordinates
 			Vector3Int distance = end - start;
 			Vector3Int direction = new Vector3Int(
@@ -62,6 +84,7 @@ namespace Generation {
 							continue;
 						if (x <= -1 || y <= -1 || z <= -1)
 							continue;
+						ChunkArray.accesible[chunkGeneration, x, y, z] = true;
 						// Modify sides based on the direction
 						if (x != corner.x) {
 							ChunkArray.sides[chunkGeneration, x, y, z, directionX.Side] = side;
@@ -78,7 +101,7 @@ namespace Generation {
         }
        
 
-		public void Line(Vector3Int start, int distance, Direction positition, bool side) {
+		public static void Line(Vector3Int start, int distance, Direction positition, bool side) {
 			for (int i = 0; i < distance; i++) {
 				Vector3Int coordinates = start + (i * positition.RelValue) + positition.Tile;
 				ChunkArray.sides[chunkGeneration, coordinates.x, coordinates.y, coordinates.z, positition.Side] = side;
