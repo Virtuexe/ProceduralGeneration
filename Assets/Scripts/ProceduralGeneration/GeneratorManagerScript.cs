@@ -33,6 +33,7 @@ public class GeneratorManagerScript : MonoBehaviour
         {
             ChunkArray.MoveChunks(playerTravelDistance);
         }
+		GenerationProp.playerTileCoordinates = GenerationProp.RealCoordinatesToTileCoordinates(player.transform.position);
         GenerateChunks();
     }
 

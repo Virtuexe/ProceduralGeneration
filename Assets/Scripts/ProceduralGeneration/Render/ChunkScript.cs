@@ -173,11 +173,22 @@ namespace Generation
                 d++;
             }
             completedChunk = true;
-            Layers.render.created[locationRender.x, locationRender.y, locationRender.z] = true;
+			if (Random.value < 0.35f) {
+				TrySpawn();
+			}
+			Layers.render.created[locationRender.x, locationRender.y, locationRender.z] = true;
         }
 		public static void DestroyChunk(Vector3Int locationRender) {
             Object.Destroy(ChunkArray.gameObject[Layers.render.LayerLocationToIndex(locationRender)]);
         }
-
+		public static void TrySpawn() {
+			for (int tries = 0; tries < 10; tries++) {
+				Vector3Int tile = new Vector3Int(Random.Range(0, GenerationProp.tileAmount.x - 1), Random.Range(0, GenerationProp.tileAmount.y - 1), Random.Range(0, GenerationProp.tileAmount.z - 1));
+				if (ChunkArray.accesible[chunkRender, tile.x, tile.y, tile.z] == true) {
+					NPCScript.Spawn(GenerationProp.TileCoordinatesToRealCoordinates(new TileCoordinates(coordinates, tile)));
+					return;
+				}
+			}
+		}
 	}
 }

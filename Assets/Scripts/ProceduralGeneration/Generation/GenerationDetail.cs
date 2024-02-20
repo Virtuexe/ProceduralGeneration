@@ -23,15 +23,15 @@ namespace Generation {
 			ChunkArray.roomsAmount[indexGenerationDetail] = rand.Number(GenerationProp.roomCount.min, GenerationProp.roomCount.max);
 			for (int room = 0; room < ChunkArray.roomsAmount[indexGenerationDetail]; room++) {
 				Vector3Int roomSize = new Vector3Int(
-					rand.Number(GenerationProp.roomSize.min.x , GenerationProp.roomSize.max.x),
-					rand.Number(GenerationProp.roomSize.min.y , GenerationProp.roomSize.max.y),
-					rand.Number(GenerationProp.roomSize.min.z , GenerationProp.roomSize.max.z));
+					rand.Number(GenerationProp.roomSize.min.x, GenerationProp.roomSize.max.x),
+					rand.Number(GenerationProp.roomSize.min.y, GenerationProp.roomSize.max.y),
+					rand.Number(GenerationProp.roomSize.min.z, GenerationProp.roomSize.max.z));
 				Vector3Int roomOrigin = new Vector3Int(
 					rand.Number(roomPossiblePlacement.min.x + roomSize.x, roomPossiblePlacement.max.x), 
 					rand.Number(roomPossiblePlacement.min.y + roomSize.y, roomPossiblePlacement.max.y), 
 					rand.Number(roomPossiblePlacement.min.z + roomSize.z, roomPossiblePlacement.max.z));
-				ChunkArray.roomOrigins[indexGenerationDetail, room] = roomOrigin;
-				ChunkArray.roomSizes[indexGenerationDetail, room] = roomOrigin - roomSize;
+				ChunkArray.roomOrigins[indexGenerationDetail, room] = roomOrigin - roomSize;
+				ChunkArray.roomSizes[indexGenerationDetail, room] = roomSize;
 			}
 			Layers.generationDetail.created[locationGenerationDetail.x, locationGenerationDetail.y, locationGenerationDetail.z] = true;
 		}
