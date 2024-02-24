@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -204,7 +205,37 @@ namespace MyArrays {
 			}
 		}
 	}
-    [StructLayout(LayoutKind.Sequential)]
+    public static class Set3Int {
+        //LOOPS
+        public delegate void Set3IntIndexDelegate(int x, int y, int z);
+        public static void Loop(in Set3<int> lengths, in Set3IntIndexDelegate function) {
+            for (int y = 0; y < lengths.y; y++) {
+                for (int z = 0; z < lengths.z; z++) {
+                    for (int x = 0; x < lengths.x; x++) {
+                        function(x, y, z);
+                    }
+                }
+            }
+        }
+        public delegate void Set3IntFlatIndexDelegate(int index);
+        public static void FlatLoop(in Set3<int> lengths, in Set3IntFlatIndexDelegate function) {
+            int length = lengths.x * lengths.y * lengths.z;
+            for (int index = 0; index < length; index++) {
+                function(index);
+            }
+        }
+		public delegate void Set3IntPointDelegate(int x, int y, int z);
+		public static void LoopCenter(in Set3<int> lengthsFromCenter, in Set3IntIndexDelegate function) {
+			for (int y = -lengthsFromCenter.y; y <= lengthsFromCenter.y; y++) {
+				for (int z = -lengthsFromCenter.z; z <= lengthsFromCenter.z; z++) {
+					for (int x = -lengthsFromCenter.x; x <= lengthsFromCenter.x; x++) {
+						function(x, y, z);
+					}
+				}
+			}
+		}
+	}
+	[StructLayout(LayoutKind.Sequential)]
     public unsafe struct Range<T> where T : unmanaged {
         public T min;
         public T max;

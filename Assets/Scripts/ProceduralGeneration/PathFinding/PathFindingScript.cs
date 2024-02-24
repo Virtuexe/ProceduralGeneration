@@ -45,9 +45,6 @@ namespace PathFinding {
 			gameEvent.gizmosBestPath.Free();
 			gameEvent.gizmosBestPath = bestPath;
 #endif
-			Node testNode = new Node();
-			testNode.tileCoordinates = startTileCoordinates;
-			Debug.Log("theoretical distance: " + testNode.GetTotalCost());
 			return new Pool<TileCoordinates>(bestPath.Length, bestPath.buffer, bestPath.Length);
         }
 		private static void ProcessQueue() {

@@ -51,7 +51,7 @@ MonoBehaviour:
   head: {fileID: 5618212702151834993}
   jumpSpeed: 10
   strafe: 10
-  speed: 10
+  speed: 8
   acceleration: 100
   rotationSpeed: 10
   lookUpSpeed: 10
