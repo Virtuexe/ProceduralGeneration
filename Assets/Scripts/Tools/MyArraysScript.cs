@@ -86,23 +86,26 @@ namespace MyArrays {
         public Pool(int length) {
             Count = 0;
             Length = length;
-			buffer = (T*)Marshal.AllocHGlobal(sizeof(T) * length);
-		}
-		public Pool(int length, T* buffer, int count) {
-			Count = count;
-			Length = length;
-			this.buffer = buffer;
-		}
-		public void Free(){
-			System.Runtime.InteropServices.Marshal.FreeHGlobal((IntPtr)buffer);
-		}
-        public T* this[int index] {
+            buffer = (T*)Marshal.AllocHGlobal(sizeof(T) * length);
+        }
+        public Pool(int length, T* buffer, int count) {
+            Count = count;
+            Length = length;
+            this.buffer = buffer;
+        }
+        public void Free() {
+            System.Runtime.InteropServices.Marshal.FreeHGlobal((IntPtr)buffer);
+        }
+        public T this[int index] {
             get {
-                return &buffer[index];
+                return buffer[index];
+            }
+            set {
+                buffer[index] = value;
             }
         }
         public void Add(T item) {
-            if(Count >= Length) {
+            if (Count >= Length) {
                 throw new ArgumentException("Array is out of space.");
             }
             buffer[Count] = item;
@@ -118,7 +121,7 @@ namespace MyArrays {
             if (index < 0) {
                 throw new IndexOutOfRangeException("Index out of range " + index);
             }
-            if(index >= Count) {
+            if (index >= Count) {
                 throw new IndexOutOfRangeException("Index out of pool range " + index);
             }
             for (int i = index; i < Count; i++) {
@@ -152,7 +155,7 @@ namespace MyArrays {
             return Count - 1;
         }
     }
-	public unsafe struct Set<T> where T : unmanaged {
+    public unsafe struct Set<T> where T : unmanaged {
 		public int Length { get; private set; }
         public T* buffer;
 		public Set(int length) {
@@ -205,31 +208,98 @@ namespace MyArrays {
 			}
 		}
 	}
-    public static class Set3Int {
+#pragma warning disable CS0660
+#pragma warning disable CS0661
+    public unsafe struct Set3Int {
+#pragma warning restore CS0661 // Type defines operator == or operator != but does not override Object.GetHashCode()
+#pragma warning restore CS0660 // Type defines operator == or operator != but does not override Object.Equals(object o)
+        private Set3<int> _value;
+        public int x { get { return _value.x; } set { _value.x = value; } }
+        public int y { get { return _value.y; } set { _value.y = value; } }
+        public int z { get { return _value.z; } set { _value.z = value; } }
+        public Set3Int(int x, int y, int z) {
+            _value = new Set3<int>(x, y, z);
+        }
+        public int this[int index] {
+            get {
+                return _value[index];
+            }
+            set {
+                _value[index] = value;
+            }
+        }
+        //Calculations
+        public static Set3Int operator +(Set3Int v1, Set3Int v2) {
+            return new Set3Int(v1.x + v2.x, v1.z + v2.z, v1.z + v2.z);
+		}
+        public static Set3Int operator -(Set3Int v1, Set3Int v2) {
+            return new Set3Int(v1.x - v2.x, v1.z - v2.z, v1.z - v2.z);
+        }
+        public static Set3Int operator *(Set3Int v1, Set3Int v2) {
+            return new Set3Int(v1.x * v2.x, v1.z * v2.z, v1.z * v2.z);
+        }
+        public static Set3Int operator *(Set3Int v1, int v2) {
+            return new Set3Int(v1.x * v2, v1.z * v2, v1.z * v2);
+        }
+        public static Set3Int operator *(int v1, Set3Int v2) {
+            return v2 * v1;
+        }
+        public static Set3Int operator /(Set3Int v1, Set3Int v2) {
+            return new Set3Int(v1.x / v2.x, v1.z / v2.z, v1.z / v2.z);
+        }
+        public static Set3Int operator /(Set3Int v1, int v2) {
+            return new Set3Int(v1.x / v2, v1.z / v2, v1.z / v2);
+        }
+        public static Set3Int operator /(int v1, Set3Int v2) {
+            return new Set3Int(v1 / v2.x, v1 / v2.y, v1 / v2.z);
+        }
+        public static Set3Int operator %(Set3Int v1, Set3Int v2) {
+            return new Set3Int(v1.x % v2.x, v1.z % v2.z, v1.z % v2.z);
+        }
+        public static Set3Int operator -(Set3Int v1) {
+            return new Set3Int(-v1.x, -v1.z, -v1.z);
+        }
+        public static bool operator ==(Set3Int v1, Set3Int v2) {
+            return v1.x == v2.x && v1.y == v2.y && v1.z == v2.z;
+        }
+        public static bool operator !=(Set3Int v1, Set3Int v2) {
+            return !(v1 == v2);
+        }
+        public static implicit operator Set3Int(Vector3Int value) {
+            return new Set3Int(value.x, value.y, value.z);
+		}
+        public static explicit operator Vector3Int(Set3Int value) {
+            return new Vector3Int(value.x, value.y, value.z);
+        }
+        public static implicit operator Set3Int(Set3<int> value) {
+            return new Set3Int(value.x, value.y, value.z);
+        }
         //LOOPS
-        public delegate void Set3IntIndexDelegate(int x, int y, int z);
-        public static void Loop(in Set3<int> lengths, in Set3IntIndexDelegate function) {
-            for (int y = 0; y < lengths.y; y++) {
-                for (int z = 0; z < lengths.z; z++) {
-                    for (int x = 0; x < lengths.x; x++) {
-                        function(x, y, z);
+        public delegate void Set3IntIndexDelegate(Set3Int index3);
+        public void Loop(in Set3<int> lengths, in Set3IntIndexDelegate function) {
+            Set3Int index = new Set3Int();
+            for (index.y = 0; index.y < lengths.y; index.y++) {
+                for (index.z = 0; index.z < lengths.z; index.z++) {
+                    for (index.x = 0; index.x < lengths.x; index.x++) {
+                        function(index);
                     }
                 }
             }
         }
         public delegate void Set3IntFlatIndexDelegate(int index);
-        public static void FlatLoop(in Set3<int> lengths, in Set3IntFlatIndexDelegate function) {
-            int length = lengths.x * lengths.y * lengths.z;
+        public void FlatLoop(in Set3IntFlatIndexDelegate function) {
+            int length = _value.x * _value.y * _value.z;
             for (int index = 0; index < length; index++) {
                 function(index);
             }
         }
-		public delegate void Set3IntPointDelegate(int x, int y, int z);
-		public static void LoopCenter(in Set3<int> lengthsFromCenter, in Set3IntIndexDelegate function) {
-			for (int y = -lengthsFromCenter.y; y <= lengthsFromCenter.y; y++) {
-				for (int z = -lengthsFromCenter.z; z <= lengthsFromCenter.z; z++) {
-					for (int x = -lengthsFromCenter.x; x <= lengthsFromCenter.x; x++) {
-						function(x, y, z);
+		public delegate void Set3IntPointDelegate(Set3Int index3);
+		public void LoopRadius(in Set3IntIndexDelegate function) {
+            Set3Int index3 = new Set3Int();
+			for (index3.y = -_value.y; index3.y <= _value.y; index3.y++) {
+				for (index3.z = -_value.z; index3.z <= _value.z; index3.z++) {
+					for (index3.x = -_value.x; index3.x <= _value.x; index3.x++) {
+						function(index3);
 					}
 				}
 			}
@@ -255,5 +325,159 @@ namespace MyArrays {
                 }
             }
         }
+    }
+    public unsafe struct Ranges {
+        public readonly int from;
+        private Pool<int> ranges;
+        public int Length {
+			get {
+                return ranges.Length; 
+			}
+		}
+        public int Count {
+			get {
+                int count = 0;
+                for(int i = 0; i < ranges.Count; i += 2) {
+                    count += ranges[i + 1] - ranges[i];
+				}
+                return count;
+			}
+        }
+        public int this[int index] {
+            get {
+                int offsetedIndex = 0;
+                int i;
+                for (i = 0; offsetedIndex >= index; i += 2) {
+                    offsetedIndex += ranges[i + 1] - ranges[i];
+				}
+                return ranges[i] - (offsetedIndex - index);
+            }
+        }
+        public Ranges(int min, int max) {
+            int maxLength = max - min + 1;
+            int length = 0;
+            for (int i = 1; i < maxLength; i++) {
+                if (i % 3 != 0) {
+                    length++;
+                }
+            }
+            ranges = new Pool<int>(length);
+            from = min;
+        }
+        public Ranges(int length) {
+            int maxLength = length;
+            int l = 0;
+            for (int i = 1; i < maxLength; i++) {
+                if (i % 3 != 0) {
+                    l++;
+                }
+            }
+            ranges = new Pool<int>(l);
+            from = 0;
+        }
+        private void Connect(int firstIndex) {
+            bool left = false;
+            bool right = false;
+            if (firstIndex - 1 >= 0 && ranges[firstIndex] - 1 == ranges[firstIndex - 1]) {
+                left = true;
+            }
+            if (firstIndex + 1 < ranges.Count && ranges[firstIndex + 1] + 1 == ranges[firstIndex + 2]) {
+                right = true;
+            }
+
+            if (left) {
+                ranges.Remove(firstIndex);
+                ranges.Remove(firstIndex - 1);
+                if (right) {
+                    ranges.Remove(firstIndex - 1);
+                    ranges.Remove(firstIndex - 1);
+                }
+                return;
+            }
+            if (right) {
+                ranges.Remove(firstIndex + 1);
+                ranges.Remove(firstIndex + 1);
+            }
+        }
+        private void Disconnect(int firstIndex) {
+            bool left = true;
+            bool right = true;
+            if (firstIndex - 1 >= 0 && ranges[firstIndex] - 1 == ranges[firstIndex - 1]) {
+                left = false;
+            }
+            if (firstIndex + 1 < ranges.Count && ranges[firstIndex + 1] + 1 == ranges[firstIndex + 2]) {
+                right = false;
+            }
+
+            if (left && right) {
+                ranges.Remove(firstIndex);
+                ranges.Remove(firstIndex);
+            }
+        }
+        private void Increment(int index) {
+            if (index % 2 == 0) {
+                if (index + 1 < ranges.Count && ranges[index] == ranges[index + 1]) {
+                    ranges.Remove(index);
+                    ranges.Remove(index);
+                    return;
+                }
+                ranges[index]++;
+                return;
+            }
+            if (index - 1 < 0 && ranges[index] == ranges[index - 1]) {
+                ranges.Remove(index);
+                ranges.Remove(index - 1);
+                return;
+            }
+            ranges[index]--;
+        }
+        public static Ranges operator -(Ranges r1, int v1) {
+            if (v1 < r1.from || v1 >= r1.ranges.Length + r1.from) {
+                throw new ArgumentException("value out of range");
+            }
+            for (int i = 0; i < r1.ranges.Count; i++) {
+                if (r1.ranges[i] == v1) {
+                    goto finished;
+                }
+                if (r1.ranges[i] > v1) {
+                    r1.ranges.Insert(i, v1);
+                    r1.ranges.Insert(i, v1);
+                    r1.Connect(i);
+                    goto finished;
+                }
+            }
+            r1.ranges.Add(v1);
+            r1.ranges.Add(v1);
+        finished:
+            return r1;
+        }
+        public static Ranges operator +(Ranges r1, int v1) {
+            if (v1 < r1.from || v1 >= r1.ranges.Length + r1.from) {
+                throw new ArgumentException("value out of range");
+            }
+            for (int i = 0; i < r1.ranges.Count; i++) {
+                if (r1.ranges[i] == v1) {
+                    r1.Increment(i);
+                    break;
+                }
+                if (r1.ranges[i] > v1) {
+                    r1.ranges.Insert(i, v1 + 1);
+                    r1.ranges.Insert(i, v1 - 1);
+                    r1.Disconnect(i);
+                    break;
+                }
+            }
+            return r1;
+        }
+        public override string ToString() {
+            string s = "";
+            for (int i = 0; i < ranges.Count; i++) {
+                s += ranges[i] + " ";
+            }
+            return s;
+        }
+        public void Free() {
+            ranges.Free();
+		}
     }
 }

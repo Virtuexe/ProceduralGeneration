@@ -29,7 +29,7 @@ namespace Generation {
 		}
 		public static Vector3Int mapCenter {
 			get {
-				return (Layers.render.Length - Vector3Int.one) / 2;
+				return ((Vector3Int)Layers.render.length - Vector3Int.one) / 2;
 			}
 		}
 		public static Vector3Int mapRenderDistantStart {
@@ -128,7 +128,11 @@ namespace Generation {
 			return realCoordinates + (tileSize / 2);
 		}
 	}
+#pragma warning disable CS0660 // Type defines operator == or operator != but does not override Object.Equals(object o)
+#pragma warning disable CS0661 // Type defines operator == or operator != but does not override Object.GetHashCode()
 	public unsafe struct TileCoordinates {
+#pragma warning restore CS0661 // Type defines operator == or operator != but does not override Object.GetHashCode()
+#pragma warning restore CS0660 // Type defines operator == or operator != but does not override Object.Equals(object o)
 		public Vector3Int coordinates;
 		public Vector3Int tiles;
 		public TileCoordinates(Vector3Int coordinates, Vector3Int tile) {

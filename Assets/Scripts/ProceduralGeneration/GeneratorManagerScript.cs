@@ -64,11 +64,11 @@ public class GeneratorManagerScript : MonoBehaviour
     private void OnDrawGizmos()
     {
         Vector3 pos = transform.position;
-        for (int y = -Layers.render.layerSize.y; y <= Layers.render.layerSize.y; y++)
+        for (int y = -Layers.render.radius.y; y <= Layers.render.radius.y; y++)
         {
-            for (int z = -Layers.render.layerSize.z; z <= Layers.render.layerSize.z; z++)
+            for (int z = -Layers.render.radius.z; z <= Layers.render.radius.z; z++)
             {
-                for (int x = -Layers.render.layerSize.x; x <= Layers.render.layerSize.x; x++)
+                for (int x = -Layers.render.radius.x; x <= Layers.render.radius.x; x++)
                 {
                     Gizmos.color = Color.red;
                     //leftDownBack is -1/2,-1/2,-1/2

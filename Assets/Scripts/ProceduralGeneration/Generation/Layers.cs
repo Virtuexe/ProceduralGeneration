@@ -1,4 +1,5 @@
 using UnityEngine;
+using MyArrays;
 namespace Generation {
 	[System.Serializable]
 	public unsafe class Layer {
@@ -13,22 +14,22 @@ namespace Generation {
 		public readonly delegate*<Vector3Int, void> generateFunction;
 		public readonly delegate*<Vector3Int, void> destroyFunction;
 
-		public Vector3Int layerSize; // modifier how many lower layers should be created around edges this
-		public Vector3Int Length => size * 2 + Vector3Int.one;
-		public int LengthInt => Length.x * Length.y * Length.z;
-		public Vector3Int FirstIndex => coordinatesOffset;
-		public Vector3Int LastIndex => coordinatesOffset + Length - Vector3Int.one;
-		public Layer(Vector3Int layerSize, delegate*<Vector3Int, void> generateFunction , delegate*<Vector3Int, void> destroyFunction) {
-			this.layerSize = layerSize;
-			this.size = layerSize;
+		public readonly Set3Int radius;
+		public Set3Int length => size * 2 + Vector3Int.one;
+		public int lengthInt => length.x * length.y * length.z;
+		public Set3Int firstIndex => coordinatesOffset;
+		public Set3Int lastIndex => coordinatesOffset + length - Vector3Int.one;
+		public Layer(Vector3Int radius, delegate*<Vector3Int, void> generateFunction , delegate*<Vector3Int, void> destroyFunction) {
+			this.radius = radius;
+			this.size = radius;
 			this.generateFunction = generateFunction;
 			this.destroyFunction = destroyFunction;
 		}
 		public void Generate() {
 			Vector3Int layerLocation = Vector3Int.zero;
-			for (layerLocation.y = 0; layerLocation.y < Length.y; layerLocation.y++)
-				for (layerLocation.z = 0; layerLocation.z < Length.z; layerLocation.z++)
-					for (layerLocation.x = 0; layerLocation.x < Length.x; layerLocation.x++) {
+			for (layerLocation.y = 0; layerLocation.y < length.y; layerLocation.y++)
+				for (layerLocation.z = 0; layerLocation.z < length.z; layerLocation.z++)
+					for (layerLocation.x = 0; layerLocation.x < length.x; layerLocation.x++) {
 						if (pendingsDestroy[layerLocation.x, layerLocation.y, layerLocation.z]) {
 							if (destroyFunction != null) {
 								destroyFunction(layerLocation);
@@ -44,13 +45,13 @@ namespace Generation {
 					}
 		}
 		public void Init() {
-			created = new bool[Length.x, Length.y, Length.z];
-			pendingsDestroy = new bool[Length.x, Length.y, Length.z];
-			indexes = new int[Length.x, Length.y, Length.z];
-			for (int z = 0; z < Length.z; z++)
-				for (int y = 0; y < Length.y; y++)
-					for (int x = 0; x < Length.x; x++) {
-						indexes[x, y, z] = x + y * Length.x + z * Length.x * Length.y;
+			created = new bool[length.x, length.y, length.z];
+			pendingsDestroy = new bool[length.x, length.y, length.z];
+			indexes = new int[length.x, length.y, length.z];
+			for (int z = 0; z < length.z; z++)
+				for (int y = 0; y < length.y; y++)
+					for (int x = 0; x < length.x; x++) {
+						indexes[x, y, z] = x + y * length.x + z * length.x * length.y;
 					}
 		}
 		public void MoveChunk(Vector3Int location, Vector3Int targetLocation) {
@@ -109,7 +110,7 @@ namespace Generation {
 			return layer.LayerCoordinatesToLayerLocation(LayerLocationToLayerCoordinates(location));
 		}
 		public bool IsLocationOutOfBounds(in Vector3Int location) {
-			return location.x < 0 || location.y < 0 || location.z < 0 || location.x >= Length.x || location.y >= Length.y || location.z >= Length.z;
+			return location.x < 0 || location.y < 0 || location.z < 0 || location.x >= length.x || location.y >= length.y || location.z >= length.z;
 		}
 		public Vector3Int CoordinatesToLayerLocation(in Vector3Int coordinates) {
 			return LocationToLayerLocation(ChunkArray.GetLocation(coordinates));

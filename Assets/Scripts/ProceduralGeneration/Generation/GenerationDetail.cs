@@ -12,9 +12,9 @@ namespace Generation {
 				-GenerationProp.tileAmount.y + 1,
 				-GenerationProp.tileAmount.z + 1),
 			new Set3<int>(
-				GenerationProp.tileAmount.x + (GenerationProp.tileAmount.x * Layers.generationDetail.layerSize.x) - 1,
-				GenerationProp.tileAmount.y + (GenerationProp.tileAmount.y * Layers.generationDetail.layerSize.y) - 1,
-				GenerationProp.tileAmount.z + (GenerationProp.tileAmount.z * Layers.generationDetail.layerSize.z) - 1));
+				GenerationProp.tileAmount.x + (GenerationProp.tileAmount.x * Layers.generationDetail.radius.x) - 1,
+				GenerationProp.tileAmount.y + (GenerationProp.tileAmount.y * Layers.generationDetail.radius.y) - 1,
+				GenerationProp.tileAmount.z + (GenerationProp.tileAmount.z * Layers.generationDetail.radius.z) - 1));
 		public static void GenerateDetail(Vector3Int locationGenerationDetail) {
 			Vector3Int coordinates = Layers.generationDetail.LayerLocationToCoodinates(locationGenerationDetail);
 			rand.SetSeed(coordinates.x, coordinates.y, coordinates.z);

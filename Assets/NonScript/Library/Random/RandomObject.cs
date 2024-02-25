@@ -2,6 +2,7 @@ using System;
 using Random = System.Random;
 using UnityEngine;
 using Generation;
+using MyArrays;
 
 public class CustomRandom {
 	private Random rand;
@@ -19,6 +20,9 @@ public class CustomRandom {
 	}
 	public void SetSeed(params int[] numbers) {
 		rand = new Random(HashCoordinates(numbers));
+	}
+	public int ChooseFromRange(Ranges ranges) {
+		int index = Number(0, ranges.Count);
 	}
 	private int HashCoordinates(params int[] state) {
 		int hash = GenerationProp.seed;

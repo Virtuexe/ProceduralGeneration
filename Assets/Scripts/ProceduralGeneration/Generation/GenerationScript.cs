@@ -1,4 +1,5 @@
 using MyArrays;
+using System;
 using UnityEngine;
 namespace Generation {
 	public static class GenerationScript {
@@ -8,7 +9,7 @@ namespace Generation {
 		private static int generationDetailIndex;
 		private static Vector3Int coordinates;
 		private static CustomRandom rand = new CustomRandom();
-		public static void GenerateChunk(Vector3Int locationGeneration) {
+		public static unsafe void GenerateChunk(Vector3Int locationGeneration) {
 			chunkGeneration = Layers.generation.LayerLocationToIndex(locationGeneration);
 			chunk = Layers.generation.GetIndex(locationGeneration, Layers.hierarchy[0]);
 			generationDetailLocation = Layers.generation.LayerLocationToOtherLayerLocation(locationGeneration, Layers.generationDetail);
@@ -24,22 +25,24 @@ namespace Generation {
 					}
 				}
 			}
-			Set3<int> generationDetailOffset;
-			for (generationDetailOffset.x = -Layers.generationDetail.layerSize.x; generationDetailOffset.x <= Layers.generationDetail.layerSize.x; generationDetailOffset.x++) {
-				for (generationDetailOffset.y = -Layers.generationDetail.layerSize.y; generationDetailOffset.y <= Layers.generationDetail.layerSize.y; generationDetailOffset.y++) {
-					for (generationDetailOffset.z = -Layers.generationDetail.layerSize.z; generationDetailOffset.z <= Layers.generationDetail.layerSize.z; generationDetailOffset.z++) {
-						Set3<int> offsetedLocationGeneration = new Set3<int>();
-						for (int i = 0; i < 3; i++) {
-							offsetedLocationGeneration[i] = locationGeneration[i] + generationDetailOffset[i];
-						}
-						int generationDetailIndex = Layers.generationDetail.LayerLocationToIndex((Layers.generation.LayerLocationToOtherLayerLocation(new Vector3Int(offsetedLocationGeneration.x, offsetedLocationGeneration.y, offsetedLocationGeneration.z), Layers.generationDetail)));
-						for (int room = 0; room < ChunkArray.roomsAmount[generationDetailIndex]; room++) {
-							Vector3Int roomOrigin = ChunkArray.roomOrigins[generationDetailIndex, room] + (new Vector3Int(generationDetailOffset.x, generationDetailOffset.y, generationDetailOffset.z) * GenerationProp.tileAmount); 
-							Fill(roomOrigin, roomOrigin + ChunkArray.roomSizes[generationDetailIndex, room], false, true);
-						}
-					}
+			Layers.generationDetail.radius.LoopRadius((generationDetailOffset) => {
+				Set3<int> offsetedLocationGeneration = new Set3<int>();
+				for (int i = 0; i < 3; i++) {
+					offsetedLocationGeneration[i] = locationGeneration[i] + generationDetailOffset[i];
 				}
-			}
+				int generationDetailIndex = Layers.generationDetail.LayerLocationToIndex((Layers.generation.LayerLocationToOtherLayerLocation(new Vector3Int(offsetedLocationGeneration.x, offsetedLocationGeneration.y, offsetedLocationGeneration.z), Layers.generationDetail)));
+				for (int room = 0; room < ChunkArray.roomsAmount[generationDetailIndex]; room++) {
+					Vector3Int roomOrigin = ChunkArray.roomOrigins[generationDetailIndex, room] + (new Vector3Int(generationDetailOffset.x, generationDetailOffset.y, generationDetailOffset.z) * GenerationProp.tileAmount);
+					Fill(roomOrigin, roomOrigin + ChunkArray.roomSizes[generationDetailIndex, room], false, true);
+				}
+			});
+			Ranges selecetedRooms = new Ranges(ChunkArray.roomsAmount[generationDetailIndex]);
+			for (int room = 0; room < ChunkArray.roomsAmount[generationDetailIndex]; room++) {
+				rand.
+				Layers.generationDetail.radius.LoopRadius((generationDetailOffset) => { 
+				});
+			} 
+						
 			//for (int thisRoom = 0; thisRoom < ChunkArray.roomsAmount[generationDetailIndex]; thisRoom++) {
 			//	for (generationDetailOffset.x = -Layers.generationDetail.layerSize.x; generationDetailOffset.x <= Layers.generationDetail.layerSize.x; generationDetailOffset.x++) {
 			//		for (generationDetailOffset.y = -Layers.generationDetail.layerSize.y; generationDetailOffset.y <= Layers.generationDetail.layerSize.y; generationDetailOffset.y++) {

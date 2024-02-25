@@ -6,10 +6,10 @@ using UnityEngine;
 
 namespace PathFinding {
 	public static unsafe class PathFindingScript {
-		private static Matrix<Node> nodes = new Matrix<Node>(Layers.generation.LengthInt, GenerationProp.tileAmount.x, GenerationProp.tileAmount.y, GenerationProp.tileAmount.z);
+		private static Matrix<Node> nodes = new Matrix<Node>(Layers.generation.lengthInt, GenerationProp.tileAmount.x, GenerationProp.tileAmount.y, GenerationProp.tileAmount.z);
 		private static int maxDistance = -1;
 		private static int bestDistance;
-		private static Pool<int> nodeQueueIndexes = new Pool<int>(Layers.generation.LengthInt * GenerationProp.tileAmount.x * GenerationProp.tileAmount.y * GenerationProp.tileAmount.z * Direction.Directions.Length);
+		private static Pool<int> nodeQueueIndexes = new Pool<int>(Layers.generation.lengthInt * GenerationProp.tileAmount.x * GenerationProp.tileAmount.y * GenerationProp.tileAmount.z * Direction.Directions.Length);
 		static TileCoordinates startTileCoordinates;
 		static TileCoordinates endTileCoordinates;
 #if UNITY_EDITOR
@@ -158,7 +158,7 @@ namespace PathFinding {
 			(*nodes[targetNodeIndex]).tileCoordinates = targetTileCoordinates;
 
 			if (endTileCoordinates == targetTileCoordinates) {
-				Debug.Log("New path found: " + (*nodes[targetNodeIndex]).distance);
+				//Debug.Log("New path found: " + (*nodes[targetNodeIndex]).distance);
 				bestDistance = (*nodes[targetNodeIndex]).distance;
 				return;
 			}
@@ -167,7 +167,7 @@ namespace PathFinding {
 		}
 		public static int GetIndex(TileCoordinates tileCoordinates) {
 			int chunkIndex = Layers.generation.CoordinatesToIndex(tileCoordinates.coordinates);
-			return chunkIndex + Layers.generation.LengthInt * (tileCoordinates.tiles.x + GenerationProp.tileAmount.x * (tileCoordinates.tiles.y + GenerationProp.tileAmount.y * tileCoordinates.tiles.z));
+			return chunkIndex + Layers.generation.lengthInt * (tileCoordinates.tiles.x + GenerationProp.tileAmount.x * (tileCoordinates.tiles.y + GenerationProp.tileAmount.y * tileCoordinates.tiles.z));
 		}
 		public struct Node {
 			public Vector3Int parentDirection;
