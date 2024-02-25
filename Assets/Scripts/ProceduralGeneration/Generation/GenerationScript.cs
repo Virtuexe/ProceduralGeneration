@@ -15,6 +15,7 @@ namespace Generation {
 			generationDetailLocation = Layers.generation.LayerLocationToOtherLayerLocation(locationGeneration, Layers.generationDetail);
 			generationDetailIndex = Layers.generationDetail.LayerLocationToIndex(generationDetailLocation);
 			coordinates = ChunkArray.GetCoordinates(Layers.generation.LayerLocationToLayerCoordinates(locationGeneration));
+			rand.SetSeed(coordinates.x, coordinates.y, coordinates.z);
 
 			for (int z = 0; z < GenerationProp.tileAmount.z; z++) {
 				for (int y = 0; y < GenerationProp.tileAmount.y; y++) {
@@ -36,13 +37,41 @@ namespace Generation {
 					Fill(roomOrigin, roomOrigin + ChunkArray.roomSizes[generationDetailIndex, room], false, true);
 				}
 			});
-			Ranges selecetedRooms = new Ranges(ChunkArray.roomsAmount[generationDetailIndex]);
-			for (int room = 0; room < ChunkArray.roomsAmount[generationDetailIndex]; room++) {
-				rand.
+			Debug.Log("#");
+			Ranges selecetedRoomRange = new Ranges(ChunkArray.roomsAmount[generationDetailIndex]);
+
+			//Hallways
+			for (int thisRoomIndex = 0; thisRoomIndex < ChunkArray.roomsAmount[generationDetailIndex]; thisRoomIndex++) {
+				Ranges selecetedRoomRangeForThisRoom = selecetedRoomRange.Copy();
+				selecetedRoomRangeForThisRoom -= thisRoomIndex;
+				int roomConnectWithIndex = rand.ChooseFromRange(selecetedRoomRangeForThisRoom);
+				Debug.Log("before " + selecetedRoomRange);
+				selecetedRoomRange -= roomConnectWithIndex;
+				Debug.Log("removed ->" + roomConnectWithIndex);
+				Debug.Log(selecetedRoomRange);
+
+				Ranges vectorRange = new Ranges(2);
+				Set3Int roomOrigin = (Set3Int)ChunkArray.roomOrigins[generationDetailIndex, thisRoomIndex];
+				Set3Int roomOriginConnectWith = (Set3Int)ChunkArray.roomOrigins[generationDetailIndex, roomConnectWithIndex];
+				Set3Int toVector = roomOrigin;
+				Set3Int fromVector = roomOrigin;
+				for (int componentCounter = 0; componentCounter < 2; componentCounter++) {
+					int component = rand.ChooseFromRange(vectorRange);
+					vectorRange -= component;
+					toVector[component] = roomOriginConnectWith[component];
+
+					Fill((Vector3Int)fromVector, (Vector3Int)toVector, false, true);
+
+					fromVector = toVector;
+				}
+				vectorRange.Free();
+
 				Layers.generationDetail.radius.LoopRadius((generationDetailOffset) => { 
 				});
-			} 
-						
+				selecetedRoomRangeForThisRoom.Free();
+			}
+			selecetedRoomRange.Free();
+			
 			//for (int thisRoom = 0; thisRoom < ChunkArray.roomsAmount[generationDetailIndex]; thisRoom++) {
 			//	for (generationDetailOffset.x = -Layers.generationDetail.layerSize.x; generationDetailOffset.x <= Layers.generationDetail.layerSize.x; generationDetailOffset.x++) {
 			//		for (generationDetailOffset.y = -Layers.generationDetail.layerSize.y; generationDetailOffset.y <= Layers.generationDetail.layerSize.y; generationDetailOffset.y++) {

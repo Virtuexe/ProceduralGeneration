@@ -10,8 +10,8 @@ namespace Generation {
 		public static float wallThickness = 0.2f;
 		public static Vector3Int tileAmount = new Vector3Int(20, 1, 20);
 		public static Vector3Int chunkPathDistance = new Vector3Int(1, 0, 1);
-		public static Range<int> roomCount = new Range<int>(1,3);
-		public static Range<Set3<int>> roomSize = new Range<Set3<int>>(new Set3<int>(3, 0, 3), new Set3<int>(20, 0, 20));
+		public static Range<int> roomCount = new Range<int>(4,4);
+		public static Range<Set3<int>> roomSize = new Range<Set3<int>>(new Set3<int>(3, 0, 3), new Set3<int>(3, 0, 3));
 		public static Set3<int> roomConnectionRange = new Set3<int>(10, 0, 10);
 		public static float entitySpawnChance = 10;
 		public static int mapPathDistanceInt { get { return (chunkPathDistance.x * 2 + 1) * (chunkPathDistance.y * 2 + 1) * (chunkPathDistance.z * 2 + 1); } }

@@ -5,7 +5,7 @@ using Generation;
 using MyArrays;
 
 public class CustomRandom {
-	private Random rand;
+	private Random rand = new Random();
 	public double RandomValue() {
 		return rand.NextDouble();
 	}
@@ -22,7 +22,8 @@ public class CustomRandom {
 		rand = new Random(HashCoordinates(numbers));
 	}
 	public int ChooseFromRange(Ranges ranges) {
-		int index = Number(0, ranges.Count);
+		int index = Number(0, ranges.Count - 1);;
+		return ranges[index];
 	}
 	private int HashCoordinates(params int[] state) {
 		int hash = GenerationProp.seed;

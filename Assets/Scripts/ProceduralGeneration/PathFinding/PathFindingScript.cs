@@ -49,7 +49,7 @@ namespace PathFinding {
         }
 		private static void ProcessQueue() {
 			while (!nodeQueueIndexes.IsEmpty()) {
-				int index = *nodeQueueIndexes.Last();
+				int index = nodeQueueIndexes.Last();
 				nodeQueueIndexes.Remove();
 				if ((*nodes[index]).distance == maxDistance) {
 					continue;

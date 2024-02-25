@@ -38,7 +38,7 @@ public unsafe class NPCScript {
 		if (path.Count == 0) {
 			return;
 		}
-		if (tileCoordinates == *path.Last()) {
+		if (tileCoordinates == path.Last()) {
 			path.Remove();
 			if(path.Count == 0) {
 				Debug.Log("done");
@@ -47,7 +47,7 @@ public unsafe class NPCScript {
 				return;
 			}
 		}
-		Vector3 direction = (GenerationProp.TileCoordinatesToRealCoordinates(*path.Last()) - entityScript.transform.position).normalized;
+		Vector3 direction = (GenerationProp.TileCoordinatesToRealCoordinates(path.Last()) - entityScript.transform.position).normalized;
 		entityScript.Move(new Vector2(direction.x, direction.z));
 	}
 }
