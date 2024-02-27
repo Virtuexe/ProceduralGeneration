@@ -25,6 +25,7 @@ public class PlayerScript : MonoBehaviour {
 	public InputActionAsset playerInput;
 	public InputAction looking;
 	public InputAction use;
+	public InputAction sprint;
 	public InputAction primary;
 	public InputAction secondary;
 	public InputAction movement;
@@ -46,6 +47,10 @@ public class PlayerScript : MonoBehaviour {
 		use.performed += context => OnUsePreformed(context, 0);
 		use.canceled += context => OnUseCanceled(context, 0);
 		use.Enable();
+		sprint = gameplayActionMap.FindAction("Sprint");
+		sprint.performed += context => OnSprint(context, true);
+		sprint.canceled += context => OnSprint(context, false);
+		sprint.Enable();
 		//primary = gameplayActionMap.FindAction("Primary");
 		//primary.performed += context => OnUsePreformed(context, 1);
 		//primary.canceled += context => OnUseCanceled(context, 1);
@@ -98,15 +103,9 @@ public class PlayerScript : MonoBehaviour {
 	NPCScript npc;
 	bool waypointSet;
 	void OnUsePreformed(InputAction.CallbackContext context, int value) {
-		//Debug.Log("coor " + GenerationProp.RealCoordinatesToTileCoordinates(transform.position));
-		if (!waypointSet) {
-			waypointSet = true;
-			npc = NPCScript.Spawn(transform.position);
-		}
-		else {
-			waypointSet = false;
-			npc.Go(GenerationProp.RealCoordinatesToTileCoordinates(transform.position));
-		}
+		controller.enabled = false;
+		this.transform.position = GenerationProp.TileCoordinatesToRealCoordinates(GenerationProp.FindAccessibleTile(GenerationProp.playerTileCoordinates));
+		controller.enabled = true;
 
 		GameAction action = null;
 		foreach (GameAction i in properties.actions.actionList) {
@@ -130,6 +129,9 @@ public class PlayerScript : MonoBehaviour {
 		}
 		if (action != null)
 			action.action.Invoke(false);
+	}
+	void OnSprint(InputAction.CallbackContext context, bool isActive) {
+		entity.sprinting = isActive;
 	}
 
 	void OnMouseMovement(InputAction.CallbackContext context) {

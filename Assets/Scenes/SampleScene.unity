@@ -852,7 +852,7 @@ Transform:
   m_GameObject: {fileID: 627099877}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -3, z: 0}
-  m_LocalScale: {x: 10, y: 1, z: 10}
+  m_LocalScale: {x: 20, y: 1, z: 20}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1793,6 +1793,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1509726230}
     - target: {fileID: 5618212701641721472, guid: de0db43c5183170419a179b58cad0e9e, type: 3}
+      propertyPath: sprint.m_Name
+      value: Sprint
+      objectReference: {fileID: 0}
+    - target: {fileID: 5618212701641721472, guid: de0db43c5183170419a179b58cad0e9e, type: 3}
       propertyPath: hudInteractBar
       value: 
       objectReference: {fileID: 273342142}
@@ -1857,12 +1861,32 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5618212701641721475, guid: de0db43c5183170419a179b58cad0e9e, type: 3}
+      propertyPath: walkSpeed
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 5618212701641721475, guid: de0db43c5183170419a179b58cad0e9e, type: 3}
       propertyPath: controller
       value: 
       objectReference: {fileID: 1001595615}
     - target: {fileID: 5618212701641721475, guid: de0db43c5183170419a179b58cad0e9e, type: 3}
+      propertyPath: energyRegen
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5618212701641721475, guid: de0db43c5183170419a179b58cad0e9e, type: 3}
+      propertyPath: sprintSpeed
+      value: 110
+      objectReference: {fileID: 0}
+    - target: {fileID: 5618212701641721475, guid: de0db43c5183170419a179b58cad0e9e, type: 3}
       propertyPath: acceleration
-      value: 100
+      value: 110
+      objectReference: {fileID: 0}
+    - target: {fileID: 5618212701641721475, guid: de0db43c5183170419a179b58cad0e9e, type: 3}
+      propertyPath: jumpEnergyConsumption
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 5618212701641721475, guid: de0db43c5183170419a179b58cad0e9e, type: 3}
+      propertyPath: sprintEnergyConsumption
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5618212701641721534, guid: de0db43c5183170419a179b58cad0e9e, type: 3}
       propertyPath: m_StepOffset

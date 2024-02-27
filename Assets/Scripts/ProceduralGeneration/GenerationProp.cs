@@ -10,9 +10,8 @@ namespace Generation {
 		public static float wallThickness = 0.2f;
 		public static Vector3Int tileAmount = new Vector3Int(20, 1, 20);
 		public static Vector3Int chunkPathDistance = new Vector3Int(1, 0, 1);
-		public static Range<int> roomCount = new Range<int>(4,4);
-		public static Range<Set3<int>> roomSize = new Range<Set3<int>>(new Set3<int>(3, 0, 3), new Set3<int>(3, 0, 3));
-		public static Set3<int> roomConnectionRange = new Set3<int>(10, 0, 10);
+		public static Range<int> roomCount = new Range<int>(1,5);
+		public static Range<Set3<int>> roomSize = new Range<Set3<int>>(new Set3<int>(3, 0, 3), new Set3<int>(4, 0, 4));
 		public static float entitySpawnChance = 10;
 		public static int mapPathDistanceInt { get { return (chunkPathDistance.x * 2 + 1) * (chunkPathDistance.y * 2 + 1) * (chunkPathDistance.z * 2 + 1); } }
 
@@ -126,6 +125,15 @@ namespace Generation {
 
 			Vector3 realCoordinates = chunkOrigin + realPositionWithinChunk;
 			return realCoordinates + (tileSize / 2);
+		}
+		public static TileCoordinates FindAccessibleTile(TileCoordinates tileCoordinate) {
+			int chunkGeneration = Layers.generation.CoordinatesToIndex(tileCoordinate.coordinates);
+			while (true) {
+				Vector3Int tile = new Vector3Int(UnityEngine.Random.Range(0, GenerationProp.tileAmount.x - 1), UnityEngine.Random.Range(0, GenerationProp.tileAmount.y - 1), UnityEngine.Random.Range(0, GenerationProp.tileAmount.z - 1));
+				if (ChunkArray.accesible[chunkGeneration, tile.x, tile.y, tile.z]) {
+					return new TileCoordinates(tileCoordinate.coordinates, new Vector3Int(tile.x, tile.y, tile.z));
+				}
+			}
 		}
 	}
 #pragma warning disable CS0660 // Type defines operator == or operator != but does not override Object.Equals(object o)

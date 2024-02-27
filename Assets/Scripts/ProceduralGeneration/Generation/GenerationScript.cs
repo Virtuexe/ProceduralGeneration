@@ -1,8 +1,11 @@
 using MyArrays;
+using OpenCover.Framework.Model;
 using System;
+using System.Numerics;
 using UnityEngine;
 namespace Generation {
 	public static class GenerationScript {
+		private static Vector3Int locationGeneration;
 		private static int chunkGeneration;
 		private static int chunk;
 		private static Vector3Int generationDetailLocation;
@@ -10,6 +13,7 @@ namespace Generation {
 		private static Vector3Int coordinates;
 		private static CustomRandom rand = new CustomRandom();
 		public static unsafe void GenerateChunk(Vector3Int locationGeneration) {
+			GenerationScript.locationGeneration = locationGeneration;
 			chunkGeneration = Layers.generation.LayerLocationToIndex(locationGeneration);
 			chunk = Layers.generation.GetIndex(locationGeneration, Layers.hierarchy[0]);
 			generationDetailLocation = Layers.generation.LayerLocationToOtherLayerLocation(locationGeneration, Layers.generationDetail);
@@ -26,6 +30,11 @@ namespace Generation {
 					}
 				}
 			}
+			CreateRooms();
+			CreateHallways();
+			Layers.generation.created[locationGeneration.x, locationGeneration.y, locationGeneration.z] = true;
+		}
+		private static void CreateRooms() {
 			Layers.generationDetail.radius.LoopRadius((generationDetailOffset) => {
 				Set3<int> offsetedLocationGeneration = new Set3<int>();
 				for (int i = 0; i < 3; i++) {
@@ -33,29 +42,33 @@ namespace Generation {
 				}
 				int generationDetailIndex = Layers.generationDetail.LayerLocationToIndex((Layers.generation.LayerLocationToOtherLayerLocation(new Vector3Int(offsetedLocationGeneration.x, offsetedLocationGeneration.y, offsetedLocationGeneration.z), Layers.generationDetail)));
 				for (int room = 0; room < ChunkArray.roomsAmount[generationDetailIndex]; room++) {
-					Vector3Int roomOrigin = ChunkArray.roomOrigins[generationDetailIndex, room] + (new Vector3Int(generationDetailOffset.x, generationDetailOffset.y, generationDetailOffset.z) * GenerationProp.tileAmount);
-					Fill(roomOrigin, roomOrigin + ChunkArray.roomSizes[generationDetailIndex, room], false, true);
+					Vector3Int roomOrigin = ChunkArray.roomCenters[generationDetailIndex, room] + (new Vector3Int(generationDetailOffset.x, generationDetailOffset.y, generationDetailOffset.z) * GenerationProp.tileAmount);
+					Fill(roomOrigin - (ChunkArray.roomSizes[generationDetailIndex, room] / 2), roomOrigin + ((ChunkArray.roomSizes[generationDetailIndex, room] + Vector3Int.one) / 2), false, true);
 				}
 			});
-			Debug.Log("#");
+		}
+		private static void CreateHallways() {
+			if(ChunkArray.roomsAmount[generationDetailIndex] <= 1) {
+				goto Skip;
+			}
 			Ranges selecetedRoomRange = new Ranges(ChunkArray.roomsAmount[generationDetailIndex]);
-
-			//Hallways
 			for (int thisRoomIndex = 0; thisRoomIndex < ChunkArray.roomsAmount[generationDetailIndex]; thisRoomIndex++) {
+				int roomConnectWithIndex;
+				if (selecetedRoomRange.Count != 0) {
+					selecetedRoomRange.Clear();
+				}
 				Ranges selecetedRoomRangeForThisRoom = selecetedRoomRange.Copy();
 				selecetedRoomRangeForThisRoom -= thisRoomIndex;
-				int roomConnectWithIndex = rand.ChooseFromRange(selecetedRoomRangeForThisRoom);
-				Debug.Log("before " + selecetedRoomRange);
+				roomConnectWithIndex = rand.ChooseFromRange(selecetedRoomRangeForThisRoom);
 				selecetedRoomRange -= roomConnectWithIndex;
-				Debug.Log("removed ->" + roomConnectWithIndex);
-				Debug.Log(selecetedRoomRange);
 
-				Ranges vectorRange = new Ranges(2);
-				Set3Int roomOrigin = (Set3Int)ChunkArray.roomOrigins[generationDetailIndex, thisRoomIndex];
-				Set3Int roomOriginConnectWith = (Set3Int)ChunkArray.roomOrigins[generationDetailIndex, roomConnectWithIndex];
+
+				Ranges vectorRange = new Ranges(3);
+				Set3Int roomOrigin = (Set3Int)ChunkArray.roomCenters[generationDetailIndex, thisRoomIndex];
+				Set3Int roomOriginConnectWith = (Set3Int)ChunkArray.roomCenters[generationDetailIndex, roomConnectWithIndex];
 				Set3Int toVector = roomOrigin;
 				Set3Int fromVector = roomOrigin;
-				for (int componentCounter = 0; componentCounter < 2; componentCounter++) {
+				for (int componentCounter = 0; componentCounter < 3; componentCounter++) {
 					int component = rand.ChooseFromRange(vectorRange);
 					vectorRange -= component;
 					toVector[component] = roomOriginConnectWith[component];
@@ -65,38 +78,41 @@ namespace Generation {
 					fromVector = toVector;
 				}
 				vectorRange.Free();
-
-				Layers.generationDetail.radius.LoopRadius((generationDetailOffset) => { 
-				});
 				selecetedRoomRangeForThisRoom.Free();
 			}
 			selecetedRoomRange.Free();
-			
-			//for (int thisRoom = 0; thisRoom < ChunkArray.roomsAmount[generationDetailIndex]; thisRoom++) {
-			//	for (generationDetailOffset.x = -Layers.generationDetail.layerSize.x; generationDetailOffset.x <= Layers.generationDetail.layerSize.x; generationDetailOffset.x++) {
-			//		for (generationDetailOffset.y = -Layers.generationDetail.layerSize.y; generationDetailOffset.y <= Layers.generationDetail.layerSize.y; generationDetailOffset.y++) {
-			//			for (generationDetailOffset.z = -Layers.generationDetail.layerSize.z; generationDetailOffset.z <= Layers.generationDetail.layerSize.z; generationDetailOffset.z++) {
-			//				Set3<int> offsetedLocationGeneration = new Set3<int>();
-			//				for (int i = 0; i < 3; i++) {
-			//					offsetedLocationGeneration[i] = locationGeneration[i] + generationDetailOffset[i];
-			//				}
-			//				int generationDetailIndex = Layers.generationDetail.LayerLocationToIndex((Layers.generation.LayerLocationToOtherLayerLocation(new Vector3Int(offsetedLocationGeneration.x, offsetedLocationGeneration.y, offsetedLocationGeneration.z), Layers.generationDetail)));
-			//				for (int room = 0; room < ChunkArray.roomsAmount[generationDetailIndex]; room++) {
-			//					if (generationDetailIndex == GenerationScript.generationDetailIndex && thisRoom == room) {
-			//						continue;
-			//					}
-			//					Vector3Int pointSource = ChunkArray.roomOrigins[GenerationScript.generationDetailIndex, thisRoom] + (ChunkArray.roomSizes[GenerationScript.generationDetailIndex, thisRoom] / 2);
-			//					Vector3Int roomOrigin = ChunkArray.roomOrigins[generationDetailIndex, room] + (new Vector3Int(generationDetailOffset.x, generationDetailOffset.y, generationDetailOffset.z) * GenerationProp.tileAmount);
-			//					Vector3Int pointDestination = roomOrigin + (ChunkArray.roomSizes[generationDetailIndex, room] / 2);
-			//					Fill(pointSource, new Vector3Int(pointSource.x, pointSource.y, pointDestination.z), false, true);
-			//					Fill(new Vector3Int(pointSource.x, pointSource.y, pointDestination.z), new Vector3Int(pointSource.x, pointDestination.y, pointDestination.z), false, true);
-			//					Fill(new Vector3Int(pointSource.x, pointDestination.y, pointDestination.z), pointDestination, false, true);
-			//				}
-			//			}
-			//		}
-			//	}
-			//}
-			Layers.generation.created[locationGeneration.x, locationGeneration.y, locationGeneration.z] = true;
+			Skip:
+			CreateHallwaysIntoChunk(Set3Int.forward, false);
+			CreateHallwaysIntoChunk(Set3Int.right, false);
+			CreateHallwaysIntoChunk(Set3Int.left, true);
+			CreateHallwaysIntoChunk(Set3Int.back, true);
+		}
+		private static void CreateHallwaysIntoChunk(Set3Int generationDetailOffset, bool thisPriority) {
+			if (generationDetailOffset == Set3Int.zero) {
+				return;
+			}
+			int generationDetailOffsetedIndex = Layers.generationDetail.LayerLocationToIndex((Vector3Int)(generationDetailLocation + generationDetailOffset));
+
+			Set3Int roomOrigin = (Set3Int)ChunkArray.roomCenters[generationDetailIndex, 0];
+			Set3Int roomOriginConnectWith = (Set3Int)ChunkArray.roomCenters[generationDetailOffsetedIndex, 0] + (generationDetailOffset * GenerationProp.tileAmount);
+			Set3Int toVector;
+			Set3Int fromVector;
+			if (thisPriority) {
+				toVector = roomOrigin;
+				fromVector = roomOrigin;
+			}
+			else {
+				toVector = roomOriginConnectWith;
+				fromVector = roomOriginConnectWith;
+				roomOriginConnectWith = roomOrigin;
+			}
+			for (int component = 0; component < 3; component++) {
+				toVector[component] = roomOriginConnectWith[component];
+
+				Fill((Vector3Int)fromVector, (Vector3Int)toVector, false, true);
+
+				fromVector = toVector;
+			}
 		}
 		public static void Fill(Vector3Int start, Vector3Int end, bool side, bool accesible) {
 			// Calculate the distance between start and end coordinates

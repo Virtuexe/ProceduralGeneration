@@ -243,36 +243,66 @@ namespace MyArrays {
                 _value[index] = value;
             }
         }
-        //Calculations
-        public static Set3Int operator +(Set3Int v1, Set3Int v2) {
-            return new Set3Int(v1.x + v2.x, v1.z + v2.z, v1.z + v2.z);
+		//Simple Conversions
+		public int AsMetrixToLength() {
+			return x * y * z;
+		}
+		public Set3Int AsRadiusToMetrix() {
+			return new Set3Int((x * 2) + 1, (y * 2) + 1, (z * 2) + 1);
+		}
+		public Set3Int IndexToMetrixIndex(int index) {
+			Set3Int result = new Set3Int();
+			result.z = index % z;
+			index /= z;
+			result.y = index % y;
+			index /= y;
+			result.x = index;
+			return result;
+		}
+		public int AsMetrixIndexToIndex(Set3Int metrix) {
+			return x * metrix.y * metrix.z + y * metrix.z + z;
+		}
+		//Nested Conversions
+		public int AsRadiusToLength() {
+			return new Set3Int((x * 2) + 1, (y * 2) + 1, (z * 2) + 1).AsMetrixToLength();
+		}
+		public int AsRadiusIndexToIndex(Set3Int radius) {
+			return this.AsRadiusToMetrix().AsMetrixIndexToIndex(radius.AsRadiusToMetrix());
+		}
+		//Other
+		public override string ToString() {
+			return $"Set3({x},{y},{z})";
+		}
+		//Calculations
+		public static Set3Int operator +(Set3Int v1, Set3Int v2) {
+            return new Set3Int(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
 		}
         public static Set3Int operator -(Set3Int v1, Set3Int v2) {
-            return new Set3Int(v1.x - v2.x, v1.z - v2.z, v1.z - v2.z);
+            return new Set3Int(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
         }
         public static Set3Int operator *(Set3Int v1, Set3Int v2) {
-            return new Set3Int(v1.x * v2.x, v1.z * v2.z, v1.z * v2.z);
+            return new Set3Int(v1.x * v2.x, v1.y * v2.y, v1.z * v2.z);
         }
         public static Set3Int operator *(Set3Int v1, int v2) {
-            return new Set3Int(v1.x * v2, v1.z * v2, v1.z * v2);
+            return new Set3Int(v1.x * v2, v1.y * v2, v1.z * v2);
         }
         public static Set3Int operator *(int v1, Set3Int v2) {
             return v2 * v1;
         }
         public static Set3Int operator /(Set3Int v1, Set3Int v2) {
-            return new Set3Int(v1.x / v2.x, v1.z / v2.z, v1.z / v2.z);
+            return new Set3Int(v1.x / v2.x, v1.y / v2.y, v1.z / v2.z);
         }
         public static Set3Int operator /(Set3Int v1, int v2) {
-            return new Set3Int(v1.x / v2, v1.z / v2, v1.z / v2);
+            return new Set3Int(v1.x / v2, v1.y / v2, v1.z / v2);
         }
         public static Set3Int operator /(int v1, Set3Int v2) {
             return new Set3Int(v1 / v2.x, v1 / v2.y, v1 / v2.z);
         }
         public static Set3Int operator %(Set3Int v1, Set3Int v2) {
-            return new Set3Int(v1.x % v2.x, v1.z % v2.z, v1.z % v2.z);
+            return new Set3Int(v1.x % v2.x, v1.y % v2.y, v1.z % v2.z);
         }
         public static Set3Int operator -(Set3Int v1) {
-            return new Set3Int(-v1.x, -v1.z, -v1.z);
+            return new Set3Int(-v1.x, -v1.y, -v1.z);
         }
         public static bool operator ==(Set3Int v1, Set3Int v2) {
             return v1.x == v2.x && v1.y == v2.y && v1.z == v2.z;
@@ -289,6 +319,14 @@ namespace MyArrays {
         public static implicit operator Set3Int(Set3<int> value) {
             return new Set3Int(value.x, value.y, value.z);
         }
+		//DEFAULTS
+		public static readonly Set3Int zero = new Set3Int(0, 0, 0);
+		public static readonly Set3Int forward = new Set3Int(0, 0, 1);
+		public static readonly Set3Int back = new Set3Int(0, 0, -1);
+		public static readonly Set3Int right = new Set3Int(1, 0, 0);
+		public static readonly Set3Int left = new Set3Int(-1, 0, 0);
+		public static readonly Set3Int up = new Set3Int(0, 1, 0);
+		public static readonly Set3Int down = new Set3Int(0, -1, 0);
         //LOOPS
         public delegate void Set3IntIndexDelegate(Set3Int index3);
         public void Loop(in Set3<int> lengths, in Set3IntIndexDelegate function) {
@@ -378,12 +416,12 @@ namespace MyArrays {
 		}
 		public Ranges(int min, int max) {
 			int length = max - min + 1;
-			ranges = new Pool<int>(length + 2);
+			ranges = new Pool<int>(length + 6);
 			from = min;
 			to = max;
 		}
 		public Ranges(int length) {
-			ranges = new Pool<int>(length + 2);
+			ranges = new Pool<int>(length + 6);
 			from = 0;
 			to = length - 1;
 		}
@@ -393,7 +431,7 @@ namespace MyArrays {
 			if (firstIndex - 1 >= 0 && ranges[firstIndex] - 1 == ranges[firstIndex - 1]) {
 				left = true;
 			}
-			if (firstIndex + 1 < ranges.Count && ranges[firstIndex + 1] + 1 == ranges[firstIndex + 2]) {
+			if (firstIndex + 2 < ranges.Count && ranges[firstIndex + 1] + 1 == ranges[firstIndex + 2]) {
 				right = true;
 			}
 
@@ -417,7 +455,7 @@ namespace MyArrays {
 			if (firstIndex - 1 >= 0 && ranges[firstIndex] - 1 == ranges[firstIndex - 1]) {
 				left = false;
 			}
-			if (firstIndex + 1 < ranges.Count && ranges[firstIndex + 1] + 1 == ranges[firstIndex + 2]) {
+			if (firstIndex + 2 < ranges.Count && ranges[firstIndex + 1] + 1 == ranges[firstIndex + 2]) {
 				right = false;
 			}
 
@@ -464,11 +502,6 @@ namespace MyArrays {
 		finished:
 			return r1;
 		}
-		public Ranges Copy() {
-			Ranges copy = this;
-			copy.ranges = ranges.Copy();
-			return copy;
-		}
 		public static Ranges operator +(Ranges r1, int v1) {
 			if (v1 < r1.from || v1 > r1.to) {
 				throw new ArgumentException("value out of range");
@@ -493,6 +526,15 @@ namespace MyArrays {
 				s += ranges[i] + " ";
 			}
 			return s;
+		}
+		public void Clear() {
+
+			ranges.Clear();
+		}
+		public Ranges Copy() {
+			Ranges copy = this;
+			copy.ranges = ranges.Copy();
+			return copy;
 		}
 		public void Free() {
 			ranges.Free();

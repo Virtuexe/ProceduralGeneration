@@ -5,16 +5,6 @@ using UnityEngine;
 namespace Generation {
 	public static class GenerationDetail {
 		static CustomRandom rand = new CustomRandom();
-
-		static Range<Set3<int>> roomPossiblePlacement = new Range<Set3<int>>(
-			new Set3<int>(
-				-GenerationProp.tileAmount.x + 1,
-				-GenerationProp.tileAmount.y + 1,
-				-GenerationProp.tileAmount.z + 1),
-			new Set3<int>(
-				GenerationProp.tileAmount.x + (GenerationProp.tileAmount.x * Layers.generationDetail.radius.x) - 1,
-				GenerationProp.tileAmount.y + (GenerationProp.tileAmount.y * Layers.generationDetail.radius.y) - 1,
-				GenerationProp.tileAmount.z + (GenerationProp.tileAmount.z * Layers.generationDetail.radius.z) - 1));
 		public static void GenerateDetail(Vector3Int locationGenerationDetail) {
 			Vector3Int coordinates = Layers.generationDetail.LayerLocationToCoodinates(locationGenerationDetail);
 			rand.SetSeed(coordinates.x, coordinates.y, coordinates.z);
@@ -26,11 +16,11 @@ namespace Generation {
 					rand.Number(GenerationProp.roomSize.min.x, GenerationProp.roomSize.max.x),
 					rand.Number(GenerationProp.roomSize.min.y, GenerationProp.roomSize.max.y),
 					rand.Number(GenerationProp.roomSize.min.z, GenerationProp.roomSize.max.z));
-				Vector3Int roomOrigin = new Vector3Int(
-					rand.Number(roomPossiblePlacement.min.x + roomSize.x, roomPossiblePlacement.max.x), 
-					rand.Number(roomPossiblePlacement.min.y + roomSize.y, roomPossiblePlacement.max.y), 
-					rand.Number(roomPossiblePlacement.min.z + roomSize.z, roomPossiblePlacement.max.z));
-				ChunkArray.roomOrigins[indexGenerationDetail, room] = roomOrigin - roomSize;
+				Vector3Int roomCenter = new Vector3Int(
+					rand.Index(GenerationProp.tileAmount.x), 
+					rand.Index(GenerationProp.tileAmount.y),
+					rand.Index(GenerationProp.tileAmount.z));
+				ChunkArray.roomCenters[indexGenerationDetail, room] = roomCenter;
 				ChunkArray.roomSizes[indexGenerationDetail, room] = roomSize;
 			}
 			Layers.generationDetail.created[locationGenerationDetail.x, locationGenerationDetail.y, locationGenerationDetail.z] = true;

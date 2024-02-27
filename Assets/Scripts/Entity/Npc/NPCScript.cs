@@ -41,7 +41,6 @@ public unsafe class NPCScript {
 		if (tileCoordinates == path.Last()) {
 			path.Remove();
 			if(path.Count == 0) {
-				Debug.Log("done");
 				hasSomewhereToGo = false;
 				entityScript.Move(new Vector2(0, 0));
 				return;

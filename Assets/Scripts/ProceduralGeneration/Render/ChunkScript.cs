@@ -182,9 +182,10 @@ namespace Generation
             Object.Destroy(ChunkArray.gameObject[Layers.render.LayerLocationToIndex(locationRender)]);
         }
 		public static void TrySpawn() {
+            int chunkGeneration = Layers.generation.LayerLocationToIndex(locationGeneration);
 			for (int tries = 0; tries < 10; tries++) {
 				Vector3Int tile = new Vector3Int(Random.Range(0, GenerationProp.tileAmount.x - 1), Random.Range(0, GenerationProp.tileAmount.y - 1), Random.Range(0, GenerationProp.tileAmount.z - 1));
-				if (ChunkArray.accesible[chunkRender, tile.x, tile.y, tile.z] == true) {
+				if (ChunkArray.accesible[chunkGeneration, tile.x, tile.y, tile.z]) {
 					NPCScript.Spawn(GenerationProp.TileCoordinatesToRealCoordinates(new TileCoordinates(coordinates, tile)));
 					return;
 				}

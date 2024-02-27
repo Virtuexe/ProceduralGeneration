@@ -51,8 +51,14 @@ MonoBehaviour:
   head: {fileID: 5618212702151834993}
   jumpSpeed: 10
   strafe: 10
-  speed: 8
-  acceleration: 100
+  walkSpeed: 10
+  sprintSpeed: 10
+  sprinting: 0
+  _energy: 100
+  energyRegen: 1
+  sprintEnergyConsumption: 1
+  jumpEnergyConsumption: 25
+  acceleration: 110
   rotationSpeed: 10
   lookUpSpeed: 10
   viewPitchRange: 90

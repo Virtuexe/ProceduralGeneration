@@ -7,7 +7,7 @@ using UnityEngine;
 namespace PathFinding {
 	public static unsafe class PathFindingScript {
 		private static Matrix<Node> nodes = new Matrix<Node>(Layers.generation.lengthInt, GenerationProp.tileAmount.x, GenerationProp.tileAmount.y, GenerationProp.tileAmount.z);
-		private static int maxDistance = -1;
+		private static int maxDistance = 20;
 		private static int bestDistance;
 		private static Pool<int> nodeQueueIndexes = new Pool<int>(Layers.generation.lengthInt * GenerationProp.tileAmount.x * GenerationProp.tileAmount.y * GenerationProp.tileAmount.z * Direction.Directions.Length);
 		static TileCoordinates startTileCoordinates;
@@ -37,13 +37,16 @@ namespace PathFinding {
 				TryMove(startNodeIndex, Direction.Directions[directionIndex]);
 			}
             ProcessQueue();
+			if (bestDistance == int.MaxValue) {
+				return new Pool<TileCoordinates>();
+			}
 			Set<TileCoordinates> bestPath = GetPath();
 #if UNITY_EDITOR
-			gameEvent.nodes = nodes;
-			gameEvent.startTileCoordinate = startTileCoordinates;
-			gameEvent.findGizmos = true;
-			gameEvent.gizmosBestPath.Free();
-			gameEvent.gizmosBestPath = bestPath;
+			//gameEvent.nodes = nodes;
+			//gameEvent.startTileCoordinate = startTileCoordinates;
+			//gameEvent.findGizmos = true;
+			//gameEvent.gizmosBestPath.Free();
+			//gameEvent.gizmosBestPath = bestPath;
 #endif
 			return new Pool<TileCoordinates>(bestPath.Length, bestPath.buffer, bestPath.Length);
         }
@@ -144,7 +147,7 @@ namespace PathFinding {
 			if (nodes[sourceNodeIndex]->GetTotalCost() >= bestDistance) {
 				return true;
 			}
-			if (nodes[targetNodeIndex]->distance <= nodes[sourceNodeIndex]->distance) {
+			if (nodes[targetNodeIndex]->distance <= nodes[sourceNodeIndex]->distance + 1) {
 				return true;
 			}
 			return false;

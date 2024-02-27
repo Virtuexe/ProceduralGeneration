@@ -7,7 +7,7 @@ namespace Generation {
 	public static class ChunkArray {
 		//generation detail
 		public static int[] roomsAmount = new int[Layers.generationDetail.lengthInt];
-		public static Vector3Int[,] roomOrigins = new Vector3Int[Layers.generationDetail.lengthInt, GenerationProp.roomCount.max];
+		public static Vector3Int[,] roomCenters = new Vector3Int[Layers.generationDetail.lengthInt, GenerationProp.roomCount.max];
 		public static Vector3Int[,] roomSizes = new Vector3Int[Layers.generationDetail.lengthInt, GenerationProp.roomCount.max];
 		//generation
 		public static bool[,,,,] sides = new bool[Layers.generation.lengthInt, GenerationProp.tileAmount.x, GenerationProp.tileAmount.y, GenerationProp.tileAmount.z, 3];

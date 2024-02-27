@@ -11,6 +11,7 @@ public class GeneratorManagerScript : MonoBehaviour
     //GENERATOR MANAGER
     //Game info
     public GameObject player;
+    public GameObject key;
     public Material material;
     public void Start()
     {
@@ -25,8 +26,7 @@ public class GeneratorManagerScript : MonoBehaviour
 		_playerChunk = PlayerChunk();
 		ChunkArray.coordinates = PlayerChunk();
     }
-    public void Update()
-    {
+    public void Update() {
         Vector3Int playerTravelDistance = PlayerTravelDistance();
         //chunks
         if (playerTravelDistance != Vector3Int.zero)
