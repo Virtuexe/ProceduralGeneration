@@ -7,23 +7,33 @@ using System.Collections.Generic;
 public unsafe class GameEventsScript : MonoBehaviour{
 #if UNITY_EDITOR
     public Matrix<PathFindingScript.Node> nodes;
-    public Matrix<bool> called = new Matrix<bool>(Layers.generation.LengthInt, GenerationProp.tileAmmount.x, GenerationProp.tileAmmount.y, GenerationProp.tileAmmount.z);
+    public Matrix<bool> called = new Matrix<bool>(Layers.generation.lengthInt, GenerationProp.tileAmount.x, GenerationProp.tileAmount.y, GenerationProp.tileAmount.z);
     public TileCoordinates startTileCoordinate;
     public bool findGizmos;
     public List<Vector3> gizmosList = new List<Vector3>();
     public Set<TileCoordinates> gizmosBestPath;
 #endif
     public static Task mainTask;
+
+    public static GameObject EnemyPrefab;
+    public GameObject NewEnemyPrefab;
+    public static List<NPCScript> NPCs = new List<NPCScript>();
+
     public void Awake()
     {
-        mainTask.minFPS = 100f;
+		mainTask.minFPS = 100f;
 #if UNITY_EDITOR
-        PathFindingScript.gameEvent = this;
+		PathFindingScript.gameEvent = this;
 #endif
+        //NPCs
+        GameEventsScript.EnemyPrefab = NewEnemyPrefab;
     }
     private void Update()
     {
         mainTask.Start();
+        for(int i = 0; i < NPCs.Count; i++) {
+            NPCs[i].Tick();
+        }
     }
 #if UNITY_EDITOR
     public void OnDrawGizmos() {
@@ -33,10 +43,10 @@ public unsafe class GameEventsScript : MonoBehaviour{
         }
         if (gizmosBestPath.Length > 0) {
             Gizmos.color = Color.cyan;
-            Vector3 lastGizmo = GenerationProp.TileCoordinatesToRealCoordinates(gizmosBestPath.array[0]);
+            Vector3 lastGizmo = GenerationProp.TileCoordinatesToRealCoordinates(gizmosBestPath.buffer[0]);
             for (int i = 1; i < gizmosBestPath.Length; i++) {
-                Gizmos.DrawLine(lastGizmo, GenerationProp.TileCoordinatesToRealCoordinates(gizmosBestPath.array[i]));
-                lastGizmo = GenerationProp.TileCoordinatesToRealCoordinates(gizmosBestPath.array[i]);
+                Gizmos.DrawLine(lastGizmo, GenerationProp.TileCoordinatesToRealCoordinates(gizmosBestPath.buffer[i]));
+                lastGizmo = GenerationProp.TileCoordinatesToRealCoordinates(gizmosBestPath.buffer[i]);
             }
         }
 
@@ -63,19 +73,24 @@ public unsafe class GameEventsScript : MonoBehaviour{
                     for (int z = -1; z <= 1; z++) {
                         TileCoordinates currentTileCoordinates = new TileCoordinates(tileCoordinate.coordinates, tileCoordinate.tiles + new Vector3Int(x, y, z));
 
-                        if (Layers.generation.IsLocationOutOfBounds(currentTileCoordinates.coordinates)) {
+                        if (Layers.generation.IsLocationOutOfBounds(Layers.generation.CoordinatesToLayerLocation(currentTileCoordinates.coordinates))) {
                             continue;
                         }
-                        int index = PathFindingScript.GetIndex(currentTileCoordinates);
-                        if (nodes.isOutOfBounds(index)) {
-                            continue;
-                        }
-                        if (!*called[index]) {
-                            *called[index] = true;
-                            AddGizmos(index);
+                        try {
+							int index = PathFindingScript.GetIndex(currentTileCoordinates);
+							if (nodes.isOutOfBounds(index)) {
+								continue;
+							}
+							if (!*called[index]) {
+								*called[index] = true;
+								AddGizmos(index);
 
-                            // Instead of calling GizmosSpread, enqueue the new tile coordinates
-                            queue.Enqueue(currentTileCoordinates);
+								// Instead of calling GizmosSpread, enqueue the new tile coordinates
+								queue.Enqueue(currentTileCoordinates);
+							}
+						}
+                        catch {
+                            Debug.Log("Err -> " + currentTileCoordinates);
                         }
                     }
                 }
@@ -83,12 +98,12 @@ public unsafe class GameEventsScript : MonoBehaviour{
         }
     }
     private void AddGizmos(int index) {
-        if (nodes.array[index].parentDirection == new Direction().Value) {
+        if (nodes.buffer[index].parentDirection == new Direction().Value) {
             return;
         }
-        Vector3 realCoordinates = GenerationProp.TileCoordinatesToRealCoordinates(nodes.array[index].tileCoordinates);
+        Vector3 realCoordinates = GenerationProp.TileCoordinatesToRealCoordinates(nodes.buffer[index].tileCoordinates);
         gizmosList.Add(realCoordinates);
-        gizmosList.Add(realCoordinates + Vector3.Scale(nodes.array[index].parentDirection, GenerationProp.tileSize));
+        gizmosList.Add(realCoordinates + Vector3.Scale(nodes.buffer[index].parentDirection, GenerationProp.tileSize));
     }
 #endif
 }

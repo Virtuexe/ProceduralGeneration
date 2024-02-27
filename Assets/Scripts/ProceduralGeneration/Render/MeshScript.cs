@@ -1,16 +1,11 @@
-using System.Drawing;
-using Unity.Profiling;
+using Generation;
 using UnityEngine;
-using UnityEngine.InputSystem.Switch;
-using UnityEngine.UIElements;
-
-[RequireComponent(typeof(MeshFilter))]
-public class MeshScript : MonoBehaviour
+public static class MeshScript
 {
     // float width;
     //public float height;
 
-    public Material mat;
+    public static Material mat;
 
 
     /*
@@ -25,11 +20,11 @@ public class MeshScript : MonoBehaviour
     }
     */
     ///edit to width and height
-    public GameObject CreateQuad(Vector3 A, Vector3 C, Direction pos)
+    public static GameObject CreateQuad(Vector3 A, Vector3 C, Direction pos)
     {
         //set relative position
-        A += transform.position;
-        C += transform.position;
+        A += GenerationProp.transform.position;
+        C += GenerationProp.transform.position;
         Mesh rectangle = new Mesh();
         //creating gameobject
         GameObject g = new GameObject();

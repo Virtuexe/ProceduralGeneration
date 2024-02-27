@@ -1,15 +1,20 @@
 using System;
 using UnityEngine;
 using PathFinding;
+using MyArrays;
+
 namespace Generation {
 	public static class ChunkArray {
-		public static bool[,,,,] sides = new bool[Layers.generation.LengthInt, GenerationProp.tileAmmount.x, GenerationProp.tileAmmount.y, GenerationProp.tileAmmount.z, 3];
-		public static bool[,,,] grid = new bool[Layers.generation.LengthInt, GenerationProp.tileAmmount.x, GenerationProp.tileAmmount.y, GenerationProp.tileAmmount.z];
-		public static bool[] genereted = new bool[Layers.generation.LengthInt];
-		public static GameObject[] gameObject = new GameObject[Layers.render.LengthInt];
-
-		//[chunk,x,y,z,chunk2,x2,y2,z2]
-		//public static Path[,,,,,,,] paths;
+		//generation detail
+		public static int[] roomsAmount = new int[Layers.generationDetail.lengthInt];
+		public static Vector3Int[,] roomCenters = new Vector3Int[Layers.generationDetail.lengthInt, GenerationProp.roomCount.max];
+		public static Vector3Int[,] roomSizes = new Vector3Int[Layers.generationDetail.lengthInt, GenerationProp.roomCount.max];
+		//generation
+		public static bool[,,,,] sides = new bool[Layers.generation.lengthInt, GenerationProp.tileAmount.x, GenerationProp.tileAmount.y, GenerationProp.tileAmount.z, 3];
+		public static bool[,,,] accesible = new bool[Layers.generation.lengthInt, GenerationProp.tileAmount.x, GenerationProp.tileAmount.y, GenerationProp.tileAmount.z];
+		public static bool[] genereted = new bool[Layers.generation.lengthInt];
+		//render
+		public static GameObject[] gameObject = new GameObject[Layers.render.lengthInt];
 
 		public static Vector3Int coordinates;
 		public static Vector3Int GetCoordinates(Vector3Int location) {
@@ -30,7 +35,7 @@ namespace Generation {
 			Vector3Int location = Vector3Int.zero;
 			for (int layer = 0; layer < Layers.hierarchy.Length; layer++) {
 				for (int dimension = 0; dimension <= 2; dimension++) {
-					length = Layers.hierarchy[layer].Length[dimension];
+					length = Layers.hierarchy[layer].length[dimension];
 					sign = (distanceToMove[dimension] >> 31) | 1;
 					shiftingLocation[dimension] = (sign + 1) / 2 * (length - 1);                            // 0 for negative, length - 1 for non-negative
 					prependingLocation[dimension] = (1 - sign) / 2 * length + (sign + 1) / 2 * -1;          // length for negative, -1 for non-negative

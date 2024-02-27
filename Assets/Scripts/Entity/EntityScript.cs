@@ -10,7 +10,14 @@ public class EntityScript : MonoBehaviour
 	//movement
 	public int jumpSpeed;
 	public float strafe;
-	public float speed;
+	private float _speed;
+	public float walkSpeed;
+	public float sprintSpeed;
+	public bool sprinting;
+	public float _energy;
+	public float energyRegen;
+	public float sprintEnergyConsumption;
+	public float jumpEnergyConsumption;
 	public float acceleration;
 	public float rotationSpeed;
 	public float lookUpSpeed;
@@ -26,9 +33,12 @@ public class EntityScript : MonoBehaviour
 	}
 	public void Jump()
 	{
-		if (controller.isGrounded)
+		if (controller.isGrounded && _energy >= jumpEnergyConsumption)
 		{
-			velocity.y = jumpSpeed;
+			_energy -= jumpEnergyConsumption;
+			Vector3 desiredDirection = (transform.right * walkDirection.x + transform.forward * walkDirection.y).normalized;
+			Vector3 desiredVelocity = desiredDirection * jumpSpeed;
+			velocity += Vector3.MoveTowards(controller.velocity, desiredVelocity, acceleration * Time.deltaTime);
 		}
 
 	}
@@ -56,13 +66,24 @@ public class EntityScript : MonoBehaviour
 		}
 		else
 		{
+			ResolveSprint();
 			Vector3 desiredDirection = (transform.right * walkDirection.x + transform.forward * walkDirection.y).normalized;
-			Vector3 desiredVelocity = desiredDirection * speed;
+			Vector3 desiredVelocity = desiredDirection * _speed;
 			velocity += Vector3.MoveTowards(controller.velocity, desiredVelocity, acceleration * Time.deltaTime);
 			velocity.y -= 0.5f;
 		}
 		// Move the controller
 		controller.Move(velocity * Time.deltaTime);
 		velocity = Vector3.zero;
+	}
+	private void ResolveSprint() {
+		if (sprinting && _energy >= sprintEnergyConsumption * Time.deltaTime) {
+			_energy -= sprintEnergyConsumption * Time.deltaTime;
+			_speed = sprintSpeed;
+		}
+		else {
+			_energy += energyRegen * Time.deltaTime;
+			_speed = walkSpeed;
+		}
 	}
 }

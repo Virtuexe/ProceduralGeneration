@@ -25,6 +25,7 @@ public class PlayerScript : MonoBehaviour {
 	public InputActionAsset playerInput;
 	public InputAction looking;
 	public InputAction use;
+	public InputAction sprint;
 	public InputAction primary;
 	public InputAction secondary;
 	public InputAction movement;
@@ -46,6 +47,10 @@ public class PlayerScript : MonoBehaviour {
 		use.performed += context => OnUsePreformed(context, 0);
 		use.canceled += context => OnUseCanceled(context, 0);
 		use.Enable();
+		sprint = gameplayActionMap.FindAction("Sprint");
+		sprint.performed += context => OnSprint(context, true);
+		sprint.canceled += context => OnSprint(context, false);
+		sprint.Enable();
 		//primary = gameplayActionMap.FindAction("Primary");
 		//primary.performed += context => OnUsePreformed(context, 1);
 		//primary.canceled += context => OnUseCanceled(context, 1);
@@ -88,7 +93,6 @@ public class PlayerScript : MonoBehaviour {
 		foreach (GameAction a in itemInteraction.actions.actionList) {
 			properties.actions.actionList.Add(a);
 		}
-
 	}
 	void OnMovementChanged(InputAction.CallbackContext context) {
 		entity.Move(context.ReadValue<Vector2>());
@@ -96,19 +100,14 @@ public class PlayerScript : MonoBehaviour {
 	void OnJumpChanged(InputAction.CallbackContext context) {
 		entity.Jump();
 	}
-	Vector3 waypointCoordinates;
+	NPCScript npc;
 	bool waypointSet;
 	void OnUsePreformed(InputAction.CallbackContext context, int value) {
-		if(!waypointSet) {
-			waypointCoordinates = transform.position;
-			Debug.Log("Waypoint set");
-            waypointSet = true;
-        } else {
-			waypointSet = false;
-            PathFindingScript.FindPath(GenerationProp.RealCoordinatesToTileCoordinates(waypointCoordinates), GenerationProp.RealCoordinatesToTileCoordinates(transform.position));
-        }
-		
-        GameAction action = null;
+		controller.enabled = false;
+		this.transform.position = GenerationProp.TileCoordinatesToRealCoordinates(GenerationProp.FindAccessibleTile(GenerationProp.playerTileCoordinates));
+		controller.enabled = true;
+
+		GameAction action = null;
 		foreach (GameAction i in properties.actions.actionList) {
 			if (i.type == (ActionType)value) {
 				if (action == null || action.priority < i.priority) {
@@ -130,6 +129,9 @@ public class PlayerScript : MonoBehaviour {
 		}
 		if (action != null)
 			action.action.Invoke(false);
+	}
+	void OnSprint(InputAction.CallbackContext context, bool isActive) {
+		entity.sprinting = isActive;
 	}
 
 	void OnMouseMovement(InputAction.CallbackContext context) {

@@ -1,44 +1,50 @@
+using Unity.VisualScripting;
 using UnityEngine;
 namespace Generation
 {
-    public class ChunkScript : MonoBehaviour
+    public static class ChunkScript
     {
-        int chunk;
-        int chunkRender;
-        Vector3Int locationGeneration;
-        Vector3Int coordinates;
+        static int chunk;
+        static int chunkRender;
+        static Vector3Int locationGeneration;
+        static int indexGeneration;
+        static Vector3Int coordinates;
 
-        bool completedChunk = true;
+        static bool completedChunk = true;
 
-        int d = 0;
-        Vector3Int tile = Vector3Int.zero;
-        public void RenderChunk(Vector3Int locationRender)
+        static int d = 0;
+        static Vector3Int tile = Vector3Int.zero;
+        public static void RenderChunk(Vector3Int locationRender)
         {
-            chunkRender = Layers.render.GetIndex(locationRender);
-            locationGeneration = Layers.render.LocationToLocation(locationRender, Layers.generation);
-            chunk = Layers.render.GetIndex(locationRender, Layers.hierarchy[0]);
+			chunkRender = Layers.render.LayerLocationToIndex(locationRender);
+            locationGeneration = Layers.render.LayerLocationToOtherLayerLocation(locationRender, Layers.generation);
+            indexGeneration = Layers.generation.LayerLocationToIndex(locationGeneration);
+			chunk = Layers.render.GetIndex(locationRender, Layers.hierarchy[0]);
             //if rendering new chunk then last time forget all values
-            if (completedChunk || coordinates != ChunkArray.GetCoordinates(Layers.generation.LocationToCoordinates(locationGeneration)))
+            if (completedChunk || coordinates != ChunkArray.GetCoordinates(Layers.generation.LayerLocationToLayerCoordinates(locationGeneration)))
             {
-                coordinates = ChunkArray.GetCoordinates(Layers.render.LocationToCoordinates(locationRender));
+                coordinates = ChunkArray.GetCoordinates(Layers.render.LayerLocationToLayerCoordinates(locationRender));
                 ChunkArray.gameObject[chunkRender] = new GameObject("tile" + coordinates);
-                ChunkArray.gameObject[chunkRender].transform.parent = transform;
+                ChunkArray.gameObject[chunkRender].transform.parent = GenerationProp.transform;
                 ChunkArray.gameObject[chunkRender].transform.localPosition = Vector3.Scale(GenerationProp.chunkSize, coordinates);
                 d = 0;
                 tile = Vector3Int.zero;
                 completedChunk = false;
             }
-            Direction pos;
+			Direction pos;
             //for every side
             while (d < 6)
             {
                 pos = new Direction(d);
-                while (tile.z < GenerationProp.tileAmmount.z)
+				while (tile.z < GenerationProp.tileAmount.z)
                 {
-                    while (tile.y < GenerationProp.tileAmmount.y)
+                    while (tile.y < GenerationProp.tileAmount.y)
                     {
-                        while (tile.x < GenerationProp.tileAmmount.x)
+                        while (tile.x < GenerationProp.tileAmount.x)
                         {
+                            if (!ChunkArray.accesible[indexGeneration, tile.x, tile.y, tile.z]) {
+								goto Continue;
+                            }
                             Vector3Int side = tile + pos.Tile;
                             //for every side of wall
                             if (GenerationProp.GetSide(locationGeneration, tile, new Direction(d)))
@@ -90,8 +96,7 @@ namespace Generation
                                 createWall();
                                 void createWall()
                                 {
-                                    ///
-                                    GetComponent<MeshScript>().CreateQuad(
+                                    MeshScript.CreateQuad(
                                         Vector3.Scale(GenerationProp.chunkSize, coordinates) - (GenerationProp.chunkSize / 2)
                                         + (GenerationProp.tileSize / 2)
                                         + (Vector3.Scale(GenerationProp.tileSize, side))
@@ -122,7 +127,7 @@ namespace Generation
                                     negative += (Vector3)vector * GenerationProp.wallThickness * pos.Multiplier / 2;
 
 
-                                    GetComponent<MeshScript>().CreateQuad(
+                                    MeshScript.CreateQuad(
                                         Vector3.Scale(GenerationProp.chunkSize, coordinates) - (GenerationProp.chunkSize / 2)
                                         + (GenerationProp.tileSize / 2)
                                         + (Vector3.Scale(GenerationProp.tileSize, side))
@@ -151,7 +156,9 @@ namespace Generation
                                         ,
                                         pos).transform.parent = ChunkArray.gameObject[chunkRender].transform;
                                 }
-                            }
+								
+							}
+						Continue:
                             tile.x++;
                             if (GameEventsScript.mainTask.OutOfTime())
                                 return;
@@ -166,7 +173,23 @@ namespace Generation
                 d++;
             }
             completedChunk = true;
-            Layers.render.created[locationRender.x, locationRender.y, locationRender.z] = true;
+			if (Random.value < 0.35f) {
+				TrySpawn();
+			}
+			Layers.render.created[locationRender.x, locationRender.y, locationRender.z] = true;
         }
-    }
+		public static void DestroyChunk(Vector3Int locationRender) {
+            Object.Destroy(ChunkArray.gameObject[Layers.render.LayerLocationToIndex(locationRender)]);
+        }
+		public static void TrySpawn() {
+            int chunkGeneration = Layers.generation.LayerLocationToIndex(locationGeneration);
+			for (int tries = 0; tries < 10; tries++) {
+				Vector3Int tile = new Vector3Int(Random.Range(0, GenerationProp.tileAmount.x - 1), Random.Range(0, GenerationProp.tileAmount.y - 1), Random.Range(0, GenerationProp.tileAmount.z - 1));
+				if (ChunkArray.accesible[chunkGeneration, tile.x, tile.y, tile.z]) {
+					NPCScript.Spawn(GenerationProp.TileCoordinatesToRealCoordinates(new TileCoordinates(coordinates, tile)));
+					return;
+				}
+			}
+		}
+	}
 }
