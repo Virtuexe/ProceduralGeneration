@@ -53,8 +53,14 @@ MonoBehaviour:
   head: {fileID: 5618212702151834993}
   jumpSpeed: 10
   strafe: 10
-  speed: 10
-  acceleration: 1
+  walkSpeed: 8
+  sprintSpeed: 14
+  sprinting: 0
+  _energy: 100
+  energyRegen: 10
+  sprintEnergyConsumption: 1
+  jumpEnergyConsumption: 25
+  acceleration: 120
   rotationSpeed: 10
   lookUpSpeed: 10
   viewPitchRange: 90
@@ -99,6 +105,15 @@ MonoBehaviour:
     m_Type: 0
     m_ExpectedControlType: 
     m_Id: a6a53d18-8197-4ab9-8a27-e5178fd29d2f
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  sprint:
+    m_Name: Sprint
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 4f445fd0-aa48-43f3-bada-33e984d7c099
     m_Processors: 
     m_Interactions: 
     m_SingletonActionBindings: []

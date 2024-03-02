@@ -1861,8 +1861,12 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5618212701641721475, guid: de0db43c5183170419a179b58cad0e9e, type: 3}
+      propertyPath: jumpSpeed
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 5618212701641721475, guid: de0db43c5183170419a179b58cad0e9e, type: 3}
       propertyPath: walkSpeed
-      value: 90
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 5618212701641721475, guid: de0db43c5183170419a179b58cad0e9e, type: 3}
       propertyPath: controller
@@ -1874,11 +1878,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5618212701641721475, guid: de0db43c5183170419a179b58cad0e9e, type: 3}
       propertyPath: sprintSpeed
-      value: 110
+      value: 14
       objectReference: {fileID: 0}
     - target: {fileID: 5618212701641721475, guid: de0db43c5183170419a179b58cad0e9e, type: 3}
       propertyPath: acceleration
-      value: 110
+      value: 120
       objectReference: {fileID: 0}
     - target: {fileID: 5618212701641721475, guid: de0db43c5183170419a179b58cad0e9e, type: 3}
       propertyPath: jumpEnergyConsumption
@@ -1910,7 +1914,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6853079636193418080, guid: de0db43c5183170419a179b58cad0e9e, type: 3}
       propertyPath: m_Type
-      value: 0
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6853079636193418080, guid: de0db43c5183170419a179b58cad0e9e, type: 3}
       propertyPath: m_SpotAngle
@@ -2105,6 +2109,10 @@ PrefabInstance:
       propertyPath: corridorComplexityMin
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7856927661401260774, guid: f8d6cad94e980a1408a4a1a54e969e1c, type: 3}
+      propertyPath: key
+      value: 
+      objectReference: {fileID: 6842841979707033406, guid: 698fb6b59109b6b4d91e1e0d6b541bf0, type: 3}
     - target: {fileID: 7856927661401260774, guid: f8d6cad94e980a1408a4a1a54e969e1c, type: 3}
       propertyPath: prop
       value: 
