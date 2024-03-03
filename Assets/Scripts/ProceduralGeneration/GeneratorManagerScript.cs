@@ -11,10 +11,13 @@ public class GeneratorManagerScript : MonoBehaviour
     //GENERATOR MANAGER
     //Game info
     public GameObject player;
-    public GameObject key;
+    public GameObject npcPrefab;
+    public GameObject keyPrefab;
     public Material material;
     public void Start()
     {
+        NPCScript.EnemyPrefab = npcPrefab;
+
         GenerationProp.transform = transform;
         MeshScript.mat = material;
 

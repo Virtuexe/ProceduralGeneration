@@ -2,6 +2,7 @@
 using UnityEngine;
 using Generation;
 using PathFinding;
+using UnityEngine.SceneManagement;
 
 public class PlayerScript : MonoBehaviour {
 	public GeneratorManagerScript manager;
@@ -9,7 +10,7 @@ public class PlayerScript : MonoBehaviour {
 	public EntityScript entity;
 	public InventoryObject inventory;
 	public InteractablePropertiesScript properties;
-	//inventory
+	//UI
 	public GameObject inventoryTab;
 	public GameObject hudInteractBar;
 	public GameObject hudInteractBarSlider;
@@ -22,6 +23,8 @@ public class PlayerScript : MonoBehaviour {
 
 	public InteractableScript _selectedObject;
 
+	public HudManager hud;
+	//keybindings
 	public InputActionAsset playerInput;
 	public InputAction looking;
 	public InputAction use;
@@ -29,7 +32,10 @@ public class PlayerScript : MonoBehaviour {
 	public InputAction primary;
 	public InputAction secondary;
 	public InputAction movement;
+	public InputAction jumping;
+	public InputAction inventoryIn;
 	public InputAction selecting;
+	public InputAction slotIn;
 
 
 	public Camera fpsCamera;
@@ -40,7 +46,7 @@ public class PlayerScript : MonoBehaviour {
 		movement.performed += OnMovementChanged;
 		movement.canceled += OnMovementChanged;
 		movement.Enable();
-		var jumping = gameplayActionMap.FindAction("Jumping");
+		jumping = gameplayActionMap.FindAction("Jumping");
 		jumping.performed += OnJumpChanged;
 		jumping.Enable();
 		use = gameplayActionMap.FindAction("Use");
@@ -62,14 +68,34 @@ public class PlayerScript : MonoBehaviour {
 		looking = gameplayActionMap.FindAction("Looking");
 		looking.performed += OnMouseMovement;
 		looking.Enable();
-		var inventory = gameplayActionMap.FindAction("Inventory");
-		inventory.performed += OnInventoryPreformed;
-		inventory.Enable();
+		inventoryIn = gameplayActionMap.FindAction("Inventory");
+		inventoryIn.performed += OnInventoryPreformed;
+		inventoryIn.Enable();
 		//slots
-		var slot = gameplayActionMap.FindAction("Slot");
-		slot.performed += OnSlotPreformed;
-		slot.Enable();
+		slotIn = gameplayActionMap.FindAction("Slot");
+		slotIn.performed += OnSlotPreformed;
+		slotIn.Enable();
 		hudInteractBar.SetActive(false);
+
+		GameEventsScript.GameEnd += End;
+	}
+	void End() {
+		movement.performed -= OnMovementChanged;
+		movement.canceled -= OnMovementChanged;
+		jumping.performed -= OnJumpChanged;
+		use.performed -= context => OnUsePreformed(context, 0);
+		use.canceled -= context => OnUseCanceled(context, 0);
+		sprint.performed -= context => OnSprint(context, true);
+		sprint.canceled -= context => OnSprint(context, false);
+		sprint.Enable();
+		//primary.performed -= context => OnUsePreformed(context, 1);
+		//primary.canceled -= context => OnUseCanceled(context, 1);
+		secondary.performed -= context => OnUsePreformed(context, 2);
+		secondary.canceled -= context => OnUseCanceled(context, 2);
+		looking.performed -= OnMouseMovement;
+		inventoryIn.performed -= OnInventoryPreformed;
+		//slots
+		slotIn.performed -= OnSlotPreformed;
 	}
 	void Start() {
 		inventoryTab.SetActive(false);
@@ -100,9 +126,8 @@ public class PlayerScript : MonoBehaviour {
 	void OnJumpChanged(InputAction.CallbackContext context) {
 		entity.Jump();
 	}
-	NPCScript npc;
-	bool waypointSet;
 	void OnUsePreformed(InputAction.CallbackContext context, int value) {
+		Hurt();
 		controller.enabled = false;
 		this.transform.position = GenerationProp.TileCoordinatesToRealCoordinates(GenerationProp.FindAccessibleTile(GenerationProp.playerTileCoordinates));
 		controller.enabled = true;
@@ -159,7 +184,12 @@ public class PlayerScript : MonoBehaviour {
 		}
 	}
 	void Update() {
-		//selecting
+		SelectTick();
+		if (hurt) {
+			HurtAwaite();
+		}
+	}
+	private void SelectTick() {
 		var ray = fpsCamera.ScreenPointToRay(new Vector3(Screen.width / 2f, Screen.height / 2f, 0));
 		RaycastHit hit;
 		if (Physics.Raycast(ray, out hit)) {
@@ -180,7 +210,8 @@ public class PlayerScript : MonoBehaviour {
 					properties.actions.actionList.Add(a);
 				}
 				_selectedObject = selectedObject;
-			} else if (selectedObject != _selectedObject && _selectedObject != null) {
+			}
+			else if (selectedObject != _selectedObject && _selectedObject != null) {
 				foreach (GameAction a in _selectedObject.actions.actionList) {
 					///set to false only already Invoked actions
 					a.action.Invoke(false);
@@ -188,7 +219,8 @@ public class PlayerScript : MonoBehaviour {
 				}
 				_selectedObject = null;
 			}
-		} else if (_selectedObject != null) {
+		}
+		else if (_selectedObject != null) {
 			foreach (GameAction a in _selectedObject.actions.actionList) {
 				///set to false only already Invoked actions
 				a.action.Invoke(false);
@@ -200,5 +232,17 @@ public class PlayerScript : MonoBehaviour {
 	private void OnApplicationQuit() {
 		inventory.container.ItemListClear();
 	}
-
+	private bool hurt;
+	public void Hurt() {
+		hud.blink.Close();
+		hurt = true;
+	}
+	private void HurtAwaite() {
+		if (!hud.blink.blinking) {
+			HurtEnd();
+		}
+	}
+	private void HurtEnd() {
+		GameEventsScript.MainMenu();
+	}
 }

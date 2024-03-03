@@ -8,7 +8,12 @@ public class MainMenuScript : MonoBehaviour
 	[SerializeField]
 	public ButtonScript startButton;
 	private void Start() {
+		UIManagerScript.Reset();
+
+		Cursor.lockState = CursorLockMode.None;
+		Cursor.visible = true;
 		startButton.Init();
+		Debug.Log(startButton.transform);
 		startButton.OnClick += StartGame;
 		//GenerationButton.OnClick += StartGame;
 	}
@@ -16,7 +21,6 @@ public class MainMenuScript : MonoBehaviour
 		UIManagerScript.Tick();
 	}
 	public void StartGame() {
-		SceneManager.UnloadScene(0);
-		SceneManager.LoadScene(1);
+		SceneManager.LoadScene(0);
 	}
 }

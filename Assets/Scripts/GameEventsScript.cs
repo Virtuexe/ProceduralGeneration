@@ -3,6 +3,7 @@ using MyArrays;
 using PathFinding;
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public unsafe class GameEventsScript : MonoBehaviour{
 #if UNITY_EDITOR
@@ -12,28 +13,32 @@ public unsafe class GameEventsScript : MonoBehaviour{
     public bool findGizmos;
     public List<Vector3> gizmosList = new List<Vector3>();
     public Set<TileCoordinates> gizmosBestPath;
+    public delegate void GameEndEvent();
+    public static GameEndEvent GameEnd;
 #endif
     public static Task mainTask;
 
-    public static GameObject EnemyPrefab;
-    public GameObject NewEnemyPrefab;
-    public static List<NPCScript> NPCs = new List<NPCScript>();
-
     public void Awake()
     {
+        GameEnd += End;
 		mainTask.minFPS = 100f;
 #if UNITY_EDITOR
 		PathFindingScript.gameEvent = this;
 #endif
-        //NPCs
-        GameEventsScript.EnemyPrefab = NewEnemyPrefab;
     }
     private void Update()
     {
         mainTask.Start();
-        for(int i = 0; i < NPCs.Count; i++) {
-            NPCs[i].Tick();
+        for(int i = 0; i < NPCScript.NPCs.Count; i++) {
+            NPCScript.NPCs[i].Tick();
         }
+    }
+    public static void End() {
+        NPCScript.NPCs.Clear();
+    }
+    public static void MainMenu() {
+        GameEnd?.Invoke();
+        SceneManager.LoadScene(1);
     }
 #if UNITY_EDITOR
     public void OnDrawGizmos() {

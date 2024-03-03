@@ -1395,6 +1395,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1939627682544092682, guid: 13d2fde13deb27945adacc528500d193, type: 3}
+      propertyPath: blink.blinkSpeed
+      value: 500
+      objectReference: {fileID: 0}
     - target: {fileID: 2147793912286412540, guid: 13d2fde13deb27945adacc528500d193, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -1446,6 +1450,30 @@ PrefabInstance:
     - target: {fileID: 2344788608257808054, guid: 13d2fde13deb27945adacc528500d193, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569923998887925527, guid: 13d2fde13deb27945adacc528500d193, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569923998887925527, guid: 13d2fde13deb27945adacc528500d193, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569923998887925527, guid: 13d2fde13deb27945adacc528500d193, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569923998887925527, guid: 13d2fde13deb27945adacc528500d193, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569923998887925527, guid: 13d2fde13deb27945adacc528500d193, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: -1002
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569923998887925527, guid: 13d2fde13deb27945adacc528500d193, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: -420
       objectReference: {fileID: 0}
     - target: {fileID: 4521495696805176765, guid: 13d2fde13deb27945adacc528500d193, type: 3}
       propertyPath: m_AnchorMax.x
@@ -1668,6 +1696,17 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 5924811762288694044, guid: 13d2fde13deb27945adacc528500d193, type: 3}
   m_PrefabInstance: {fileID: 1699539184}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2009004915 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1939627682544092682, guid: 13d2fde13deb27945adacc528500d193, type: 3}
+  m_PrefabInstance: {fileID: 1699539184}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2009004910}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 730a0f6b07b66004fb20c69bd2cdec55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2108460303
 GameObject:
   m_ObjectHideFlags: 0
@@ -1772,6 +1811,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5618212701641721472, guid: de0db43c5183170419a179b58cad0e9e, type: 3}
+      propertyPath: hud
+      value: 
+      objectReference: {fileID: 2009004915}
     - target: {fileID: 5618212701641721472, guid: de0db43c5183170419a179b58cad0e9e, type: 3}
       propertyPath: manager
       value: 
@@ -1898,6 +1941,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5618212701641721535, guid: de0db43c5183170419a179b58cad0e9e, type: 3}
       propertyPath: m_Name
+      value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 5618212701641721535, guid: de0db43c5183170419a179b58cad0e9e, type: 3}
+      propertyPath: m_TagString
       value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 5618212702151834995, guid: de0db43c5183170419a179b58cad0e9e, type: 3}
@@ -2129,6 +2176,10 @@ PrefabInstance:
       propertyPath: material
       value: 
       objectReference: {fileID: 2100000, guid: 2df65e6a8b2c3134a945702c74709588, type: 2}
+    - target: {fileID: 7856927661401260774, guid: f8d6cad94e980a1408a4a1a54e969e1c, type: 3}
+      propertyPath: npcPrefab
+      value: 
+      objectReference: {fileID: 5618212701641721535, guid: 9725adb5176ed86448d16b42efd56149, type: 3}
     - target: {fileID: 7856927661401260774, guid: f8d6cad94e980a1408a4a1a54e969e1c, type: 3}
       propertyPath: generationS
       value: 

@@ -6,6 +6,7 @@ public static class UIManagerScript
 {
 	public static Vector2 mousePosition { get; private set; }
 	public static List<ButtonScript> buttons = new List<ButtonScript>();
+
 	static public void Tick() {
 		mousePosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
 		CheckButtons();
@@ -17,5 +18,8 @@ public static class UIManagerScript
 			}
 			buttons[index].CheckButtonHover();
 		}
+	}
+	public static void Reset() {
+		buttons.Clear();
 	}
 }

@@ -2,17 +2,21 @@ using Generation;
 using MyArrays;
 using PathFinding;
 using System;
+using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
 public unsafe class NPCScript {
+	public static GameObject EnemyPrefab;
+	public static List<NPCScript> NPCs = new List<NPCScript>();
 	public static NPCScript Spawn(Vector3 coordinates) {
-		GameObject npc = GameObject.Instantiate(GameEventsScript.EnemyPrefab, coordinates, new Quaternion());
+		GameObject npc = GameObject.Instantiate(EnemyPrefab, coordinates, new Quaternion());
 		NPCScript npcScript = new NPCScript();
 		npcScript.entityScript = npc.GetComponent<EntityScript>();
-		GameEventsScript.NPCs.Add(npcScript);
+		NPCs.Add(npcScript);
 		return npcScript;
 	} 
+
 	public EntityScript entityScript;
 	private Pool<TileCoordinates> path;
 	private bool hasSomewhereToGo;
@@ -30,6 +34,7 @@ public unsafe class NPCScript {
 			}
 		}
 		if (hasSomewhereToGo) {
+			Look();
 			Move();
 		}
 	}
@@ -46,7 +51,13 @@ public unsafe class NPCScript {
 				return;
 			}
 		}
-		Vector3 direction = (GenerationProp.TileCoordinatesToRealCoordinates(path.Last()) - entityScript.transform.position).normalized;
-		entityScript.Move(new Vector2(direction.x, direction.z));
+		Vector3 globalDirection = (GenerationProp.TileCoordinatesToRealCoordinates(path.Last()) - entityScript.transform.position).normalized;
+		Vector3 localDirection = entityScript.transform.InverseTransformDirection(globalDirection);
+		entityScript.Move(new Vector2(localDirection.x, localDirection.z));
+	}
+	private void Look() {
+		Vector3 direction = GenerationProp.TileCoordinatesToRealCoordinates(GenerationProp.playerTileCoordinates) - entityScript.transform.position;
+		direction.y = 0;
+		entityScript.transform.forward = direction;
 	}
 }

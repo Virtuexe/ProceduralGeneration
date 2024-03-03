@@ -11,7 +11,7 @@ public class ButtonScript : MonoBehaviour {
 	public Action OnClick;
 	public Action OnEnter;
 	public Action OnExit;
-	private new RectTransform transform;
+	public new RectTransform transform;
 	private TextMeshProUGUI text;
 	public void Init() {
 		UIManagerScript.buttons.Add(this);
