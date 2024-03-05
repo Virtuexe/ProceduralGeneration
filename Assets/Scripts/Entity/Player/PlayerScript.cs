@@ -24,6 +24,12 @@ public class PlayerScript : MonoBehaviour {
 	public InteractableScript _selectedObject;
 
 	public HudManager hud;
+	//sound
+	public AudioSource source;
+	public AudioClip chasingI;
+	public AudioClip chasingII;
+	public AudioClip chasingIII;
+	public AudioClip chasingIV;
 	//keybindings
 	public InputActionAsset playerInput;
 	public InputAction looking;
@@ -127,11 +133,6 @@ public class PlayerScript : MonoBehaviour {
 		entity.Jump();
 	}
 	void OnUsePreformed(InputAction.CallbackContext context, int value) {
-		Hurt();
-		controller.enabled = false;
-		this.transform.position = GenerationProp.TileCoordinatesToRealCoordinates(GenerationProp.FindAccessibleTile(GenerationProp.playerTileCoordinates));
-		controller.enabled = true;
-
 		GameAction action = null;
 		foreach (GameAction i in properties.actions.actionList) {
 			if (i.type == (ActionType)value) {
@@ -158,7 +159,6 @@ public class PlayerScript : MonoBehaviour {
 	void OnSprint(InputAction.CallbackContext context, bool isActive) {
 		entity.sprinting = isActive;
 	}
-
 	void OnMouseMovement(InputAction.CallbackContext context) {
 		entity.Look(context.ReadValue<Vector2>());
 	}
@@ -188,6 +188,30 @@ public class PlayerScript : MonoBehaviour {
 		if (hurt) {
 			HurtAwaite();
 		}
+		Sound();
+	}
+	int lastChasingNpcAmount = -1;
+	private void Sound() {
+		if (lastChasingNpcAmount == NPCScript.chasingNpcAmount) {
+			return;
+		}
+		source.loop = true;
+		float time = source.time;
+		if (NPCScript.chasingNpcAmount == 0) {
+			source.clip = chasingI;
+		}
+		else if (NPCScript.chasingNpcAmount == 1) {
+			source.clip = chasingII;
+		}
+		else if (NPCScript.chasingNpcAmount == 2) {
+			source.clip = chasingIII;
+		}
+		else {
+			source.clip = chasingIV;
+		}
+		source.Play();
+		source.time = time;
+		lastChasingNpcAmount = NPCScript.chasingNpcAmount;
 	}
 	private void SelectTick() {
 		var ray = fpsCamera.ScreenPointToRay(new Vector3(Screen.width / 2f, Screen.height / 2f, 0));
@@ -244,5 +268,10 @@ public class PlayerScript : MonoBehaviour {
 	}
 	private void HurtEnd() {
 		GameEventsScript.MainMenu();
+	}
+	public void Teleport() {
+		controller.enabled = false;
+		this.transform.position = GenerationProp.TileCoordinatesToRealCoordinates(GenerationProp.FindAccessibleTile(GenerationProp.playerTileCoordinates));
+		controller.enabled = true;
 	}
 }

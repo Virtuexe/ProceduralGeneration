@@ -135,5 +135,17 @@ namespace Generation {
 				hierarchy[layer].Init();
 			}
 		}
+		public static void Regenerate() {
+			for(int i = 0; i < hierarchy.Length; i++) {
+				for(int chunkX = 0; chunkX < hierarchy[i].length.x; chunkX++) {
+					for (int chunkY = 0; chunkY < hierarchy[i].length.y; chunkY++) {
+						for (int chunkZ = 0; chunkZ < hierarchy[i].length.z; chunkZ++) {
+							hierarchy[i].pendingsDestroy[chunkX, chunkY, chunkZ] = true;
+							hierarchy[i].created[chunkX, chunkY, chunkZ] = false;
+						}
+					}
+				}
+			}
+		}
 	}
 }

@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using PathFinding;
 using MyArrays;
+using System.Collections.Generic;
 
 namespace Generation {
 	public static class ChunkArray {
@@ -15,8 +16,15 @@ namespace Generation {
 		public static bool[] genereted = new bool[Layers.generation.lengthInt];
 		//render
 		public static GameObject[] gameObject = new GameObject[Layers.render.lengthInt];
+		public static Dictionary<Vector3Int, int[]> keysTaken = new Dictionary<Vector3Int, int[]>();
 
 		public static Vector3Int coordinates;
+		static ChunkArray() {
+			GameEventsScript.GameEnd += End;
+		}
+		private static void End() {
+			keysTaken.Clear();
+		}
 		public static Vector3Int GetCoordinates(Vector3Int location) {
 			return location + ChunkArray.coordinates - Layers.hierarchy[0].size;
 		}

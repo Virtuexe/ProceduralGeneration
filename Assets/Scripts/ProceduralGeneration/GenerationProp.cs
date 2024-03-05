@@ -18,7 +18,10 @@ namespace Generation {
 		public static int seed = 68;
 
 		public static Transform transform;
+		public static PlayerScript player;
 		public static TileCoordinates playerTileCoordinates;
+		public static GameObject keyPrefab;
+		public static GameObject trapDoorPrefab;
 
 		//calculations
 		public static Vector3 chunkSize {
@@ -133,6 +136,21 @@ namespace Generation {
 				if (ChunkArray.accesible[chunkGeneration, tile.x, tile.y, tile.z]) {
 					return new TileCoordinates(tileCoordinate.coordinates, new Vector3Int(tile.x, tile.y, tile.z));
 				}
+			}
+		}
+		//Game
+		public static void ForceGenerateChunks() {
+				Layers.Regenerate();
+				GameEventsScript.mainTask.forceComplete = true;
+				for (int i = 1; i < Layers.hierarchy.Length; i++) {
+					Layers.hierarchy[i].Generate();
+				}
+				player.GetComponent<PlayerScript>().Teleport();
+				GameEventsScript.mainTask.forceComplete = false;
+		}
+		public static void GenerateChunks() {
+			for (int i = 1; i < Layers.hierarchy.Length; i++) {
+				Layers.hierarchy[i].Generate();
 			}
 		}
 	}

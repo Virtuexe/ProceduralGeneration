@@ -15,14 +15,17 @@ public class CustomRandom {
 	public int Index(int length) {
 		return rand.Next(length);
 	}
-	public int Number(int min, int max) {
+	public float Float(float min, float max) {
+		return (float)(min + (rand.NextDouble() * (max - min)));
+	}
+	public int Integer(int min, int max) {
 		return rand.Next(min, max + 1);
 	}
 	public void SetSeed(params int[] numbers) {
 		rand = new Random(HashCoordinates(numbers));
 	}
 	public int ChooseFromRange(Ranges ranges) {
-		int index = Number(0, ranges.Count - 1);;
+		int index = Integer(0, ranges.Count - 1);;
 		return ranges[index];
 	}
 	private int HashCoordinates(params int[] state) {

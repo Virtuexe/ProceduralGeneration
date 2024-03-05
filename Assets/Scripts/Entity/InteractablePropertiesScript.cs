@@ -2,8 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InteractablePropertiesScript : MonoBehaviour
-{
+public class InteractablePropertiesScript : MonoBehaviour {
     public Camera fpsCamera;
     public HealthSystemScript health;
     public InventoryObject inventory;

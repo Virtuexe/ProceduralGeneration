@@ -9,6 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1617616048279740038}
+  - component: {fileID: 1094127498029105312}
+  - component: {fileID: 5833292496128642384}
+  - component: {fileID: 7993520372818501959}
   m_Layer: 0
   m_Name: Trap door
   m_TagString: Untagged
@@ -32,6 +35,63 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1094127498029105312
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5171851243701068576}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a69d5835c4cc446429e9ba705818dac5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  properties: {fileID: 0}
+  actions:
+    actionList:
+    - action:
+        m_PersistentCalls:
+          m_Calls:
+          - m_Target: {fileID: 7993520372818501959}
+            m_TargetAssemblyTypeName: TrapDoor, Assembly-CSharp
+            m_MethodName: Open
+            m_Mode: 0
+            m_Arguments:
+              m_ObjectArgument: {fileID: 0}
+              m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+              m_IntArgument: 0
+              m_FloatArgument: 0
+              m_StringArgument: 
+              m_BoolArgument: 0
+            m_CallState: 2
+      type: 0
+      priority: 0
+--- !u!65 &5833292496128642384
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5171851243701068576}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 0.2, z: 1}
+  m_Center: {x: 0, y: 0.1, z: 0}
+--- !u!114 &7993520372818501959
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5171851243701068576}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8f11455c0bff154a8392cd994c074d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1912916847873232527
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -45,7 +105,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: ec958215c25176049850e887d9f946dd, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.54712
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: ec958215c25176049850e887d9f946dd, type: 3}
       propertyPath: m_LocalPosition.y
@@ -53,7 +113,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: ec958215c25176049850e887d9f946dd, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -4.7715216
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: ec958215c25176049850e887d9f946dd, type: 3}
       propertyPath: m_LocalRotation.w

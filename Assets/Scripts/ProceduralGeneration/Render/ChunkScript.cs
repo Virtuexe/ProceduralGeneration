@@ -172,24 +172,49 @@ namespace Generation
                 tile.z = 0;
                 d++;
             }
-            completedChunk = true;
-			if (Random.value < 0.35f) {
-				TrySpawn();
+			if (Random.value < 1f) {
+				TrySpawnNpc();
+                if (!GameEventsScript.playerFoundKey) {
+					TrySpawnKey();
+				}
+                TrySpawnTrapDoor();
 			}
+
+			completedChunk = true;
 			Layers.render.created[locationRender.x, locationRender.y, locationRender.z] = true;
         }
 		public static void DestroyChunk(Vector3Int locationRender) {
             Object.Destroy(ChunkArray.gameObject[Layers.render.LayerLocationToIndex(locationRender)]);
         }
-		public static void TrySpawn() {
+        public static void TrySpawnNpc() {
+            TileCoordinates tileCoordinates = new TileCoordinates();
+            if (TrySpawn(ref tileCoordinates)) {
+                NPCScript.Spawn(GenerationProp.TileCoordinatesToRealCoordinates(tileCoordinates));
+			}
+		}
+		public static void TrySpawnKey() {
+			TileCoordinates tileCoordinates = new TileCoordinates();
+			
+			if (TrySpawn(ref tileCoordinates)) {
+                KeyPickup.Spawn(GenerationProp.TileCoordinatesToRealCoordinates(tileCoordinates));
+			}
+		}
+		public static void TrySpawnTrapDoor() {
+			TileCoordinates tileCoordinates = new TileCoordinates();
+			if (TrySpawn(ref tileCoordinates)) {
+                TrapDoor.Spawn(GenerationProp.TileCoordinatesToRealCoordinates(tileCoordinates));
+			}
+		}
+		public static bool TrySpawn(ref TileCoordinates tileCoordinate) {
             int chunkGeneration = Layers.generation.LayerLocationToIndex(locationGeneration);
 			for (int tries = 0; tries < 10; tries++) {
 				Vector3Int tile = new Vector3Int(Random.Range(0, GenerationProp.tileAmount.x - 1), Random.Range(0, GenerationProp.tileAmount.y - 1), Random.Range(0, GenerationProp.tileAmount.z - 1));
 				if (ChunkArray.accesible[chunkGeneration, tile.x, tile.y, tile.z]) {
-					NPCScript.Spawn(GenerationProp.TileCoordinatesToRealCoordinates(new TileCoordinates(coordinates, tile)));
-					return;
+                    tileCoordinate = new TileCoordinates(coordinates, tile);
+					return true;
 				}
 			}
+            return false;
 		}
 	}
 }

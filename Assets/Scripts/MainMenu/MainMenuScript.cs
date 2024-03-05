@@ -13,7 +13,6 @@ public class MainMenuScript : MonoBehaviour
 		Cursor.lockState = CursorLockMode.None;
 		Cursor.visible = true;
 		startButton.Init();
-		Debug.Log(startButton.transform);
 		startButton.OnClick += StartGame;
 		//GenerationButton.OnClick += StartGame;
 	}

@@ -6,6 +6,7 @@ using UnityEngine;
 public struct Task
 {
     public float minFPS;
+    public bool forceComplete;
     private float startTime;
     public void Start()
     {
@@ -13,6 +14,9 @@ public struct Task
 	}
     public bool OutOfTime()
     {
+        if (forceComplete) {
+            return false;
+        }
 		return 1/minFPS < Time.realtimeSinceStartup - startTime;
     }
 }

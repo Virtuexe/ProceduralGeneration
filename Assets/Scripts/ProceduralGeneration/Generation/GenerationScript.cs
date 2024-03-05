@@ -1,5 +1,4 @@
 using MyArrays;
-using OpenCover.Framework.Model;
 using System;
 using System.Numerics;
 using UnityEngine;
@@ -27,6 +26,7 @@ namespace Generation {
 						for (int d = 0; d < 3; d++) {
 							ChunkArray.sides[chunkGeneration, x, y, z, d] = true;
 						}
+						ChunkArray.accesible[chunkGeneration, x, y, z] = false;
 					}
 				}
 			}

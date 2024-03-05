@@ -13,10 +13,11 @@ public unsafe class GameEventsScript : MonoBehaviour{
     public bool findGizmos;
     public List<Vector3> gizmosList = new List<Vector3>();
     public Set<TileCoordinates> gizmosBestPath;
-    public delegate void GameEndEvent();
-    public static GameEndEvent GameEnd;
 #endif
-    public static Task mainTask;
+	public delegate void GameEndEvent();
+	public static GameEndEvent GameEnd;
+	public static Task mainTask;
+    public static bool playerFoundKey;
 
     public void Awake()
     {
@@ -29,17 +30,34 @@ public unsafe class GameEventsScript : MonoBehaviour{
     private void Update()
     {
         mainTask.Start();
-        for(int i = 0; i < NPCScript.NPCs.Count; i++) {
-            NPCScript.NPCs[i].Tick();
+        for(int i = 0; i < NPCScript.npcs.Count; i++) {
+            NPCScript.npcs[i].Tick();
         }
     }
     public static void End() {
-        NPCScript.NPCs.Clear();
+        NPCScript.npcs.Clear();
+        TrapDoor.trapDoors.Clear();
+        KeyPickup.instances.Clear();
+		NPCScript.chasingNpcAmount = 0;
+        playerFoundKey = false;
     }
     public static void MainMenu() {
         GameEnd?.Invoke();
         SceneManager.LoadScene(1);
     }
+    public static void StartLevel() {
+		CustomRandom rand = new CustomRandom();
+		GenerationProp.seed += 1;
+		rand.SetSeed(GenerationProp.seed);
+		MeshScript.mat.color = new Color(rand.Float(0.2f, 0.5f), rand.Float(0.2f, 0.5f), rand.Float(0.2f, 0.5f));
+
+        KeyPickup.DestroyAll();
+        NPCScript.DestroyAll();
+        TrapDoor.DestroyAll();
+
+		Layers.Regenerate();
+		GenerationProp.ForceGenerateChunks();
+	}
 #if UNITY_EDITOR
     public void OnDrawGizmos() {
         Gizmos.color = Color.white;

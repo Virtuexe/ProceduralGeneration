@@ -13,13 +13,18 @@ public class GeneratorManagerScript : MonoBehaviour
     public GameObject player;
     public GameObject npcPrefab;
     public GameObject keyPrefab;
+    public GameObject trapDoorPrefab;
     public Material material;
+    private bool gameStarted;
     public void Start()
     {
         NPCScript.EnemyPrefab = npcPrefab;
+        GenerationProp.player = player.GetComponent<PlayerScript>();
+        GenerationProp.keyPrefab = keyPrefab;
+        GenerationProp.trapDoorPrefab = trapDoorPrefab;
 
         GenerationProp.transform = transform;
-        MeshScript.mat = material;
+		MeshScript.mat = material;
 
 		GameEventsScript gameEvent = gameObject.GetComponent<GameEventsScript>();
 
@@ -28,6 +33,8 @@ public class GeneratorManagerScript : MonoBehaviour
 		//Game info
 		_playerChunk = PlayerChunk();
 		ChunkArray.coordinates = PlayerChunk();
+
+        GameEventsScript.StartLevel();
     }
     public void Update() {
         Vector3Int playerTravelDistance = PlayerTravelDistance();
@@ -37,7 +44,7 @@ public class GeneratorManagerScript : MonoBehaviour
             ChunkArray.MoveChunks(playerTravelDistance);
         }
 		GenerationProp.playerTileCoordinates = GenerationProp.RealCoordinatesToTileCoordinates(player.transform.position);
-        GenerateChunks();
+        GenerationProp.GenerateChunks();
     }
 
     Vector3Int playerChunk;
@@ -57,11 +64,6 @@ public class GeneratorManagerScript : MonoBehaviour
         Vector3Int playerTravelDistance = playerChunk - _playerChunk;
         _playerChunk = playerChunk;
         return playerTravelDistance;
-    }
-    private void GenerateChunks() {
-        for (int i = 1; i < Layers.hierarchy.Length; i++) {
-            Layers.hierarchy[i].Generate();
-		}
     }
 #if UNITY_EDITOR
     private void OnDrawGizmos()
