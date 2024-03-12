@@ -18,6 +18,8 @@ public class GeneratorManagerScript : MonoBehaviour
     private bool gameStarted;
     public void Start()
     {
+        GenerationProp.score = -1;
+        GenerationProp.playerTileCoordinates = new TileCoordinates();
         NPCScript.EnemyPrefab = npcPrefab;
         GenerationProp.player = player.GetComponent<PlayerScript>();
         GenerationProp.keyPrefab = keyPrefab;

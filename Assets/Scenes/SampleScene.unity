@@ -1727,9 +1727,25 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 384938993}
     - target: {fileID: 5618212701641721472, guid: de0db43c5183170419a179b58cad0e9e, type: 3}
+      propertyPath: chasingI
+      value: 
+      objectReference: {fileID: 8300000, guid: e08a618e5c298e840b21b18197e65960, type: 3}
+    - target: {fileID: 5618212701641721472, guid: de0db43c5183170419a179b58cad0e9e, type: 3}
+      propertyPath: chasingII
+      value: 
+      objectReference: {fileID: 8300000, guid: 66083e61d2e14cb4fa8bbe7674345e23, type: 3}
+    - target: {fileID: 5618212701641721472, guid: de0db43c5183170419a179b58cad0e9e, type: 3}
+      propertyPath: chasingIV
+      value: 
+      objectReference: {fileID: 8300000, guid: 263b8af9802930b498b5210b2a5f97c4, type: 3}
+    - target: {fileID: 5618212701641721472, guid: de0db43c5183170419a179b58cad0e9e, type: 3}
       propertyPath: inventory
       value: 
       objectReference: {fileID: 11400000, guid: 374887a8ecb437d47bd22fd129140334, type: 2}
+    - target: {fileID: 5618212701641721472, guid: de0db43c5183170419a179b58cad0e9e, type: 3}
+      propertyPath: chasingIII
+      value: 
+      objectReference: {fileID: 8300000, guid: d50143db71f7ff444888952d7880a0c0, type: 3}
     - target: {fileID: 5618212701641721472, guid: de0db43c5183170419a179b58cad0e9e, type: 3}
       propertyPath: properties
       value: 
@@ -1821,6 +1837,10 @@ PrefabInstance:
     - target: {fileID: 5618212701641721474, guid: de0db43c5183170419a179b58cad0e9e, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5618212701641721475, guid: de0db43c5183170419a179b58cad0e9e, type: 3}
+      propertyPath: energy
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 5618212701641721475, guid: de0db43c5183170419a179b58cad0e9e, type: 3}
       propertyPath: jumpSpeed

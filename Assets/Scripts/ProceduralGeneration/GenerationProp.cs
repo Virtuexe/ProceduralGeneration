@@ -12,10 +12,14 @@ namespace Generation {
 		public static Vector3Int chunkPathDistance = new Vector3Int(1, 0, 1);
 		public static Range<int> roomCount = new Range<int>(1,5);
 		public static Range<Set3<int>> roomSize = new Range<Set3<int>>(new Set3<int>(3, 0, 3), new Set3<int>(4, 0, 4));
-		public static float entitySpawnChance = 10;
+		public static float entitySpawnChance = 5;
+		public static float keySpawnChance = 10;
+		public static float trapDoorSpawnChance = 10;
 		public static int mapPathDistanceInt { get { return (chunkPathDistance.x * 2 + 1) * (chunkPathDistance.y * 2 + 1) * (chunkPathDistance.z * 2 + 1); } }
 
 		public static int seed = 68;
+		public static int score = 0;
+		public static int highScore = 0;
 
 		public static Transform transform;
 		public static PlayerScript player;
@@ -130,6 +134,7 @@ namespace Generation {
 			return realCoordinates + (tileSize / 2);
 		}
 		public static TileCoordinates FindAccessibleTile(TileCoordinates tileCoordinate) {
+			Debug.Log(tileCoordinate);
 			int chunkGeneration = Layers.generation.CoordinatesToIndex(tileCoordinate.coordinates);
 			while (true) {
 				Vector3Int tile = new Vector3Int(UnityEngine.Random.Range(0, GenerationProp.tileAmount.x - 1), UnityEngine.Random.Range(0, GenerationProp.tileAmount.y - 1), UnityEngine.Random.Range(0, GenerationProp.tileAmount.z - 1));

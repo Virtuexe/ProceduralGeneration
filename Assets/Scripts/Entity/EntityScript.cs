@@ -14,7 +14,8 @@ public class EntityScript : MonoBehaviour
 	public float walkSpeed;
 	public float sprintSpeed;
 	public bool sprinting;
-	public float _energy;
+	public float energy;
+	private float _energy;
 	public float energyRegen;
 	public float sprintEnergyConsumption;
 	public float jumpEnergyConsumption;
@@ -27,6 +28,9 @@ public class EntityScript : MonoBehaviour
 	float pitch = 0;
 	Vector2 walkDirection = Vector2.zero;
 	public Vector3 velocity = Vector3.zero;
+	private void Start() {
+		energy = _energy;
+	}
 	public void Move(Vector2 direction)
 	{
 		this.walkDirection = direction;
@@ -82,7 +86,12 @@ public class EntityScript : MonoBehaviour
 			_speed = sprintSpeed;
 		}
 		else {
-			_energy += energyRegen * Time.deltaTime;
+			if(_energy >= energy) {
+				_energy = energy;
+			}
+			else {
+				_energy += energyRegen * Time.deltaTime;
+			}
 			_speed = walkSpeed;
 		}
 	}

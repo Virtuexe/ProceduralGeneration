@@ -26,6 +26,7 @@ public class PlayerScript : MonoBehaviour {
 	public HudManager hud;
 	//sound
 	public AudioSource source;
+	public AudioClip coinPickup;
 	public AudioClip chasingI;
 	public AudioClip chasingII;
 	public AudioClip chasingIII;
@@ -191,7 +192,16 @@ public class PlayerScript : MonoBehaviour {
 		Sound();
 	}
 	int lastChasingNpcAmount = -1;
+	float minTimeSound = 1;
+	float timeSound = 0;
 	private void Sound() {
+		timeSound += Time.deltaTime;
+		if(timeSound >= minTimeSound) {
+			timeSound = 0;
+		}
+		else {
+			return;
+		}
 		if (lastChasingNpcAmount == NPCScript.chasingNpcAmount) {
 			return;
 		}

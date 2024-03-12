@@ -38,7 +38,11 @@ public unsafe class GameEventsScript : MonoBehaviour{
         NPCScript.npcs.Clear();
         TrapDoor.trapDoors.Clear();
         KeyPickup.instances.Clear();
+        ChunkArray.coordinates = Vector3Int.zero;
 		NPCScript.chasingNpcAmount = 0;
+        if(GenerationProp.score > GenerationProp.highScore) {
+            GenerationProp.highScore = GenerationProp.score;
+        }
         playerFoundKey = false;
     }
     public static void MainMenu() {
@@ -47,6 +51,7 @@ public unsafe class GameEventsScript : MonoBehaviour{
     }
     public static void StartLevel() {
 		CustomRandom rand = new CustomRandom();
+        GenerationProp.score += 1;
 		GenerationProp.seed += 1;
 		rand.SetSeed(GenerationProp.seed);
 		MeshScript.mat.color = new Color(rand.Float(0.2f, 0.5f), rand.Float(0.2f, 0.5f), rand.Float(0.2f, 0.5f));
