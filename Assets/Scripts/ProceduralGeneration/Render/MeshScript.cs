@@ -20,7 +20,7 @@ public static class MeshScript
     }
     */
     ///edit to width and height
-    public static GameObject CreateQuad(Vector3 A, Vector3 C, Direction pos)
+    public static GameObject CreateQuad(Vector3 A, Vector3 C, Direction pos, string name)
     {
         //set relative position
         A += GenerationProp.transform.position;
@@ -30,7 +30,7 @@ public static class MeshScript
         GameObject g = new GameObject();
         //g.transform.parent = transform;
         //g.transform.localPosition = new Vector3(0, 0, 0);
-        g.name = "rectangle";
+        g.name = name;
         g.AddComponent<MeshFilter>();
         var boxCollider = g.AddComponent<BoxCollider>();
         var meshRenderer = g.AddComponent<MeshRenderer>();

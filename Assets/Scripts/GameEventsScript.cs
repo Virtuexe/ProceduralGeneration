@@ -4,6 +4,7 @@ using PathFinding;
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
 
 public unsafe class GameEventsScript : MonoBehaviour{
 #if UNITY_EDITOR

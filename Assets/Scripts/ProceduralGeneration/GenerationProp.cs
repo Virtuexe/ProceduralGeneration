@@ -216,7 +216,7 @@ namespace Generation {
 			return left.coordinates == right.coordinates && left.tiles == right.tiles;
 		}
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool operator !=(TileCoordinates left, TileCoordinates right) {
+		public static bool operator != (TileCoordinates left, TileCoordinates right) {
 			return left.coordinates != right.coordinates || left.tiles != right.tiles;
 		}
 		public static void FixSelectedCoordinate() {

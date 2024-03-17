@@ -15,7 +15,7 @@ public class EntityScript : MonoBehaviour
 	public float sprintSpeed;
 	public bool sprinting;
 	public float energy;
-	private float _energy;
+	public float _energy;
 	public float energyRegen;
 	public float sprintEnergyConsumption;
 	public float jumpEnergyConsumption;

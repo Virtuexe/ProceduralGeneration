@@ -15,14 +15,15 @@ public class KeyPickup : MonoBehaviour {
 		if (GameEventsScript.playerFoundKey) {
 			return;
 		}
+		Debug.Log("Create");
 		GameObject obj = Object.Instantiate(GenerationProp.keyPrefab, coordinates, new Quaternion());
 		instances.Add(obj.GetComponent<KeyPickup>());
 	}
 	public static void DestroyAll() {
 		for (int i = 0; i < instances.Count; i++) {
 			Destroy(instances[i].gameObject);
-			instances.RemoveAt(i);
 		}
+		instances.Clear();
 	}
 	private void OnTriggerEnter(Collider other) {
 		if (other.CompareTag("Player")) {

@@ -45,6 +45,7 @@ namespace Generation
                             if (!ChunkArray.accesible[indexGeneration, tile.x, tile.y, tile.z]) {
 								goto Continue;
                             }
+                            string name = "";
                             Vector3Int side = tile + pos.Tile;
                             //for every side of wall
                             if (GenerationProp.GetSide(locationGeneration, tile, new Direction(d)))
@@ -64,33 +65,67 @@ namespace Generation
                                 //side bool
                                 bool back_right = GenerationProp.GetSide(locationGeneration, tile + position.RelValue, new Direction(position.RelValueX));
                                 bool back_up = GenerationProp.GetSide(locationGeneration, tile + position.RelValue, new Direction(position.RelValueY));
+								if (right) {
+									name += "right ";
+								}
+								if (left) {
+									name += "left ";
+								}
+								if (up) {
+									name += "up ";
+								}
+								if (down) {
+									name += "down ";
+								}
+								if (right_forward) {
+									name += "right_forward ";
+								}
+								if (left_forward) {
+									name += "left_forward ";
+								}
+								if (up_forward) {
+									name += "up_forward ";
+								}
+								if (down_forward) {
+									name += "down_forward ";
+								}
+								if (back_right) {
+									name += "back_right ";
+								}
+								if (back_up) {
+									name += "back_up ";
+								}
 
-                                if (right)
-                                    positive -= (Vector3)position.RelValueX * GenerationProp.wallThickness / 2;
-                                else if (!right_forward)
-                                {
+								if (right) {
+									positive -= (Vector3)position.RelValueX * GenerationProp.wallThickness / 2;
+								}
+                                else if (!right_forward) {
                                     positive += (Vector3)position.RelValueX * GenerationProp.wallThickness / 2;
-                                    if (!back_right)
-                                        createSide(new Direction(-pos.RelValueX));
+                                    if (!back_right) {
+										createSide(new Direction(-pos.RelValueX));
+									}
                                 }
-                                if (left)
-                                    negative += (Vector3)position.RelValueX * GenerationProp.wallThickness / 2;
+                                if (left) {
+									negative += (Vector3)position.RelValueX * GenerationProp.wallThickness / 2;
+								}
                                 else if (!left_forward)
                                 {
                                     negative -= (Vector3)position.RelValueX * GenerationProp.wallThickness / 2;
                                 }
-                                if (up)
-                                    positive -= (Vector3)position.RelValueY * GenerationProp.wallThickness / 2;
+                                if (up) {
+									positive -= (Vector3)position.RelValueY * GenerationProp.wallThickness / 2;
+								}
                                 else if (!up_forward)
                                 {
                                     positive += (Vector3)position.RelValueY * GenerationProp.wallThickness / 2;
-                                    if (!back_up)
-                                        createSide(new Direction(-pos.RelValueY));
+                                    if (!back_up) {
+										createSide(new Direction(-pos.RelValueY));
+									}
                                 }
-                                if (down)
-                                    negative += (Vector3)position.RelValueY * GenerationProp.wallThickness / 2;
-                                else if (!down_forward)
-                                {
+                                if (down) {
+									negative += (Vector3)position.RelValueY * GenerationProp.wallThickness / 2;
+								}
+                                else if (!down_forward){
                                     negative -= (Vector3)position.RelValueY * GenerationProp.wallThickness / 2;
                                 }
                                 createWall();
@@ -115,7 +150,7 @@ namespace Generation
                                         - (Vector3)position.RelValue * GenerationProp.wallThickness / 2
                                         + positive
                                         ,
-                                        position).transform.parent = ChunkArray.gameObject[chunkRender].transform;
+                                        position, name).transform.parent = ChunkArray.gameObject[chunkRender].transform;
                                 }
                                 void createSide(Direction pos)
                                 {
@@ -154,7 +189,7 @@ namespace Generation
                                         + (Vector3.Scale(position.Value, GenerationProp.tileSize) / 2)
                                         + positive
                                         ,
-                                        pos).transform.parent = ChunkArray.gameObject[chunkRender].transform;
+                                        pos, name).transform.parent = ChunkArray.gameObject[chunkRender].transform;
                                 }
 								
 							}
