@@ -28,6 +28,7 @@ public class KeyPickup : MonoBehaviour {
 	private void OnTriggerEnter(Collider other) {
 		if (other.CompareTag("Player")) {
 			GameEventsScript.playerFoundKey = true;
+			HudManager.hasKey(true);
 			DestroyAll();
 		}
 	}

@@ -55,6 +55,7 @@ MonoBehaviour:
   walkSpeed: 10
   sprintSpeed: 10
   sprinting: 0
+  energy: 0
   _energy: 100
   energyRegen: 1
   sprintEnergyConsumption: 1
@@ -285,8 +286,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 1}
+  m_Size: {x: 1, y: 1, z: 3}
+  m_Center: {x: 0, y: 0, z: 2}
 --- !u!114 &3347268199557896700
 MonoBehaviour:
   m_ObjectHideFlags: 0

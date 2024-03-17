@@ -58,11 +58,6 @@ namespace Generation {
 								Layers.hierarchy[layer].pendingsDestroy[location.x, location.y, location.z] = true;
 								Layers.hierarchy[layer].created[location.x, location.y, location.z] = false;
 							}
-							//if (!Layers.hierarchy[layer].IsLocationIncluded(location - distanceToMove)) {
-							//	if (!Layers.hierarchy[layer].pendingsDestroy[location.x, location.y, location.z])
-							//		Debug.Log("IM NOT USELESS!!!");
-
-							//}
 						}
 					}
 				}

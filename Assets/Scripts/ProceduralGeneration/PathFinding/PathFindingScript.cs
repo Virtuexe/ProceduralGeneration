@@ -42,11 +42,11 @@ namespace PathFinding {
 			}
 			Set<TileCoordinates> bestPath = GetPath();
 #if UNITY_EDITOR
-			//gameEvent.nodes = nodes;
-			//gameEvent.startTileCoordinate = startTileCoordinates;
-			//gameEvent.findGizmos = true;
-			//gameEvent.gizmosBestPath.Free();
-			//gameEvent.gizmosBestPath = bestPath;
+			gameEvent.nodes = nodes;
+			gameEvent.startTileCoordinate = startTileCoordinates;
+			gameEvent.findGizmos = true;
+			gameEvent.gizmosBestPath.Free();
+			gameEvent.gizmosBestPath = bestPath;
 #endif
 			return new Pool<TileCoordinates>(bestPath.Length, bestPath.buffer, bestPath.Length);
         }

@@ -17,7 +17,7 @@ namespace Generation {
 		public static float trapDoorSpawnChance = 10;
 		public static int mapPathDistanceInt { get { return (chunkPathDistance.x * 2 + 1) * (chunkPathDistance.y * 2 + 1) * (chunkPathDistance.z * 2 + 1); } }
 
-		public static int seed = 68;
+		public static int seed = 6;
 		public static int score = 0;
 		public static int highScore = 0;
 

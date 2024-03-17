@@ -24,11 +24,15 @@ public unsafe class GameEventsScript : MonoBehaviour{
     {
         GameEnd += End;
 		mainTask.minFPS = 100f;
+        
 #if UNITY_EDITOR
-		PathFindingScript.gameEvent = this;
+        PathFindingScript.gameEvent = this;
 #endif
     }
-    private void Update()
+	public void Start() {
+        HudManager.hasKey(false);
+    }
+	private void Update()
     {
         mainTask.Start();
         for(int i = 0; i < NPCScript.npcs.Count; i++) {
@@ -36,6 +40,7 @@ public unsafe class GameEventsScript : MonoBehaviour{
         }
     }
     public static void End() {
+        HudManager.hasKey(false);
         NPCScript.npcs.Clear();
         TrapDoor.trapDoors.Clear();
         KeyPickup.instances.Clear();
@@ -45,13 +50,15 @@ public unsafe class GameEventsScript : MonoBehaviour{
             GenerationProp.highScore = GenerationProp.score;
         }
         playerFoundKey = false;
+        
     }
     public static void MainMenu() {
         GameEnd?.Invoke();
         SceneManager.LoadScene(1);
     }
     public static void StartLevel() {
-		CustomRandom rand = new CustomRandom();
+        HudManager.hasKey(false);
+        CustomRandom rand = new CustomRandom();
         GenerationProp.score += 1;
 		GenerationProp.seed += 1;
 		rand.SetSeed(GenerationProp.seed);
